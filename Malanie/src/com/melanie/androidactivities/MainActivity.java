@@ -1,10 +1,13 @@
 package com.melanie.androidactivities;
 
-import com.melanie.androidactivities.support.MelanieListViewAdapter;
-import com.melanie.support.Common;
-
 import android.app.ListActivity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ListView;
+
+import com.melanie.androidactivities.support.Common;
+import com.melanie.androidactivities.support.MelanieListViewAdapter;
 
 public class MainActivity extends ListActivity {
 	
@@ -17,7 +20,12 @@ public class MainActivity extends ListActivity {
 				Common.getMainPageImages(),
 				Common.getMainPageNavigationItems(),
 				Common.getMainPageNavigationDescription()));
+	}
 
+	@Override
+	protected void onListItemClick(ListView l, View v, int position, long id) {
+		Intent intent = new Intent(this,Common.getMelanieActivities().get(position));
+		startActivity(intent);
 	}
 
 }

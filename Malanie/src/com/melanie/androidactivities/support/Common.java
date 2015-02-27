@@ -1,4 +1,8 @@
-package com.melanie.support;
+package com.melanie.androidactivities.support;
+
+import android.app.Activity;
+import android.util.SparseArray;
+import com.melanie.androidactivities.ProductsMainActivity;
 
 import com.melanie.androidactivities.R;
 
@@ -20,4 +24,11 @@ public class Common {
 				R.string.SettingsDesc };
 	}
 
+	public static SparseArray<Class<? extends Activity>> getMelanieActivities(){
+		
+		return new SparseArray<Class<? extends Activity>>(){{
+			append(0, ProductsMainActivity.class);
+		}};
+		
+	}
 }

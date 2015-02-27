@@ -13,12 +13,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-public class CategoryActivity extends OrmLiteBaseActivity<DataSource> {
+public class CategoriesActivity extends OrmLiteBaseActivity<DataSource> {
 
 	private ProductEntryController productController;
 	private MelanieBusiness business;
 
-	public CategoryActivity() {
+	public CategoriesActivity() {
 		super();
 		productController = new ProductEntryControllerImpl();
 		business = new MelanieBusinessImpl();
@@ -28,7 +28,7 @@ public class CategoryActivity extends OrmLiteBaseActivity<DataSource> {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		business.initialize(getHelper());
-		setContentView(R.layout.activity_category_activity);
+		setContentView(R.layout.activity_categories);
 	}
 
 	@Override

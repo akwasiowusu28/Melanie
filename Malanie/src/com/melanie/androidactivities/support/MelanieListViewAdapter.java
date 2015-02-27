@@ -18,7 +18,7 @@ public class MelanieListViewAdapter extends ArrayAdapter<Integer> {
 	private Integer[] navigationItems;
 	private Integer[] navigationItemsDesc;
 
-	private class ViewHolder {
+	private static class ViewHolder {
 		public TextView firstLinetextView;
 		public TextView secondLinetextView;
 		public ImageView mainIconImageView;
@@ -39,20 +39,25 @@ public class MelanieListViewAdapter extends ArrayAdapter<Integer> {
 		LayoutInflater inflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-		ViewHolder viewHolder = null;
+		View rowView = convertView;
 
-		if (convertView == null) {
+		if (rowView == null) {
+			ViewHolder viewHolder = null;
 			viewHolder = new ViewHolder();
-			convertView = inflater.inflate(resource, parent, false);
+			rowView = inflater.inflate(resource, parent, false);
+
+			viewHolder.firstLinetextView = (TextView) rowView
+					.findViewById(R.id.firstLine);
+			viewHolder.secondLinetextView = (TextView) rowView
+					.findViewById(R.id.secondLine);
+
+			viewHolder.mainIconImageView = (ImageView) rowView
+					.findViewById(R.id.icon);
+
+			rowView.setTag(viewHolder);
 		}
 		
-		viewHolder.firstLinetextView = (TextView) convertView
-				.findViewById(R.id.firstLine);
-		viewHolder.secondLinetextView = (TextView) convertView
-				.findViewById(R.id.secondLine);
-
-		viewHolder.mainIconImageView = (ImageView) convertView
-				.findViewById(R.id.icon);
+		ViewHolder viewHolder = (ViewHolder)rowView.getTag();
 		viewHolder.mainIconImageView
 				.setImageResource(navigationIcons[position]);
 
@@ -60,8 +65,7 @@ public class MelanieListViewAdapter extends ArrayAdapter<Integer> {
 				.getString(navigationItems[position]));
 		viewHolder.secondLinetextView.setText(context
 				.getString(navigationItemsDesc[position]));
-		
-		
-		return convertView;
+
+		return rowView;
 	}
 }

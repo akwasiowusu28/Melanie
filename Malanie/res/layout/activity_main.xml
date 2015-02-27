@@ -12,7 +12,9 @@
     android:layout_centerInParent="true"
     android:id="@id/android:list"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+    android:layout_height="wrap_content"
+    android:choiceMode="singleChoice"
+    android:listSelector="@drawable/listgradient">
 </ListView>
 
 </RelativeLayout>
