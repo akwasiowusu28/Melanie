@@ -1,16 +1,45 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+    android:layout_width="fill_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
+    android:layout_gravity="center"
     tools:context="com.melanie.androidactivities.ProductsMainActivity" >
 
-    <TextView
-        android:layout_width="wrap_content"
+    <include
+        android:id="@+id/header"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="@string/hello_world" />
+        android:layout_alignParentTop="true"
+        layout="@layout/layout_header" />
 
+    <Button
+        android:id="@+id/addProducts"
+        style="@style/buttonStyle"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/header"
+        android:drawableTop="@drawable/addproduct"
+        android:text="@string/products" />
+    
+    <Button
+        android:id="@+id/viewProducts"
+        style="@style/buttonStyle"
+        android:layout_toRightOf="@id/addProducts"
+        android:layout_below="@id/header"
+        android:drawableTop="@drawable/viewproducts"
+        android:text="@string/products" />
+
+     <Button
+        android:id="@+id/addCategories"
+        style="@style/buttonStyle"
+        android:layout_below="@id/addProducts"
+        android:drawableTop="@drawable/addcategory"
+        android:text="@string/categories" />
+     
+     <Button
+        android:id="@+id/viewCategories"
+        android:layout_toRightOf="@id/addCategories"
+        style="@style/buttonStyle"
+        android:layout_below="@id/viewProducts"
+        android:drawableTop="@drawable/viewcategory"
+        android:text="@string/categories" />
 </RelativeLayout>

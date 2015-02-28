@@ -8,13 +8,22 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.melanie.androidactivities.MainActivity" >
 
-<ListView 
-    android:layout_centerInParent="true"
-    android:id="@id/android:list"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:choiceMode="singleChoice"
-    android:listSelector="@drawable/listgradient">
-</ListView>
+    <ImageView 
+        android:src="@drawable/melanie"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/melanielogo"
+        android:contentDescription="@string/app_name"
+        android:layout_marginBottom="20dp"/>
+    
+    <ListView
+        android:layout_below="@id/melanielogo"
+        android:id="@id/android:list"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:choiceMode="singleChoice"
+        android:listSelector="@drawable/listgradient" >
+    </ListView>
 
 </RelativeLayout>

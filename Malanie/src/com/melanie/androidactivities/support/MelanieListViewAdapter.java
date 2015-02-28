@@ -26,9 +26,9 @@ public class MelanieListViewAdapter extends ArrayAdapter<Integer> {
 
 	public MelanieListViewAdapter(Context context, Integer[] navigationIcons,
 			Integer[] navigationItems, Integer[] navigationItemsDesc) {
-		super(context, R.layout.listview_main_page, navigationItems);
+		super(context, R.layout.layout_listview_main_page, navigationItems);
 		this.context = context;
-		this.resource = R.layout.listview_main_page;
+		this.resource = R.layout.layout_listview_main_page;
 		this.navigationItems = navigationItems;
 		this.navigationIcons = navigationIcons;
 		this.navigationItemsDesc = navigationItemsDesc;
