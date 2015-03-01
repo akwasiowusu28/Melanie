@@ -1,9 +1,14 @@
 package com.melanie.androidactivities;
 
+import com.google.zxing.WriterException;
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
+
+import com.google.zxing.client.androidGScannerFiles.GZxingEncoder;
 
 public class AddProductActivity extends Activity {
 
@@ -11,6 +16,18 @@ public class AddProductActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_add_product);
+		
+		GZxingEncoder 	encoder = GZxingEncoder.getInstance();
+		encoder.initalize(this);
+
+		try {
+			Bitmap bitmap = encoder.generateBarCode_general("1234");
+			ImageView img = (ImageView)findViewById(R.id.barcodeImage);
+			img.setImageBitmap(bitmap);
+		} catch (WriterException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override
