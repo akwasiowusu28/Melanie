@@ -23,7 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:choiceMode="singleChoice"
-        android:listSelector="@drawable/listgradient" >
+        android:listSelector="@drawable/listselector" >
     </ListView>
 
 </RelativeLayout>

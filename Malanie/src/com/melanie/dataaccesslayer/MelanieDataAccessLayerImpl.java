@@ -1,12 +1,15 @@
 package com.melanie.dataaccesslayer;
 
 import java.sql.SQLException;
+import java.util.List;
+
 import com.j256.ormlite.dao.Dao;
 import com.melanie.dataaccesslayer.datasource.DataSource;
 import com.melanie.dataaccesslayer.datasource.DataSourceManager;
 import com.melanie.entities.BaseEntity;
 import com.melanie.support.exceptions.MelanieDataLayerException;
 
+@SuppressWarnings("unchecked")
 public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {	
 	
 	@Override
@@ -68,7 +71,6 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 	}
 
 	//TODO: change the class argument to something better
-	@SuppressWarnings("unchecked")
 	@Override
 	public <T> T findItemById(int itemId, Class<?> itemClass) {
 		Dao<Object, Integer> dao = DataSourceManager.getCachedDaoFor(itemClass);
@@ -85,7 +87,6 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 		return item;
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public <T> T findItemByFieldName(String fieldName, String searchValue, Class<?> itemClass) {
 		Dao<Object, Integer> dao = DataSourceManager.getCachedDaoFor(itemClass);
@@ -98,6 +99,18 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 			throw new MelanieDataLayerException(e.getMessage());
 		}	
 		return item;
+	}
+	
+	@Override
+	public <T> List<T> findAllItems(Class<?> itemClass) {
+		Dao<Object,Integer> dao = DataSourceManager.getCachedDaoFor(itemClass);
+		List<T> items = null;
+		try {
+			items = (List<T>) dao.queryForAll();
+		} catch (SQLException e) {
+			throw new MelanieDataLayerException(e.getMessage());
+		}
+		return items;
 	}
 
 }

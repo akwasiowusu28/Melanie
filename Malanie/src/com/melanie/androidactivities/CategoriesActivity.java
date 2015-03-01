@@ -1,34 +1,41 @@
 package com.melanie.androidactivities;
 
-import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
-import com.melanie.business.MelanieBusiness;
-import com.melanie.business.MelanieBusinessImpl;
-import com.melanie.business.controllers.ProductEntryController;
-import com.melanie.business.controllers.ProductEntryControllerImpl;
-import com.melanie.dataaccesslayer.datasource.DataSource;
-import com.melanie.support.exceptions.MelanieArgumentException;
+import java.util.List;
+
+import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ListView;
 import android.widget.TextView;
 
-public class CategoriesActivity extends OrmLiteBaseActivity<DataSource> {
+import com.melanie.androidactivities.support.CategoriesListViewAdapter;
+import com.melanie.business.controllers.ProductEntryController;
+import com.melanie.business.controllers.ProductEntryControllerImpl;
+import com.melanie.entities.Category;
+import com.melanie.support.exceptions.MelanieArgumentException;
+
+public class CategoriesActivity extends Activity {
 
 	private ProductEntryController productController;
-	private MelanieBusiness business;
+	//private MelanieBusiness business;
 
 	public CategoriesActivity() {
 		super();
 		productController = new ProductEntryControllerImpl();
-		business = new MelanieBusinessImpl();
+	//	business = new MelanieBusinessImpl();
 	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		business.initialize(getHelper());
 		setContentView(R.layout.activity_categories);
+		List<Category> listOfCategories = productController.getAllCategories();
+		
+		int[] productsCount = new int[listOfCategories.size()];
+		ListView categoriesListView = (ListView) findViewById(R.id.categoryList);
+		categoriesListView.setAdapter(new CategoriesListViewAdapter(this,listOfCategories,productsCount));
 	}
 
 	@Override
@@ -58,7 +65,7 @@ public class CategoriesActivity extends OrmLiteBaseActivity<DataSource> {
 		} catch (MelanieArgumentException e) {
 			e.printStackTrace();
 		}
-		TextView resultView = (TextView) findViewById(R.id.resultTempView);
-		resultView.setText(categoryName + getString(R.string.addSuccessful));
+//		TextView resultView = (TextView) findViewById(R.id.resultTempView);
+//		resultView.setText(categoryName + getString(R.string.addSuccessful));
 	}
 }

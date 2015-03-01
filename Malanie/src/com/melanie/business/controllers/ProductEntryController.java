@@ -1,6 +1,8 @@
 package com.melanie.business.controllers;
 
 
+import java.util.List;
+
 import com.melanie.entities.Category;
 import com.melanie.entities.Product;
 import com.melanie.support.exceptions.MelanieArgumentException;
@@ -10,6 +12,7 @@ public interface ProductEntryController {
 	public void addCategory(String categoryName) throws MelanieArgumentException;
 	public Category findCategory(int id);
 	public Category findCategory(String categoryName);
+	public List<Category> getAllCategories();
 	public void addProduct(String productName, int quantity, double price, Category productCategory) throws MelanieArgumentException;
 	public void removeProduct(int productId);
 	public Product findProduct(int productId);

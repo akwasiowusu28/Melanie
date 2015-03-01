@@ -18,7 +18,8 @@
         android:layout_alignParentLeft="true"
         android:layout_below="@id/header"
         android:drawableTop="@drawable/addproduct"
-        android:text="@string/products" />
+        android:text="@string/products"
+        android:onClick="launchActivity" />
     
     <Button
         android:id="@+id/viewProducts"
@@ -26,14 +27,16 @@
         android:layout_toRightOf="@id/addProducts"
         android:layout_below="@id/header"
         android:drawableTop="@drawable/viewproducts"
-        android:text="@string/products" />
+        android:text="@string/products"
+        android:onClick="launchActivity" />
 
      <Button
         android:id="@+id/addCategories"
         style="@style/buttonStyle"
         android:layout_below="@id/addProducts"
         android:drawableTop="@drawable/addcategory"
-        android:text="@string/categories" />
+        android:text="@string/categories"
+        android:onClick="launchActivity" />
      
      <Button
         android:id="@+id/viewCategories"
@@ -41,5 +44,6 @@
         style="@style/buttonStyle"
         android:layout_below="@id/viewProducts"
         android:drawableTop="@drawable/viewcategory"
-        android:text="@string/categories" />
+        android:text="@string/categories"
+        android:onClick="launchActivity" />
 </RelativeLayout>

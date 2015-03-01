@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.melanie.androidactivities.R;
 
-public class MelanieListViewAdapter extends ArrayAdapter<Integer> {
+public class MainPageListViewAdapter extends ArrayAdapter<Integer> {
 
 	private Context context;
 	private int resource;
@@ -24,7 +24,7 @@ public class MelanieListViewAdapter extends ArrayAdapter<Integer> {
 		public ImageView mainIconImageView;
 	}
 
-	public MelanieListViewAdapter(Context context, Integer[] navigationIcons,
+	public MainPageListViewAdapter(Context context, Integer[] navigationIcons,
 			Integer[] navigationItems, Integer[] navigationItemsDesc) {
 		super(context, R.layout.layout_listview_main_page, navigationItems);
 		this.context = context;

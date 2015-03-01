@@ -60,8 +60,8 @@ public class DataSource extends OrmLiteSqliteOpenHelper  {
 	
 	@Override
 	public void close() {
-		super.close();
 		DataSourceManager.clearDataSource();
+		super.close();
 	}
 	
 }

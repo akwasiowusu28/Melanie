@@ -1,6 +1,8 @@
 package com.melanie.business.controllers;
 
 
+import java.util.List;
+
 import com.melanie.dataaccesslayer.MelanieDataAccessLayer;
 import com.melanie.dataaccesslayer.MelanieDataAccessLayerImpl;
 import com.melanie.entities.Category;
@@ -40,6 +42,11 @@ public class ProductEntryControllerImpl implements ProductEntryController{
 	@Override
 	public Category findCategory(String categoryName) {
 		return dataAccess.findItemByFieldName(LocalConstants.CATEGORYNAME, categoryName, Category.class);
+	}
+	
+	@Override
+	public List<Category> getAllCategories() {
+		return dataAccess.findAllItems(Category.class);
 	}
 	
 	@Override

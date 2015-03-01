@@ -1,47 +1,61 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.melanie.androidactivities.CategoriesActivity" >
 
-    
+    <include
+        android:id="@+id/header"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        layout="@layout/layout_header" />
+
     <TextView
+        android:id="@+id/categoriesListLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@id/header"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="15dp"
         android:text="@string/categoriesList" />
-    
-    <ListView 
-        android:layout_height="0dp"
-        android:layout_width="0dp"
+
+    <ListView
         android:id="@+id/categoryList"
-        android:layout_weight="3" />
-    
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/categoriesListLabel"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp" />
+
     <TextView
+        android:id="@+id/categoryNameLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@id/categoryList"
+        android:layout_marginLeft="10dp"
         android:text="@string/category_name" />
 
-    <EditText
-        android:id="@+id/categoryName"
-        android:layout_width="match_parent"
+    <LinearLayout
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/enterCategoryName" />
+        android:layout_below="@id/categoryNameLabel"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp" >
 
-    <Button
-        android:id="@+id/addCategoryButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="addCategory"
-        android:text="@string/add" />
+        <EditText
+            android:id="@+id/categoryName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="@string/enterCategoryName" />
 
-        <TextView
-        android:id="@+id/resultTempView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        <Button
+            android:id="@+id/addCategoryButton"
+            android:layout_width="70dp"
+            android:layout_height="wrap_content"
+            android:onClick="addCategory"
+            android:text="@string/add" />
+    </LinearLayout>
 
-</LinearLayout>
+</RelativeLayout>
