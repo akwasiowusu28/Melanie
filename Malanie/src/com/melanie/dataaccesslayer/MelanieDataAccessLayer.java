@@ -13,4 +13,5 @@ public interface MelanieDataAccessLayer {
 	public <T> T findItemById(int itemId,Class<?> itemClass);
 	public <T> T findItemByFieldName(String fieldName, String searchValue, Class<?> itemClass);
 	public <T> List<T> findAllItems(Class<?> itemClass);
+	public <T> int getLastInsertedId(Class<?> itemClass);
 }

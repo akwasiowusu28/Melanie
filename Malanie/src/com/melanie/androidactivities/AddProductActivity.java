@@ -1,33 +1,41 @@
 package com.melanie.androidactivities;
 
-import com.google.zxing.WriterException;
+import java.util.List;
+
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.Spinner;
 
+import com.google.zxing.WriterException;
 import com.google.zxing.client.androidGScannerFiles.GZxingEncoder;
+import com.melanie.androidactivities.support.Common;
+import com.melanie.business.controllers.ProductEntryController;
+import com.melanie.business.controllers.ProductEntryControllerImpl;
+import com.melanie.entities.Category;
 
 public class AddProductActivity extends Activity {
 
+	private ProductEntryController productController;
+	
+	public AddProductActivity() {
+		productController = new ProductEntryControllerImpl();
+	}
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_add_product);
 		
-		GZxingEncoder 	encoder = GZxingEncoder.getInstance();
-		encoder.initalize(this);
-
-		try {
-			Bitmap bitmap = encoder.generateBarCode_general("1234");
-			ImageView img = (ImageView)findViewById(R.id.barcodeImage);
-			img.setImageBitmap(bitmap);
-		} catch (WriterException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		List<Category> categories = productController.getAllCategories();
+		
+		Spinner categorySpinner = (Spinner) findViewById(R.id.categoriesSpinner);
+		categorySpinner.setAdapter(new ArrayAdapter<Category>(this, android.R.layout.simple_spinner_dropdown_item ,categories));
 	}
 
 	@Override
@@ -47,5 +55,29 @@ public class AddProductActivity extends Activity {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+	
+	public void addProduct(View view){
+		Spinner categorySpinner = (Spinner) findViewById(R.id.categoriesSpinner);
+		Category selectedCategory = (Category)categorySpinner.getSelectedItem();
+		int lastProductId = productController.getLastInsertedProductId();
+		ImageView img = (ImageView)findViewById(R.id.barcodeImage);
+		img.setImageBitmap(generateBarcodeBitmap(lastProductId, selectedCategory.getId()));
+
+	}
+	
+	private Bitmap generateBarcodeBitmap(int lastProductId, int categotyId){
+		Bitmap bitmap = null;
+		GZxingEncoder 	encoder = GZxingEncoder.getInstance();
+		encoder.initalize(this);
+		String barcodeString = Common.generateBarcodeString(lastProductId, categotyId);
+		
+		 try {
+			bitmap = encoder.generateBarCode_general(barcodeString);
+		} catch (WriterException e) {
+			e.printStackTrace();
+		}
+		 
+		return bitmap;
 	}
 }

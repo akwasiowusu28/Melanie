@@ -79,4 +79,9 @@ public class ProductEntryControllerImpl implements ProductEntryController{
 	public void updateProductQuantity(String productName, int updateQuantity) {
 		// TODO Auto-generated method stub
 	}
+
+	@Override
+	public int getLastInsertedProductId() {
+		return dataAccess.getLastInsertedId(Product.class);
+	}
 }

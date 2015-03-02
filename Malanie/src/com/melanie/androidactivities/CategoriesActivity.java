@@ -7,10 +7,10 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.melanie.androidactivities.support.CategoriesListViewAdapter;
 import com.melanie.business.controllers.ProductEntryController;
 import com.melanie.business.controllers.ProductEntryControllerImpl;
 import com.melanie.entities.Category;
@@ -31,11 +31,10 @@ public class CategoriesActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_categories);
-		List<Category> listOfCategories = productController.getAllCategories();
+		List<Category> categories = productController.getAllCategories();
 		
-		int[] productsCount = new int[listOfCategories.size()];
 		ListView categoriesListView = (ListView) findViewById(R.id.categoryList);
-		categoriesListView.setAdapter(new CategoriesListViewAdapter(this,listOfCategories,productsCount));
+		categoriesListView.setAdapter(new ArrayAdapter<Category>(this, android.R.layout.simple_list_item_1 ,categories));
 	}
 
 	@Override

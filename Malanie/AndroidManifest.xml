@@ -4,6 +4,11 @@
     android:versionCode="1"
     android:versionName="1.0" >
 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+
     <uses-sdk
         android:minSdkVersion="9"
         android:targetSdkVersion="21" />
@@ -34,8 +39,7 @@
         </activity>
         <activity
             android:name=".AddProductActivity"
-            android:label="@string/title_activity_add_product"
-            android:parentActivityName=".ProductsMainActivity" >
+            android:label="@string/title_activity_add_product" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.melanie.androidactivities.ProductsMainActivity" />

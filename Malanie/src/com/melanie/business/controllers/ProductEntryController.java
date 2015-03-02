@@ -18,4 +18,5 @@ public interface ProductEntryController {
 	public Product findProduct(int productId);
 	public Product findProduct(String productName)throws MelanieArgumentException;
 	public void updateProductQuantity(String productName, int updateQuantity) throws MelanieArgumentException;
+	public int getLastInsertedProductId();
 }
