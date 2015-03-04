@@ -1,6 +1,8 @@
 package com.melanie.androidactivities;
 
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -12,9 +14,10 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.Spinner;
 
+import com.google.zxing.EncodeHintType;
 import com.google.zxing.WriterException;
 import com.google.zxing.client.androidGScannerFiles.GZxingEncoder;
-import com.melanie.androidactivities.support.Common;
+import com.melanie.androidactivities.support.Utils;
 import com.melanie.business.controllers.ProductEntryController;
 import com.melanie.business.controllers.ProductEntryControllerImpl;
 import com.melanie.entities.Category;
@@ -70,10 +73,13 @@ public class AddProductActivity extends Activity {
 		Bitmap bitmap = null;
 		GZxingEncoder 	encoder = GZxingEncoder.getInstance();
 		encoder.initalize(this);
-		String barcodeString = Common.generateBarcodeString(lastProductId, categotyId);
+		String barcodeString = Utils.generateBarcodeString(lastProductId, categotyId);
 		
 		 try {
-			bitmap = encoder.generateBarCode_general(barcodeString);
+			 Map<EncodeHintType,Object> hints = new EnumMap<EncodeHintType,Object>(EncodeHintType.class);
+			 hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
+			 hints.put(EncodeHintType.MARGIN, 2);
+			bitmap = encoder.generate_EAN_13(barcodeString, hints);
 		} catch (WriterException e) {
 			e.printStackTrace();
 		}

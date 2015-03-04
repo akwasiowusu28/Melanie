@@ -78,7 +78,7 @@
     <ImageView
         android:id="@+id/barcodeImage"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="70dp"
         android:contentDescription="@string/products" 
         />
 </LinearLayout>
