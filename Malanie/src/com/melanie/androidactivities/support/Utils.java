@@ -7,9 +7,7 @@ public final class Utils {
 		int trailingZeroes = 13 - String.valueOf(lastItemId).length()
 				- String.valueOf(categoryId).length();
 		String format = "%0" + trailingZeroes + "d";
-		String barcodeNumber = categoryId + String.format(format, lastItemId);
-		//return barcodeNumber + getCheckSum(barcodeNumber);
-		
+		String barcodeNumber = categoryId + String.format(format, lastItemId);		
 		return barcodeNumber;
 	}
 

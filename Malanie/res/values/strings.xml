@@ -32,4 +32,5 @@
     <string name="productNameHint">Enter name of product</string>
     <string name="productQuantityHint">Enter quantity of product</string>
     <string name="productPriceHint">0.00</string>
+    <string name="bluetoothNotSupported">Bluetooth is not supported on this device</string>
 </resources>
