@@ -92,7 +92,7 @@ public class AddProductActivity extends Activity {
 	}
 
 	private void initializePrinter() {
-		if (canConnectBluetooth()) {
+		if (canConnectBluetooth() && printer == null && printerInfo == null) {
 			discoverLWPrinter();
 			printer = new LWPrint(this);
 			printer.setCallback(new PrintCallBack());
@@ -103,8 +103,8 @@ public class AddProductActivity extends Activity {
 	// remove this method and rename the called method if you don't add any
 	// other statement to it since it's just a pass through
 	private void printBarcode() {
-		if(isPrinterFound)
-		   performPrint();
+		if (isPrinterFound)
+			performPrint();
 	}
 
 	private boolean canConnectBluetooth() {
