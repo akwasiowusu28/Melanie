@@ -42,7 +42,7 @@ public class MelanieBarcodeDataProvider implements LWPrintDataProvider {
 	public InputStream getFormDataForPage(int arg0) {
 		System.out.println("AKWASI OWUSU: I'm getFormDataFormDataForPage method and I got hit!!");
 			try {
-				inputStream = assetManager.open("BarcodeData/Barcode.plist");
+				inputStream = assetManager.open(BARCODE_CONFIG_FILE);
 			} catch (IOException e) {
 				System.out.println(e.getMessage()); //Use logger instead
 			}
