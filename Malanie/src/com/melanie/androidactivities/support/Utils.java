@@ -26,7 +26,7 @@ public final class Utils {
 //		return checksum_value;
 //	}
 
-	private static int num(char charValue) {
-		return Character.getNumericValue(charValue);
-	}
+//	private static int num(char charValue) {
+//		return Character.getNumericValue(charValue);
+//	}
 }

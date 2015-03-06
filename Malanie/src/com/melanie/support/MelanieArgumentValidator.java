@@ -20,7 +20,7 @@ public class MelanieArgumentValidator {
         }
     }
 
-    public void VerifyParamsNonNull(Object[] arguments) throws MelanieArgumentException
+    public void VerifyParamsNonNull(Object... arguments) throws MelanieArgumentException
     {
         VerifyNonNull(arguments);
 
