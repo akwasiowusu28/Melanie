@@ -10,7 +10,7 @@ import com.epson.lwprint.sdk.LWPrintDataProvider;
 
 public class MelanieBarcodeDataProvider implements LWPrintDataProvider {
 
-	private static final String BARCODE_CONFIG_FILE = "barcode/Barcode";
+	private static final String BARCODE_CONFIG_FILE = "BarcodeData/Barcode.plist";
 	private AssetManager assetManager;
 	private String barcodeString;
 	
@@ -40,13 +40,11 @@ public class MelanieBarcodeDataProvider implements LWPrintDataProvider {
 
 	@Override
 	public InputStream getFormDataForPage(int arg0) {
-		
-		if(inputStream != null)
+		System.out.println("AKWASI OWUSU: I'm getFormDataFormDataForPage method and I got hit!!");
 			try {
-				inputStream.close();
-				inputStream = assetManager.open(BARCODE_CONFIG_FILE);
+				inputStream = assetManager.open("BarcodeData/Barcode.plist");
 			} catch (IOException e) {
-				e.printStackTrace(); //use a logger instead
+				System.out.println(e.getMessage()); //Use logger instead
 			}
 		
 		return inputStream;
@@ -55,11 +53,12 @@ public class MelanieBarcodeDataProvider implements LWPrintDataProvider {
 	@Override
 	public int getNumberOfPages() {
 		// TODO Auto-generated method stub
-		return 0;
+		return 1;
 	}
 
 	@Override
 	public String getStringContentData(String contentName, int pageIndex) {
+		System.out.println("AKWASI OWUSU: I'm getStringContentData method and I got hit!!");
 		return this.barcodeString;
 	}
 

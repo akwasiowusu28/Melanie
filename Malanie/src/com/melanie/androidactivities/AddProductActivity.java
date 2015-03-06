@@ -1,15 +1,21 @@
 package com.melanie.androidactivities;
 
+import java.io.IOException;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
+
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
-import android.os.AsyncTask;
+import android.content.res.AssetManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -39,8 +45,8 @@ public class AddProductActivity extends Activity {
 	private Map<String, String> printerInfo = null;
 	private LWPrint printer;
 	private String currentBarcode = null;
-	private int currentProductQuantity = 0;
-
+	private int currentProductQuantity = 1;
+    private boolean isPrinterFound = false;
 	public AddProductActivity() {
 		productController = new ProductEntryControllerImpl();
 	}
@@ -94,7 +100,26 @@ public class AddProductActivity extends Activity {
 
 	private void printBarcode(){
 	    	discoverLWPrinter();
-	    	performPrint();
+//			try {
+//				XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+//				XmlPullParser parser = factory.newPullParser();
+//				AssetManager assets = getResources().getAssets();
+//				String[] files = assets.list("BarcodeData");
+//				for (int i=0; i<files.length; i++)
+//					System.out.println(files[i]);
+//				parser.setInput(assets.open("BarcodeData/Barcode.plist"), "UTF-8");
+//				while(parser.getEventType() != XmlPullParser.END_DOCUMENT)
+//				{
+//					if(parser.getEventType() == XmlPullParser.TEXT)
+//						System.out.println("Can read the fucking xml");
+//					System.out.println("Here it is: " + parser.getText());
+//					parser.next();
+//				}
+//			} catch (XmlPullParserException e) {
+//				System.out.println(e.getMessage());
+//			} catch (IOException e) {
+//				System.out.println(e.getMessage());
+//			}
 	}
 	
 	private boolean canConnectBluetooth() {
@@ -118,9 +143,9 @@ public class AddProductActivity extends Activity {
 	}
 
 	private void discoverLWPrinter() {
-		Thread discoverThread = new Thread() {
+//		Thread discoverThread = new Thread() {
 
-			public void run() {
+//			public void run() {
 				EnumSet<LWPrintDiscoverConnectionType> flag = EnumSet
 						.of(LWPrintDiscoverConnectionType.ConnectionTypeBluetooth);
 				LWPrintDiscoverPrinter printerDiscoverHelper = new LWPrintDiscoverPrinter(
@@ -128,15 +153,15 @@ public class AddProductActivity extends Activity {
 				printerDiscoverHelper
 						.setCallback(new DiscoverPrinterCallback());
 				printerDiscoverHelper.startDiscover(AddProductActivity.this);
-			}
+//			}
 
-		};
-		discoverThread.start();
-		try {
-			discoverThread.join();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+//		};
+//		discoverThread.start();
+//		try {
+//			discoverThread.join(1000);
+//		} catch (InterruptedException e) {
+//			e.printStackTrace();
+//		}
 	}
 
 	private HashMap<String, Object> getPrintSettings(int productQuantity) {
@@ -153,16 +178,20 @@ public class AddProductActivity extends Activity {
 
 	private void performPrint() {
 
-		new AsyncTask<Object, Object, Object>() {
-			@Override
-			protected Object doInBackground(Object... params) {
-				printer.setPrinterInformation(printerInfo);
-				printer.doPrint(new MelanieBarcodeDataProvider(getAssets(),
-						currentBarcode),
-						getPrintSettings(currentProductQuantity));
-				return null;
-			}
-		};
+		printer.setPrinterInformation(printerInfo);
+		printer.doPrint(new MelanieBarcodeDataProvider(getAssets(),
+				currentBarcode),
+				getPrintSettings(currentProductQuantity));
+//		new AsyncTask<Object, Object, Object>() {
+//			@Override
+//			protected Object doInBackground(Object... params) {
+//				printer.setPrinterInformation(printerInfo);
+//				printer.doPrint(new MelanieBarcodeDataProvider(getAssets(),
+//						currentBarcode),
+//						getPrintSettings(currentProductQuantity));
+//				return null;
+//			}
+//		};
 	}
 
 	private class PrintCallBack implements LWPrintCallback {
@@ -181,9 +210,24 @@ public class AddProductActivity extends Activity {
 
 		@Override
 		public void onChangePrintOperationPhase(LWPrint print, int phase) {
+			switch (phase) {
+			case LWPrintPrintingPhase.Prepare:
+				System.out.println("AKWASI OWUSU :  Preparing");
+				break;
+			case LWPrintPrintingPhase.Processing:
+				System.out.println("AKWASI OWUSU: Processing");
+				break;
+			case LWPrintPrintingPhase.WaitingForPrint:
+				System.out.println("AKWASI OWUSU: Waiting for print");
+				break;
+			case LWPrintPrintingPhase.Complete:
+				System.out.println("Printing complete");
+
+			default:
+				break;
+			}
 			if (phase == LWPrintPrintingPhase.Complete)
-				Toast.makeText(getApplicationContext(), "Printing Complete", Toast.LENGTH_SHORT)
-						.show();
+				Log.i("AKWASI OWUSU:::","Printing Complete");
 		}
 
 		@Override
@@ -206,8 +250,11 @@ public class AddProductActivity extends Activity {
 		@Override
 		public void onFindPrinter(LWPrintDiscoverPrinter printerDiscoverHelper,
 				Map<String, String> printerInfo) {
-
+  
+	        AddProductActivity.this.isPrinterFound = true;		
 			AddProductActivity.this.printerInfo = printerInfo;
+			Toast.makeText(getApplicationContext(), "Yay! Printer found!!!!", Toast.LENGTH_LONG).show();
+			AddProductActivity.this.performPrint();
 		}
 
 		@Override
