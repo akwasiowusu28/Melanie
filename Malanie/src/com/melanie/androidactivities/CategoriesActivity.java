@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import com.melanie.business.controllers.ProductEntryController;
 import com.melanie.business.controllers.ProductEntryControllerImpl;
-import com.melanie.entities.ProductCategory;
+import com.melanie.entities.Category;
 import com.melanie.support.exceptions.MelanieArgumentException;
 
 public class CategoriesActivity extends Activity {
@@ -31,10 +31,10 @@ public class CategoriesActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_categories);
-		List<ProductCategory> productCategories = productController.getAllCategories();
+		List<Category> categories = productController.getAllCategories();
 		
 		ListView categoriesListView = (ListView) findViewById(R.id.categoryList);
-		categoriesListView.setAdapter(new ArrayAdapter<ProductCategory>(this, android.R.layout.simple_list_item_1 ,productCategories));
+		categoriesListView.setAdapter(new ArrayAdapter<Category>(this, android.R.layout.simple_list_item_1 ,categories));
 	}
 
 	@Override

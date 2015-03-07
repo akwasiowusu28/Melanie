@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.melanie.dataaccesslayer.MelanieDataAccessLayer;
 import com.melanie.dataaccesslayer.MelanieDataAccessLayerImpl;
-import com.melanie.entities.ProductCategory;
+import com.melanie.entities.Category;
 import com.melanie.entities.Product;
 import com.melanie.support.MelanieArgumentValidator;
 import com.melanie.support.exceptions.MelanieArgumentException;
@@ -43,7 +43,7 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 			throws MelanieArgumentException {
 		argumentValidator.VerifyNotEmptyString(categoryName,
 				LocalConstants.EMPTY_CATEGORY_NAME_MSG);
-		dataAccess.addDataItem(new ProductCategory(categoryName));
+		dataAccess.addDataItem(new Category(categoryName));
 	}
 
 	/**
@@ -54,7 +54,7 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 	 * @return Category the found category or null
 	 */
 	@Override
-	public ProductCategory findCategory(int id) {
+	public Category findCategory(int id) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -68,9 +68,9 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 	 */
 
 	@Override
-	public ProductCategory findCategory(String categoryName) {
+	public Category findCategory(String categoryName) {
 		return dataAccess.findItemByFieldName(LocalConstants.CATEGORYNAME,
-				categoryName, ProductCategory.class);
+				categoryName, Category.class);
 	}
 
 	/**
@@ -79,8 +79,8 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 	 * @return All product categories
 	 */
 	@Override
-	public List<ProductCategory> getAllCategories() {
-		return dataAccess.findAllItems(ProductCategory.class);
+	public List<Category> getAllCategories() {
+		return dataAccess.findAllItems(Category.class);
 	}
 
 	/**
@@ -92,19 +92,19 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 	 *            the quantity of the product
 	 * @param price
 	 *            the price of the product
-	 * @param productCategory
+	 * @param category
 	 *            the selected category of the product
 	 */
 	@Override
 	public void addProduct(String productName, int quantity, double price,
-			ProductCategory productCategory) throws MelanieArgumentException {
+			Category category) throws MelanieArgumentException {
 
-		argumentValidator.VerifyNonNull(productCategory);
+		argumentValidator.VerifyNonNull(category);
 		argumentValidator.VerifyNotEmptyString(productName,
 				LocalConstants.EMPTY_PRODUCT_NAME_MSG);
 
 		Product product = new Product(productName, quantity, price,
-				productCategory);
+				category);
 		dataAccess.addDataItem(product);
 	}
 

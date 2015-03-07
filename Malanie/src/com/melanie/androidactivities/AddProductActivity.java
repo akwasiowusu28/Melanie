@@ -4,14 +4,20 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
+import android.os.Handler;
+import android.util.SparseIntArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,7 +37,7 @@ import com.melanie.androidactivities.support.MelanieBarcodeDataProvider;
 import com.melanie.androidactivities.support.Utils;
 import com.melanie.business.controllers.ProductEntryController;
 import com.melanie.business.controllers.ProductEntryControllerImpl;
-import com.melanie.entities.ProductCategory;
+import com.melanie.entities.Category;
 import com.melanie.support.exceptions.MelanieArgumentException;
 
 public class AddProductActivity extends Activity {
@@ -40,25 +46,29 @@ public class AddProductActivity extends Activity {
 	private final int BLUETOOTH_REQUEST_CODE = 28;
 	private final int CUT_EACH_TAPE = 0;
 	private final int DENSITY = 0;
+
 	private Map<String, String> printerInfo = null;
 	private LWPrint printer;
 	private String currentBarcode = null;
 	private int currentProductQuantity = 1;
 	private boolean isPrinterFound = false;
 
-	public AddProductActivity() {
-		productController = new ProductEntryControllerImpl();
-	}
+	private ProgressDialog progressDialog = null;
+	private Handler handler;
+	private ScheduledExecutorService executorService;
+
+	private int printPhaseMessage;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_add_product);
 
-		List<ProductCategory> categories = productController.getAllCategories();
+		initializeFields();
 
+		List<Category> categories = productController.getAllCategories();
 		Spinner categorySpinner = (Spinner) findViewById(R.id.categoriesSpinner);
-		categorySpinner.setAdapter(new ArrayAdapter<ProductCategory>(this,
+		categorySpinner.setAdapter(new ArrayAdapter<Category>(this,
 				android.R.layout.simple_spinner_dropdown_item, categories));
 
 		initializePrinter();
@@ -83,32 +93,81 @@ public class AddProductActivity extends Activity {
 		return super.onOptionsItemSelected(item);
 	}
 
+	private void initializeFields() {
+		productController = new ProductEntryControllerImpl();
+		handler = new Handler();
+		createPrintProgressDialog();
+	}
+
+	private void createPrintProgressDialog() {
+		if (progressDialog == null) {
+			progressDialog = new ProgressDialog(this);
+			progressDialog.setCancelable(false);
+			progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+			progressDialog.setIcon(R.drawable.printer);
+			progressDialog.setMax(100);
+			setProgressBarHandlers();
+		}
+	}
+
+	private void setProgressBarHandlers() {
+		progressDialog.setButton(DialogInterface.BUTTON_NEGATIVE,
+				getText(R.string.cancel),
+				new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						progressDialog.setProgress(0);
+						progressDialog.cancel();
+
+					}
+				});
+		progressDialog
+				.setOnCancelListener(new DialogInterface.OnCancelListener() {
+					@Override
+					public void onCancel(DialogInterface dialog) {
+						printer.cancelPrint();
+					}
+				});
+	}
+
+	/**
+	 * Add a new product from the user input
+	 * 
+	 * @param view
+	 */
 	public void addProduct(View view) {
 
-		ProductCategory productCategory = getSelectedCategory();
+		Category category = getSelectedCategory();
 		String productName = ((EditText) findViewById(R.id.productName))
 				.getText().toString();
 		String priceStr = ((EditText) findViewById(R.id.price)).getText()
 				.toString();
 		double price = Double.parseDouble(priceStr);
 
-		if (productCategory != null) {
+		if (category != null) {
 			int lastProductId = productController.getLastInsertedProductId();
 			currentBarcode = Utils.generateBarcodeString(lastProductId,
-					productCategory.getId());
+					category.getId());
 			try {
 				productController.addProduct(productName,
-						currentProductQuantity, price, productCategory);
+						currentProductQuantity, price, category);
 			} catch (MelanieArgumentException e) {
 				e.printStackTrace(); // Use logger
 			}
 			printBarcode();
+			clearTextFields();
 		}
 	}
 
-	private ProductCategory getSelectedCategory() {
+	private void clearTextFields() {
+		((EditText) findViewById(R.id.productName)).setText("");
+		((EditText) findViewById(R.id.quantity)).setText("");
+		((EditText) findViewById(R.id.price)).setText("");
+	}
+
+	private Category getSelectedCategory() {
 		Spinner categorySpinner = (Spinner) findViewById(R.id.categoriesSpinner);
-		return (ProductCategory) categorySpinner.getSelectedItem();
+		return (Category) categorySpinner.getSelectedItem();
 	}
 
 	private void initializePrinter() {
@@ -174,13 +233,57 @@ public class AddProductActivity extends Activity {
 	}
 
 	private void performPrint() {
+		handler.postDelayed(new Runnable() {
+
+			@Override
+			public void run() {
+				if (progressDialog != null)
+					progressDialog.show();
+			}
+		}, 2);
 
 		new MelaniePrintAsyncTask().execute(printer, printerInfo,
 				getPrintSettings(currentProductQuantity), getAssets(),
 				currentBarcode);
+
+		setProgressDialogUpdates();
+	}
+
+	private void setProgressDialogUpdates() {
+		executorService = Executors.newScheduledThreadPool(2);
+		executorService.scheduleAtFixedRate(new Runnable() {
+			@Override
+			public void run() {
+				handler.post(new Runnable() {
+
+					@Override
+					public void run() {
+						progressDialog.setProgress((int) (printer
+								.getProgressOfPrint() * 100));
+						progressDialog.setMessage(getText(printPhaseMessage));
+					}
+
+				});
+			}
+		}, 3, 2, TimeUnit.SECONDS);
 	}
 
 	private class PrintCallBack implements LWPrintCallback {
+
+		private SparseIntArray phaseMessage;
+
+		public PrintCallBack() {
+			phaseMessage = new SparseIntArray(3) {
+				{
+					put(LWPrintPrintingPhase.Prepare, R.string.printPreparing);
+					put(LWPrintPrintingPhase.Processing, R.string.printing);
+					put(LWPrintPrintingPhase.Complete,
+							R.string.printingComplete);
+					put(LWPrintPrintingPhase.WaitingForPrint,
+							R.string.waitingForPrint);
+				}
+			};
+		}
 
 		@Override
 		public void onAbortPrintOperation(LWPrint arg0, int arg1, int arg2) {
@@ -196,24 +299,7 @@ public class AddProductActivity extends Activity {
 
 		@Override
 		public void onChangePrintOperationPhase(LWPrint print, int phase) {
-			switch (phase) {
-			case LWPrintPrintingPhase.Prepare:
-				System.out.println("AKWASI OWUSU :  Preparing");
-				break;
-			case LWPrintPrintingPhase.Processing:
-				System.out.println("AKWASI OWUSU: Processing");
-				break;
-			case LWPrintPrintingPhase.WaitingForPrint:
-				System.out.println("AKWASI OWUSU: Waiting for print");
-				break;
-			case LWPrintPrintingPhase.Complete:
-				System.out.println("Printing complete");
-
-			default:
-				break;
-			}
-			if (phase == LWPrintPrintingPhase.Complete)
-				Log.i("AKWASI OWUSU:::", "Printing Complete");
+			printPhaseMessage = phaseMessage.get(phase);
 		}
 
 		@Override

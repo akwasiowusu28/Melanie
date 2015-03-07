@@ -24,19 +24,19 @@ public class Product extends BaseEntity {
 	private long barcodeNumber;
 	
 	@DatabaseField(canBeNull= true, foreign = true)
-	private ProductCategory productCategory;
+	private Category category;
 	
 	public Product() {
 		super();
 	}
 	
 	public Product(String productName, int quantity, double price,
-			ProductCategory productCategory) {
+			Category category) {
 		super();
 		this.productName = productName;
 		this.quantity = quantity;
 		this.price = price;
-		this.productCategory = productCategory;
+		this.category = category;
 	}
 
 	public String getProductName() {
@@ -63,11 +63,11 @@ public class Product extends BaseEntity {
 	public void setBarcodeNumber(long barcodeNumber) {
 		this.barcodeNumber = barcodeNumber;
 	}
-	public ProductCategory getProductCategory() {
-		return productCategory;
+	public Category getProductCategory() {
+		return category;
 	}
-	public void setProductCategory(ProductCategory productCategory) {
-		this.productCategory = productCategory;
+	public void setProductCategory(Category category) {
+		this.category = category;
 	}
 	
 	

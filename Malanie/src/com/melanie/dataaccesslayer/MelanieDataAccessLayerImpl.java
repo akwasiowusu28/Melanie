@@ -109,9 +109,9 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 
 	/**
 	 * Returns an item based on it's field name
-	 * @param fieldName. The name of the field
-	 * @param searchValue. The value to search for in that field
-	 * @param itemClass. The class of the return item
+	 * @param fieldName The name of the field
+	 * @param searchValue The value to search for in that field
+	 * @param itemClass The class of the return item
 	 * @return The item searched for by name
 	 */
 	@Override

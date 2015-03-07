@@ -4,7 +4,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import com.j256.ormlite.dao.Dao;
-import com.melanie.entities.ProductCategory;
+import com.melanie.entities.Category;
 import com.melanie.entities.Customer;
 import com.melanie.entities.Payment;
 import com.melanie.entities.Product;
@@ -21,12 +21,12 @@ public class DataSourceManager {
 	private static List<Class<?>> entityClasses = new ArrayList<Class<?>>(){		
 		private static final long serialVersionUID = 1L;
 	{
-		add(ProductCategory.class);
+		add(Category.class);
 		add(Customer.class);
 		add(Payment.class);
 		add(Product.class);
 		add(Sale.class);
-		add(ProductCategory.class);
+		add(Category.class);
 	}};
 	
 	

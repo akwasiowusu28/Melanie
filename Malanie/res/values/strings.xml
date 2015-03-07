@@ -34,4 +34,10 @@
     <string name="productPriceHint">0.00</string>
     <string name="bluetoothNotSupported">Bluetooth is not supported on this device</string>
     <string name="printerNotFound">Printer not found</string>
+    <string name="printPreparing">Preparing to print&#8230;</string>
+    <string name="printing">Printing barcodes&#8230;</string>
+    <string name ="printingComplete">Printing complete!</string>
+    <string name ="tapeFeedRequired">Please insert new catridge</string>
+    <string name ="cancel">Cancel</string>
+    <string name="waitingForPrint">Waiting&#8230;</string>
 </resources>
