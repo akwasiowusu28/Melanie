@@ -5,11 +5,11 @@
 	<key>LWContentType</key>
 	<string>LWContentTypeFrame</string>
 	<key>LWTapeLengthAuto</key>
-	<true/>
+	<false/>
 	<key>LWLayoutDirection</key>
 	<string>LWLayoutDirectionHorizontal</string>
 	<key>LWLengthMM</key>
-	<integer>65</integer>
+	<integer>50</integer>
 	<key>LWFrameSizeMode</key>
 	<string>LWFrameSizeModePercent</string>
 	<key>LWFrames</key>

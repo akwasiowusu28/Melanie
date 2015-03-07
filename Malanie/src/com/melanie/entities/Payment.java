@@ -3,6 +3,12 @@ package com.melanie.entities;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
+/**
+ *  The payment entity
+ * @author Akwasi Owusu
+ *
+ */
+
 @DatabaseTable
 public class Payment extends BaseEntity {
 

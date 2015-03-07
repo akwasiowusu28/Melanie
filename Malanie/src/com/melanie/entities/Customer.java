@@ -1,5 +1,10 @@
 package com.melanie.entities;
 
+/**
+ * The Customer entity
+ * @author Akwasi Owusu
+ *
+ */
 public class Customer extends BaseEntity {
 	
 	private String name;

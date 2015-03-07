@@ -10,6 +10,11 @@ import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 import com.melanie.support.exceptions.MelanieDataLayerException;
 
+/**
+ * 
+ * @author Akwasi Owusu
+ *The data source class that inherits from the ORM database helper
+ */
 public class DataSource extends OrmLiteSqliteOpenHelper  {
 	
 	private static final String DATABASE_NAME = "melaniedata.db";

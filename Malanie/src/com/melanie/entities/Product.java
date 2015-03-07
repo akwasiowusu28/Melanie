@@ -3,6 +3,11 @@ package com.melanie.entities;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
+/**
+ * The Product entity 
+ * @author Akwasi Owusu
+ *
+ */
 @DatabaseTable
 public class Product extends BaseEntity {
 
@@ -19,14 +24,14 @@ public class Product extends BaseEntity {
 	private long barcodeNumber;
 	
 	@DatabaseField(canBeNull= true, foreign = true)
-	private Category productCategory;
+	private ProductCategory productCategory;
 	
 	public Product() {
 		super();
 	}
 	
 	public Product(String productName, int quantity, double price,
-			Category productCategory) {
+			ProductCategory productCategory) {
 		super();
 		this.productName = productName;
 		this.quantity = quantity;
@@ -58,10 +63,10 @@ public class Product extends BaseEntity {
 	public void setBarcodeNumber(long barcodeNumber) {
 		this.barcodeNumber = barcodeNumber;
 	}
-	public Category getProductCategory() {
+	public ProductCategory getProductCategory() {
 		return productCategory;
 	}
-	public void setProductCategory(Category productCategory) {
+	public void setProductCategory(ProductCategory productCategory) {
 		this.productCategory = productCategory;
 	}
 	

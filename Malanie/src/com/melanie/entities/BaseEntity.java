@@ -2,6 +2,11 @@ package com.melanie.entities;
 
 import com.j256.ormlite.field.DatabaseField;
 
+/**
+ * The parent class of all entities
+ * @author Akwasi Owusu
+ *
+ */
 public abstract class BaseEntity {
 
 	public BaseEntity(){}

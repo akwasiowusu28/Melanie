@@ -10,14 +10,27 @@ import com.melanie.dataaccesslayer.datasource.DataSourceManager;
 import com.melanie.entities.BaseEntity;
 import com.melanie.support.exceptions.MelanieDataLayerException;
 
+/**
+ * 
+ * @author Akwasi Owusu
+ * A class that serves as a facade to the Database access for all clients
+ */
 @SuppressWarnings("unchecked")
 public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 
+	/**
+	 * @param dataSource the ORM datasource helper pushed from the UI
+	 */
 	@Override
 	public void initialize(DataSource dataSource) {
 		DataSourceManager.initialize(dataSource);
 	}
 
+	/**
+	 * 
+	 * Use this to add an item to the database. Item should typically be anything that extends BaseEntity
+	 * @param dataItem The item to persist
+	 */
 	@Override
 	public <T> void addDataItem(T dataItem) {
 
@@ -31,18 +44,11 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 		}
 	}
 
-	@Override
-	public <T> void removeDataItem(T dataItem) {
-		Dao<Object, Integer> dao = DataSourceManager.getCachedDaoFor(dataItem
-				.getClass());
-		try {
-			if (dao != null)
-				dao.delete(dataItem);
-		} catch (SQLException e) {
-			throw new MelanieDataLayerException(e.getMessage());
-		}
-	}
-
+	/**
+	 * 
+	 * Use this to update an item in the database. Item should typically be anything that extends BaseEntity
+	 * @param dataItem The item to update
+	 */
 	@Override
 	public <T> boolean updateDataItem(T dataItem) {
 		boolean updateSuccess = false;
@@ -60,6 +66,10 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 		return updateSuccess;
 	}
 
+	/**
+	 * 
+	 * @param dataItem The dataItem to delete. Returns true on success
+	 */
 	@Override
 	public <T> boolean deleteDataItem(T dataItem) {
 		boolean deleteSuccess = false;
@@ -77,7 +87,11 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 		return deleteSuccess;
 	}
 
-	// TODO: change the class argument to something better
+
+/**
+ * Returns an item based on its id
+ * @return Item of type T, the type of the specified class
+ */
 	@Override
 	public <T> T findItemById(int itemId, Class<?> itemClass) {
 		Dao<Object, Integer> dao = DataSourceManager.getCachedDaoFor(itemClass);
@@ -93,6 +107,13 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 		return item;
 	}
 
+	/**
+	 * Returns an item based on it's field name
+	 * @param fieldName. The name of the field
+	 * @param searchValue. The value to search for in that field
+	 * @param itemClass. The class of the return item
+	 * @return The item searched for by name
+	 */
 	@Override
 	public <T> T findItemByFieldName(String fieldName, String searchValue,
 			Class<?> itemClass) {
@@ -108,6 +129,11 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 		return item;
 	}
 
+	/**
+	 * Find all items
+	 * @param itemClass The class of the return item
+	 * @return all Items of itemClass
+	 */
 	@Override
 	public <T> List<T> findAllItems(Class<?> itemClass) {
 		Dao<Object, Integer> dao = DataSourceManager.getCachedDaoFor(itemClass);
@@ -120,6 +146,12 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 		return items;
 	}
 
+	/**
+	 * 
+	 * Returns the id of the last inserted item
+	 * @param itemClass the class of the return item
+	 * @return the id of the last insertedItem
+	 */
 	@Override
 	public <T> int getLastInsertedId(Class<?> itemClass) {
 		Dao<Object, Integer> dao = DataSourceManager.getCachedDaoFor(itemClass);

@@ -3,14 +3,19 @@ package com.melanie.entities;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
+/**
+ * The Category entity
+ * @author Akwasi Owusu
+ *
+ */
 @DatabaseTable
-public class Category extends BaseEntity {
+public class ProductCategory extends BaseEntity {
 
-	public Category() {
+	public ProductCategory() {
 		super();
 	}
     
-	public Category(String categoryName) {
+	public ProductCategory(String categoryName) {
 		super();
 		this.categoryName = categoryName;
 	}
