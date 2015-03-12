@@ -43,12 +43,18 @@ import com.melanie.support.exceptions.MelanieArgumentException;
 public class AddProductActivity extends Activity {
 
 	private ProductEntryController productController;
+
 	private final int BLUETOOTH_REQUEST_CODE = 28;
 	private final int CUT_EACH_TAPE = 0;
-	private final int DENSITY = 0;
-
+	private final int DENSITY = -2;
+    
 	private Map<String, String> printerInfo = null;
 	private LWPrint printer;
+	private LWPrintDiscoverPrinter printerDiscoverHelper = null;
+	
+	private BluetoothAdapter bluetoothAdapter = null;
+	private boolean wasTurnedOnByMelanie;
+	
 	private String currentBarcode = null;
 	private int currentProductQuantity = 1;
 	private boolean isPrinterFound = false;
@@ -104,6 +110,7 @@ public class AddProductActivity extends Activity {
 			progressDialog = new ProgressDialog(this);
 			progressDialog.setCancelable(false);
 			progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+			progressDialog.setMessage(getText(R.string.printPreparing));
 			progressDialog.setIcon(R.drawable.printer);
 			progressDialog.setMax(100);
 			setProgressBarHandlers();
@@ -134,6 +141,7 @@ public class AddProductActivity extends Activity {
 	 * Add a new product from the user input
 	 * 
 	 * @param view
+	 *            the add button
 	 */
 	public void addProduct(View view) {
 
@@ -190,7 +198,7 @@ public class AddProductActivity extends Activity {
 
 		boolean canConnect = false;
 
-		BluetoothAdapter bluetoothAdapter = BluetoothAdapter
+		 bluetoothAdapter = BluetoothAdapter
 				.getDefaultAdapter();
 		if (bluetoothAdapter == null) {
 			Toast.makeText(getApplicationContext(),
@@ -208,25 +216,31 @@ public class AddProductActivity extends Activity {
 				BluetoothAdapter.ACTION_REQUEST_ENABLE);
 		startActivityForResult(enableBluetoothIntent, BLUETOOTH_REQUEST_CODE);
 	}
+	
+	private void disableBluetooth(){
+		 bluetoothAdapter = BluetoothAdapter
+				.getDefaultAdapter();
+		if(bluetoothAdapter != null && bluetoothAdapter.isEnabled())
+			bluetoothAdapter.disable();
+	}
 
 	private void discoverLWPrinter() {
 
 		EnumSet<LWPrintDiscoverConnectionType> flag = EnumSet
 				.of(LWPrintDiscoverConnectionType.ConnectionTypeBluetooth);
-		LWPrintDiscoverPrinter printerDiscoverHelper = new LWPrintDiscoverPrinter(
+		printerDiscoverHelper = new LWPrintDiscoverPrinter(
 				null, null, flag);
 		printerDiscoverHelper.setCallback(new DiscoverPrinterCallback());
 		printerDiscoverHelper.startDiscover(this);
-
 	}
 
-	private HashMap<String, Object> getPrintSettings(int productQuantity) {
+	private HashMap<String, Object> getPrintSettings() {
 
 		HashMap<String, Object> printSettings = new HashMap<String, Object>();
-		printSettings.put(LWPrintParameterKey.Copies, productQuantity);
-		printSettings.put(LWPrintParameterKey.HalfCut, true);
+		printSettings.put(LWPrintParameterKey.Copies, 1);
+		printSettings.put(LWPrintParameterKey.HalfCut, false);
 		printSettings.put(LWPrintParameterKey.TapeCut, CUT_EACH_TAPE);
-		printSettings.put(LWPrintParameterKey.PrintSpeed, true);
+		printSettings.put(LWPrintParameterKey.PrintSpeed, false);
 		printSettings.put(LWPrintParameterKey.Density, DENSITY);
 
 		return printSettings;
@@ -243,8 +257,7 @@ public class AddProductActivity extends Activity {
 		}, 2);
 
 		new MelaniePrintAsyncTask().execute(printer, printerInfo,
-				getPrintSettings(currentProductQuantity), getAssets(),
-				currentBarcode);
+				getPrintSettings(), getAssets(), currentBarcode);
 
 		setProgressDialogUpdates();
 	}
@@ -258,14 +271,15 @@ public class AddProductActivity extends Activity {
 
 					@Override
 					public void run() {
-						progressDialog.setProgress((int) (printer
-								.getProgressOfPrint() * 100));
-						progressDialog.setMessage(getText(printPhaseMessage));
+						
+							progressDialog.setProgress((int) (printer
+									.getProgressOfPrint() * 100));
+							progressDialog.setMessage(getText(printPhaseMessage));	
 					}
 
 				});
 			}
-		}, 3, 2, TimeUnit.SECONDS);
+		}, 2, 2, TimeUnit.SECONDS);
 	}
 
 	private class PrintCallBack implements LWPrintCallback {
@@ -287,30 +301,44 @@ public class AddProductActivity extends Activity {
 
 		@Override
 		public void onAbortPrintOperation(LWPrint arg0, int arg1, int arg2) {
-			// TODO Auto-generated method stub
+			// Do nothing for now
 
 		}
 
 		@Override
 		public void onAbortTapeFeedOperation(LWPrint arg0, int arg1, int arg2) {
-			// TODO Auto-generated method stub
+			// Do nothing for now
 
 		}
 
 		@Override
 		public void onChangePrintOperationPhase(LWPrint print, int phase) {
-			printPhaseMessage = phaseMessage.get(phase);
+			final int p = phase;
+			handler.post(new Runnable() {
+				@Override
+				public void run() {
+						printPhaseMessage = phaseMessage.get(p);	
+				}
+			});
+			if (phase == LWPrintPrintingPhase.Complete)
+				handler.postDelayed(new Runnable() {
+					@Override
+					public void run() {
+						progressDialog.dismiss();
+						progressDialog.setProgress(0);
+					}
+				}, 1200);
 		}
 
 		@Override
 		public void onChangeTapeFeedOperationPhase(LWPrint arg0, int arg1) {
-			// TODO Auto-generated method stub
+			// Do nothing for now
 
 		}
 
 		@Override
 		public void onSuspendPrintOperation(LWPrint arg0, int arg1, int arg2) {
-			// TODO Auto-generated method stub
+			//Do nothing for now
 
 		}
 
@@ -321,11 +349,14 @@ public class AddProductActivity extends Activity {
 
 		@Override
 		public void onFindPrinter(LWPrintDiscoverPrinter printerDiscoverHelper,
-				Map<String, String> printerInfo) {
+				Map<String, String> foundPrinterInfo) {
 
-			AddProductActivity.this.isPrinterFound = true;
-			AddProductActivity.this.printerInfo = printerInfo;
-
+			AddProductActivity a = AddProductActivity.this;
+			a.isPrinterFound = true;
+			a.printerInfo = foundPrinterInfo;
+			a.wasTurnedOnByMelanie = true;
+			 if(a.printerDiscoverHelper != null) 
+				a. printerDiscoverHelper.stopDiscover();
 		}
 
 		@Override
@@ -353,11 +384,19 @@ public class AddProductActivity extends Activity {
 			AssetManager assetManager = (AssetManager) params[ASSET_MANAGER];
 			String barcode = (String) params[BARCODE];
 
-			printer.setPrinterInformation(printerInfo);
-			printer.doPrint(new MelanieBarcodeDataProvider(assetManager,
-					barcode), printSettings);
+				printer.setPrinterInformation(printerInfo);
+				printer.doPrint(new MelanieBarcodeDataProvider(assetManager,
+						barcode), printSettings);	
 			return null;
 		}
 
+	}
+	@Override
+	public void onDestroy(){
+		super.onDestroy();
+		if(executorService != null)
+			executorService.shutdown();
+		if(wasTurnedOnByMelanie)
+		   disableBluetooth();
 	}
 }

@@ -3,12 +3,14 @@ package com.melanie.entities;
 import java.util.Date;
 
 import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
 
 /**
  * The Sale entity
  * @author Akwasi Owusu
  *
  */
+@DatabaseTable
 public class Sale extends BaseEntity {
 
 	@DatabaseField

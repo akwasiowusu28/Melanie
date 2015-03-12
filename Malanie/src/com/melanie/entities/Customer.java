@@ -1,10 +1,14 @@
 package com.melanie.entities;
 
+import com.j256.ormlite.table.DatabaseTable;
+
 /**
  * The Customer entity
  * @author Akwasi Owusu
  *
  */
+
+@DatabaseTable
 public class Customer extends BaseEntity {
 	
 	private String name;

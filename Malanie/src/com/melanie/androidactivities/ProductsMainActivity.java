@@ -21,4 +21,5 @@ public class ProductsMainActivity extends Activity {
 		intent.putExtra("viewId", view.getId());
 		startActivity(intent);
 	}
+
 }

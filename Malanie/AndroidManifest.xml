@@ -4,14 +4,24 @@
     android:versionCode="1"
     android:versionName="1.0" >
 
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE"/>
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.FLASHLIGHT" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    
+    <uses-feature android:name="android.hardware.camera"/>
+  	<uses-feature android:name="android.hardware.camera.autofocus" android:required="false"/>
+  	<uses-feature android:name="android.hardware.camera.flash" android:required="false"/>
+  	<uses-feature android:name="android.hardware.screen.landscape"/>
+  	<uses-feature android:name="android.hardware.wifi" android:required="false"/>
+  	<uses-feature android:name="android.hardware.touchscreen" android:required="false"/>
 
     <uses-sdk
         android:minSdkVersion="9"
@@ -28,7 +38,6 @@
             android:theme="@style/mainPageStyle" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -47,6 +56,46 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.melanie.androidactivities.ProductsMainActivity" />
+        </activity>
+        <activity
+            android:name=".ScanBarcodeActivity"
+            android:label="@string/title_activity_scan_barcode" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.melanie.androidactivities.SalesActivity" />
+        </activity>
+        
+        <activity android:name="com.google.zxing.client.android.CaptureActivity"
+              android:clearTaskOnLaunch="true"
+              android:stateNotNeeded="true"
+              android:configChanges="orientation|keyboardHidden"
+              android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+              android:windowSoftInputMode="stateAlwaysHidden"/>
+        
+        <activity
+            android:name=".SalesActivity"
+            android:label="@string/title_activity_sales" >
+        </activity>
+        <activity
+            android:name=".CustomersActivity"
+            android:label="@string/title_activity_customers">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.melanie.androidactivities.MainActivity" />
+        </activity>
+        <activity
+            android:name=".ReportsActivity"
+            android:label="@string/title_activity_reports">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.melanie.androidactivities.MainActivity" />
+        </activity>
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.melanie.androidactivities.MainActivity" />
         </activity>
     </application>
 

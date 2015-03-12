@@ -8,70 +8,85 @@ import android.graphics.Bitmap;
 
 import com.epson.lwprint.sdk.LWPrintDataProvider;
 
+/**
+ * 
+ * @author Akwasi Owusu Class that provides the barcode data and the barcode
+ *         string to the Label Works bluetooth printer
+ */
+
 public class MelanieBarcodeDataProvider implements LWPrintDataProvider {
 
 	private static final String BARCODE_CONFIG_FILE = "BarcodeData/Barcode.plist";
 	private AssetManager assetManager;
 	private String barcodeString;
-	
-	public MelanieBarcodeDataProvider(AssetManager assetManager, String barcodeString){
+
+	/**
+	 * Initilizes the data provider with path to the assets. This is needed to
+	 * locate the raw file that contains the barcode data
+	 * 
+	 * @param assetManager
+	 *            the asset manager
+	 * @param barcodeString
+	 *            the barcode to send to the printer
+	 */
+	public MelanieBarcodeDataProvider(AssetManager assetManager,
+			String barcodeString) {
 		this.assetManager = assetManager;
 		this.barcodeString = barcodeString;
 	}
-	
+
 	private InputStream inputStream;
+
 	@Override
 	public void endOfPrint() {
-		// TODO Auto-generated method stub
-		
+		// Do nothing
+
 	}
 
 	@Override
 	public void endPage() {
-		// TODO Auto-generated method stub
-		
+		// Do nothing
+
 	}
 
 	@Override
 	public Bitmap getBitmapContentData(String arg0, int arg1) {
-		// TODO Auto-generated method stub
+		// Do nothing
 		return null;
 	}
 
 	@Override
 	public InputStream getFormDataForPage(int arg0) {
-		System.out.println("AKWASI OWUSU: I'm getFormDataFormDataForPage method and I got hit!!");
-			try {
-				inputStream = assetManager.open(BARCODE_CONFIG_FILE);
-			} catch (IOException e) {
-				System.out.println(e.getMessage()); //Use logger instead
-			}
-		
+		try {
+			inputStream = assetManager.open(BARCODE_CONFIG_FILE);
+		} catch (IOException e) {
+			System.out.println(e.getMessage()); // Use logger instead
+		}
+
 		return inputStream;
 	}
 
 	@Override
 	public int getNumberOfPages() {
-		// TODO Auto-generated method stub
 		return 1;
 	}
 
 	@Override
 	public String getStringContentData(String contentName, int pageIndex) {
-		System.out.println("AKWASI OWUSU: I'm getStringContentData method and I got hit!!");
 		return this.barcodeString;
+
 	}
 
 	@Override
 	public void startOfPrint() {
-		// TODO Auto-generated method stub
-		
+		// Do nothing
+
 	}
 
 	@Override
 	public void startPage() {
-		// TODO Auto-generated method stub
-		
+		// Do nothing
+
 	}
 
 }

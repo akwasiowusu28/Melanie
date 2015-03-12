@@ -5,60 +5,37 @@
 	<key>LWContentType</key>
 	<string>LWContentTypeFrame</string>
 	<key>LWTapeLengthAuto</key>
-	<false/>
+	<true/>
 	<key>LWLayoutDirection</key>
 	<string>LWLayoutDirectionHorizontal</string>
+	<key>LWMargins</key>
+	<string>LWMarginsMinimum</string>
 	<key>LWLengthMM</key>
-	<integer>50</integer>
+	<integer>35</integer>
 	<key>LWFrameSizeMode</key>
 	<string>LWFrameSizeModePercent</string>
 	<key>LWFrames</key>
 	<array>
 		<dict>
-			<key>LWContentType</key>
-			<string>LWContentTypeFrame</string>
-			<key>LWLayoutDirection</key>
-			<string>LWLayoutDirectionVertical</string>
+			<key>LWContentID</key>
+			<string>Code-EAN13</string>
 			<key>LWBorderType</key>
 			<string>LWBorderTypeSquare</string>
 			<key>LWContentWidth</key>
 			<integer>10</integer>
-			<key>LWFrames</key>
-			<array>
-				<dict>
-					<key>LWContentType</key>
-					<string>LWContentTypeString</string>
-					<key>LWContentID</key>
-					<string>BarcodeName_EAN13</string>
-					<key>LWBorderType</key>
-					<string>LWBorderTypeSquare</string>
-					<key>LWContentHeight</key>
-					<integer>30</integer>
-					<key>LWTextAlignment</key>
-					<string>LWTextAlignmentCenter</string>
-				</dict>
-				<dict>
-					<key>LWContentID</key>
-					<string>Code-EAN13</string>
-					<key>LWBorderType</key>
-					<string>LWBorderTypeSquare</string>
-					<key>LWContentWidth</key>
-					<integer>10</integer>
-					<key>LWContentHeight</key>
-					<integer>70</integer>
-					<key>LWContentType</key>
-					<string>LWContentTypeBarcode</string>
-					<key>LWBarcodeType</key>
-					<string>LWBarcodeTypeEAN13</string>
-					<key>LWBarcodeWidth</key>
-					<string>LWBarcodeWidthSmall</string>
-					<key>LWBarcodeShowText</key>
-					<true/>
-					<key>LWBarcodeStretch</key>
-					<true/>
-				</dict>
-			</array>
-		</dict>
+			<key>LWContentHeight</key>
+			<integer>50</integer>
+			<key>LWContentType</key>
+			<string>LWContentTypeBarcode</string>
+			<key>LWBarcodeType</key>
+			<string>LWBarcodeTypeEAN13</string>
+			<key>LWBarcodeWidth</key>
+			<string>LWBarcodeWidthSmall</string>
+			<key>LWBarcodeShowText</key>
+			<true/>
+			<key>LWBarcodeStretch</key>
+			<true/>
+		</dict>	
 	</array>
 </dict>
 </plist>

@@ -8,6 +8,7 @@ import com.j256.ormlite.table.DatabaseTable;
  * @author Akwasi Owusu
  *
  */
+
 @DatabaseTable
 public class Product extends BaseEntity {
 
