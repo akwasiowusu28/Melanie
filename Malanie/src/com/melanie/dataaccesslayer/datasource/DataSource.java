@@ -35,6 +35,7 @@ public class DataSource extends OrmLiteSqliteOpenHelper  {
 		List<Class<?>> entityClasses = DataSourceManager.getEntityClasses();
 		for(Class<?> entityClass: entityClasses){
 			try {
+				DataSource.this.cancelQueriesEnabled = false;
 				TableUtils.createTableIfNotExists(connectionSource, entityClass);
 			} catch (SQLException e) {
 				throw new MelanieDataLayerException(e.getMessage(), e);

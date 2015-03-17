@@ -19,8 +19,6 @@
     <uses-feature android:name="android.hardware.camera"/>
   	<uses-feature android:name="android.hardware.camera.autofocus" android:required="false"/>
   	<uses-feature android:name="android.hardware.camera.flash" android:required="false"/>
-  	<uses-feature android:name="android.hardware.screen.landscape"/>
-  	<uses-feature android:name="android.hardware.wifi" android:required="false"/>
   	<uses-feature android:name="android.hardware.touchscreen" android:required="false"/>
 
     <uses-sdk
@@ -59,18 +57,12 @@
         </activity>
         <activity
             android:name=".ScanBarcodeActivity"
-            android:label="@string/title_activity_scan_barcode" >
+            android:label="@string/title_activity_scan_barcode"
+            android:theme="@android:style/Theme.Dialog" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.melanie.androidactivities.SalesActivity" />
         </activity>
-        
-        <activity android:name="com.google.zxing.client.android.CaptureActivity"
-              android:clearTaskOnLaunch="true"
-              android:stateNotNeeded="true"
-              android:configChanges="orientation|keyboardHidden"
-              android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
-              android:windowSoftInputMode="stateAlwaysHidden"/>
         
         <activity
             android:name=".SalesActivity"
