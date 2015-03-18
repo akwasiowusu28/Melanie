@@ -4,6 +4,7 @@
     android:layout_height="250dp"
     android:layout_gravity="center"
     android:baselineAligned="false"
+    android:clipChildren="true"
     tools:context="${relativePackage}.${activityClass}" >
 
     <FrameLayout

@@ -16,6 +16,7 @@ public interface ProductEntryController {
 	public void addProduct(String productName, int quantity, double price, Category category) throws MelanieArgumentException;
 	public void removeProduct(int productId);
 	public Product findProduct(int productId);
+	public Product findProductByBarcode(String barcodDigits);
 	public Product findProduct(String productName)throws MelanieArgumentException;
 	public void updateProductQuantity(String productName, int updateQuantity) throws MelanieArgumentException;
 	public int getLastInsertedProductId();

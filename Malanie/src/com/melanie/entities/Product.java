@@ -22,7 +22,7 @@ public class Product extends BaseEntity {
 	private double price;
 	
 	@DatabaseField
-	private long barcodeNumber;
+	private String barcodeNumber;
 	
 	@DatabaseField(canBeNull= true, foreign = true)
 	private Category category;
@@ -58,10 +58,10 @@ public class Product extends BaseEntity {
 	public void setPrice(double price) {
 		this.price = price;
 	}
-	public long getBarcodeNumber() {
+	public String getBarcodeNumber() {
 		return barcodeNumber;
 	}
-	public void setBarcodeNumber(long barcodeNumber) {
+	public void setBarcodeNumber(String barcodeNumber) {
 		this.barcodeNumber = barcodeNumber;
 	}
 	public Category getProductCategory() {
@@ -71,5 +71,19 @@ public class Product extends BaseEntity {
 		this.category = category;
 	}
 	
+	@Override
+	public boolean equals(Object obj){
+		boolean equals = false;
+		
+		if(obj instanceof Product){
+			Product product = (Product)obj;
+			equals = product.barcodeNumber.equals(this.barcodeNumber);
+		}
+		return equals;
+	}
 	
+	@Override
+	public int hashCode(){
+		return super.hashCode();
+	}
 }

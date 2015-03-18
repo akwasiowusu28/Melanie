@@ -44,5 +44,5 @@
     <string name="title_activity_sales">SalesActivity</string>
     <string name="title_activity_customers">CustomersActivity</string>
     <string name="title_activity_reports">ReportsActivity</string>
-
+    <string name="doneText">Done</string>
 </resources>

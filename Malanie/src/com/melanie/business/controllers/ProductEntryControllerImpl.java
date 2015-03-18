@@ -22,6 +22,7 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 		public static final String EMPTY_PRODUCT_NAME_MSG = "Product name cannot be empty";
 		public static final String EMPTY_CATEGORY_NAME_MSG = "Category name cannot be empty";
 		public static final String CATEGORYNAME = "CategoryName";
+		public static final String BARCODE_NUMBER = "barcodeNumber";
 	}
 
 	private MelanieArgumentValidator argumentValidator;
@@ -103,8 +104,7 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 		argumentValidator.VerifyNotEmptyString(productName,
 				LocalConstants.EMPTY_PRODUCT_NAME_MSG);
 
-		Product product = new Product(productName, quantity, price,
-				category);
+		Product product = new Product(productName, quantity, price, category);
 		dataAccess.addDataItem(product);
 	}
 
@@ -162,5 +162,18 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 	@Override
 	public int getLastInsertedProductId() {
 		return dataAccess.getLastInsertedId(Product.class);
+	}
+
+	/**
+	 * Use this to get find a product by its barcode
+	 * 
+	 * @param barcodDigits
+	 *            the barcode to search for
+	 * @return the found product or null
+	 */
+	@Override
+	public Product findProductByBarcode(String barcodDigits) {
+		return dataAccess.findItemByFieldName(LocalConstants.BARCODE_NUMBER,
+				barcodDigits, Product.class);
 	}
 }

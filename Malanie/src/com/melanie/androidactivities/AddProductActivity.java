@@ -392,7 +392,7 @@ public class AddProductActivity extends Activity {
 
 	}
 	@Override
-	public void onDestroy(){
+	public void onPause(){
 		super.onDestroy();
 		if(executorService != null)
 			executorService.shutdown();

@@ -9,7 +9,7 @@ import com.melanie.androidactivities.CustomersActivity;
 import com.melanie.androidactivities.ProductsMainActivity;
 import com.melanie.androidactivities.R;
 import com.melanie.androidactivities.ReportsActivity;
-import com.melanie.androidactivities.ScanBarcodeActivity;
+import com.melanie.androidactivities.SalesActivity;
 import com.melanie.androidactivities.SettingsActivity;
 
 /**
@@ -59,8 +59,7 @@ public class NavigationHelper {
 		return new SparseArray<Class<? extends Activity>>() {
 			{
 				append(0, ProductsMainActivity.class);
-				append(1, ScanBarcodeActivity.class);
-//				append(1, SalesActivity.class);
+				append(1, SalesActivity.class);
 				append(2, CustomersActivity.class);
 				append(3, ReportsActivity.class);
 				append(4,SettingsActivity.class);
