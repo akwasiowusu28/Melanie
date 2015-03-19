@@ -30,6 +30,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import com.melanie.androidactivities.support.CameraPreview;
 
@@ -80,7 +81,6 @@ public class ScanBarcodeActivity extends Activity {
 			protected Void doInBackground(Void... params) {
 				mediaPlayer = MediaPlayer.create(ScanBarcodeActivity.this,
 						R.raw.barcodebeep);
-				mediaPlayer.setVolume(2,20);
 				return null;
 			}
 		};
@@ -117,9 +117,6 @@ public class ScanBarcodeActivity extends Activity {
 				autoFocusCallBack);
 		FrameLayout previewFrame = (FrameLayout) findViewById(R.id.scannerMainView);
 		previewFrame.addView(cameraPreview);
-		camera.setPreviewCallback(previewCallBack);
-		camera.startPreview();
-		camera.autoFocus(autoFocusCallBack);
 	}
 
 	private void addExtraViewsToPreviewFrame() {
@@ -144,7 +141,7 @@ public class ScanBarcodeActivity extends Activity {
 		FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
 				LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 		params.gravity = Gravity.BOTTOM | Gravity.CENTER;
-	    button.setLayoutParams(params);
+		button.setLayoutParams(params);
 		button.setText(R.string.doneText);
 		setButtonOnclickListner(button);
 		return button;
@@ -166,30 +163,52 @@ public class ScanBarcodeActivity extends Activity {
 
 	PreviewCallback previewCallBack = new PreviewCallback() {
 		public void onPreviewFrame(byte[] data, Camera camera) {
+			
+			int result = scanAndReturnBarcodeResult(data,camera);
+			
+			if (result != 0) {
+				addScannerResultsToScannedBarcodes();
+			}
+		}
+		
+		private int scanAndReturnBarcodeResult(byte[] data, Camera camera){
 			Camera.Parameters parameters = camera.getParameters();
 			Size size = parameters.getPreviewSize();
 
 			Image barcode = new Image(size.width, size.height, "Y800");
 			barcode.setData(data);
-
 			int result = scanner.scanImage(barcode);
-
-			if (result != 0) {
-				camera.setPreviewCallback(null);
-				if (mediaPlayer != null) {
-					mediaPlayer.reset();
-					mediaPlayer.start();
+			
+			return result;
+		}
+		
+		private void playBeep(){
+			if (mediaPlayer != null) {
+				mediaPlayer.start();
+			}
+		}
+		
+		private void addScannerResultsToScannedBarcodes(){
+			SymbolSet syms = scanner.getResults();
+			for (Symbol sym : syms) {
+				
+				String barcode = sym.getData();
+				if(barcode.length() == 13)
+				{
+					scannedBarcodes.add(barcode);
+					//remove below lines ASAP
+					TextView textView = (TextView) findViewById(R.id.tempDisplay);
+					textView.setText(barcode + "");
+					textView.bringToFront();
+					playBeep();
 				}
-				SymbolSet syms = scanner.getResults();
-				for (Symbol sym : syms) {
-					String barcodeDigits = sym.getData();
-					scannedBarcodes.add(barcodeDigits);
-
-				}
+				
+				break;
 			}
 		}
 	};
 
+	
 	AutoFocusCallback autoFocusCallBack = new AutoFocusCallback() {
 		public void onAutoFocus(boolean success, Camera camera) {
 			handler.postDelayed(doAutoFocus, 1000);

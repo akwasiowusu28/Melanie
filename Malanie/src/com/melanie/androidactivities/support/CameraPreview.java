@@ -29,24 +29,11 @@ public class CameraPreview extends SurfaceView implements
 			PreviewCallback previewCb, AutoFocusCallback autoFocusCb) {
 		super(context);
 
+		setWillNotDraw(false);
+		
 		mCamera = camera;
 		previewCallback = previewCb;
 		autoFocusCallback = autoFocusCb;
-
-		/*
-		 * Set camera to continuous focus if supported, otherwise use software
-		 * auto-focus. Only works for API level >=9.
-		 */
-		/*
-		 * Camera.Parameters parameters = camera.getParameters(); for (String f
-		 * : parameters.getSupportedFocusModes()) { if (f ==
-		 * Parameters.FOCUS_MODE_CONTINUOUS_PICTURE) {
-		 * mCamera.setFocusMode(Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
-		 * autoFocusCallback = null; break; } }
-		 */
-
-		// Install a SurfaceHolder.Callback so we get notified when the
-		// underlying surface is created and destroyed.
 		mHolder = getHolder();
 		mHolder.addCallback(this);
 
@@ -56,10 +43,12 @@ public class CameraPreview extends SurfaceView implements
 	}
 
 	public void surfaceCreated(SurfaceHolder holder) {
-		// The Surface has been created, now tell the camera where to draw the
-		// preview.
 		try {
 			mCamera.setPreviewDisplay(holder);
+			mCamera.setPreviewCallback(previewCallback);
+			mCamera.startPreview();
+			mCamera.autoFocus(autoFocusCallback);
+			
 		} catch (IOException e) {
 			Log.d("DBG", "Error setting camera preview: " + e.getMessage());
 		}
@@ -69,18 +58,12 @@ public class CameraPreview extends SurfaceView implements
 		// Camera preview released in activity
 	}
 
+
 	public void surfaceChanged(SurfaceHolder holder, int format, int width,
 			int height) {
-		/*
-		 * If your preview can change or rotate, take care of those events here.
-		 * Make sure to stop the preview before resizing or reformatting it.
-		 */
 		if (mHolder.getSurface() == null) {
-			// preview surface does not exist
 			return;
 		}
-
-		// stop preview before making changes
 		try {
 			mCamera.stopPreview();
 		} catch (Exception e) {
@@ -88,8 +71,6 @@ public class CameraPreview extends SurfaceView implements
 		}
 
 		try {
-			// Hard code camera surface rotation 90 degs to match Activity view
-			// in portrait
 			mCamera.setDisplayOrientation(90);
 
 			mCamera.setPreviewDisplay(mHolder);
