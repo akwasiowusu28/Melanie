@@ -1,19 +1,21 @@
-package com.melanie.business.controllers;
+package com.melanie.business.concrete;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import com.melanie.business.ProductEntryController;
 import com.melanie.dataaccesslayer.MelanieDataAccessLayer;
-import com.melanie.dataaccesslayer.MelanieDataAccessLayerImpl;
 import com.melanie.entities.Category;
 import com.melanie.entities.Product;
 import com.melanie.support.MelanieArgumentValidator;
+import com.melanie.support.MelanieDataFactory;
 import com.melanie.support.exceptions.MelanieArgumentException;
 
 /**
+ * This class is the main business controller for the Products subsystem. It
+ * provides methods for all operations regarding products and product categories
  * 
- * @author Akwasi Owusu This class is the main business controller for the
- *         Products subsystem. It provides methods for all operations regarding
- *         products and product categories
+ * @author Akwasi Owusu
  * 
  */
 public class ProductEntryControllerImpl implements ProductEntryController {
@@ -22,6 +24,7 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 		public static final String EMPTY_PRODUCT_NAME_MSG = "Product name cannot be empty";
 		public static final String EMPTY_CATEGORY_NAME_MSG = "Category name cannot be empty";
 		public static final String CATEGORYNAME = "CategoryName";
+		public static final String PRODUCTNAME = "CategoryName";
 		public static final String BARCODE_NUMBER = "barcodeNumber";
 	}
 
@@ -30,7 +33,7 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 
 	public ProductEntryControllerImpl() {
 		argumentValidator = new MelanieArgumentValidator();
-		dataAccess = new MelanieDataAccessLayerImpl();
+		dataAccess = MelanieDataFactory.makeDataAccessLayer();
 	}
 
 	/**
@@ -44,7 +47,8 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 			throws MelanieArgumentException {
 		argumentValidator.VerifyNotEmptyString(categoryName,
 				LocalConstants.EMPTY_CATEGORY_NAME_MSG);
-		dataAccess.addDataItem(new Category(categoryName));
+		if (dataAccess != null)
+			dataAccess.addDataItem(new Category(categoryName));
 	}
 
 	/**
@@ -70,8 +74,11 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 
 	@Override
 	public Category findCategory(String categoryName) {
-		return dataAccess.findItemByFieldName(LocalConstants.CATEGORYNAME,
-				categoryName, Category.class);
+		Category category = null;
+		if (dataAccess != null)
+			category = dataAccess.findItemByFieldName(
+					LocalConstants.CATEGORYNAME, categoryName, Category.class);
+		return category;
 	}
 
 	/**
@@ -81,7 +88,10 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 	 */
 	@Override
 	public List<Category> getAllCategories() {
-		return dataAccess.findAllItems(Category.class);
+		List<Category> allCategories = new ArrayList<Category>();
+		if (dataAccess != null)
+			allCategories = dataAccess.findAllItems(Category.class);
+		return allCategories;
 	}
 
 	/**
@@ -104,8 +114,12 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 		argumentValidator.VerifyNotEmptyString(productName,
 				LocalConstants.EMPTY_PRODUCT_NAME_MSG);
 
-		Product product = new Product(productName, quantity, price, category);
-		dataAccess.addDataItem(product);
+		if (dataAccess != null) {
+			Product product = new Product(productName, quantity, price,
+					category);
+			dataAccess.addDataItem(product);
+		}
+
 	}
 
 	/**
@@ -127,7 +141,10 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 	 */
 	@Override
 	public Product findProduct(int productId) {
-		return dataAccess.findItemById(productId, Product.class);
+		Product product = null;
+		if (dataAccess != null)
+			product = dataAccess.findItemById(productId, Product.class);
+		return product;
 	}
 
 	/**
@@ -138,7 +155,11 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 	 */
 	@Override
 	public Product findProduct(String productName) {
-		return null;
+		Product product = null;
+		if (dataAccess != null)
+			product = dataAccess.findItemByFieldName(
+					LocalConstants.PRODUCTNAME, productName, Product.class);
+		return product;
 	}
 
 	/**
@@ -161,7 +182,10 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 	 */
 	@Override
 	public int getLastInsertedProductId() {
-		return dataAccess.getLastInsertedId(Product.class);
+		int id = 0;
+		if(dataAccess != null)
+		id= dataAccess.getLastInsertedId(Product.class);
+		return id;
 	}
 
 	/**

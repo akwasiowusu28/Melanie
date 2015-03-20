@@ -9,7 +9,7 @@ import com.j256.ormlite.android.apptools.OrmLiteBaseListActivity;
 import com.melanie.androidactivities.support.NavigationHelper;
 import com.melanie.androidactivities.support.MainPageListViewAdapter;
 import com.melanie.business.MelanieBusiness;
-import com.melanie.business.MelanieBusinessImpl;
+import com.melanie.business.concrete.MelanieBusinessImpl;
 import com.melanie.dataaccesslayer.datasource.DataSource;
 
 public class MainActivity extends OrmLiteBaseListActivity<DataSource> {

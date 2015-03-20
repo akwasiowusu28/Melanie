@@ -45,7 +45,7 @@ public class CameraPreview extends SurfaceView implements
 	public void surfaceCreated(SurfaceHolder holder) {
 		try {
 			mCamera.setPreviewDisplay(holder);
-			mCamera.setPreviewCallback(previewCallback);
+			resetPreviewCallBack();
 			mCamera.startPreview();
 			mCamera.autoFocus(autoFocusCallback);
 			
@@ -59,6 +59,14 @@ public class CameraPreview extends SurfaceView implements
 	}
 
 
+	public void removePreviewCallBack(){
+		mCamera.setPreviewCallback(null);
+	}
+	
+	public void resetPreviewCallBack(){
+		mCamera.setPreviewCallback(previewCallback);
+	}
+	
 	public void surfaceChanged(SurfaceHolder holder, int format, int width,
 			int height) {
 		if (mHolder.getSurface() == null) {
@@ -74,7 +82,7 @@ public class CameraPreview extends SurfaceView implements
 			mCamera.setDisplayOrientation(90);
 
 			mCamera.setPreviewDisplay(mHolder);
-			mCamera.setPreviewCallback(previewCallback);
+			resetPreviewCallBack();
 			mCamera.startPreview();
 			mCamera.autoFocus(autoFocusCallback);
 		} catch (Exception e) {

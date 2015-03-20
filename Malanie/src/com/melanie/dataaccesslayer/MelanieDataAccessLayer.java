@@ -4,13 +4,21 @@ import java.util.List;
 
 import com.melanie.dataaccesslayer.datasource.DataSource;
 
-public interface MelanieDataAccessLayer {
-	public void initialize(DataSource dataSource);
-	public <T> void addDataItem(T dataItem);
-	public <T> boolean updateDataItem(T dataItem);
-	public <T> boolean deleteDataItem(T dataItem);
-	public <T> T findItemById(int itemId,Class<?> itemClass);
-	public <T> T findItemByFieldName(String fieldName, String searchValue, Class<?> itemClass);
-	public <T> List<T> findAllItems(Class<?> itemClass);
-	public <T> int getLastInsertedId(Class<?> itemClass);
+ public interface MelanieDataAccessLayer {
+	 void initialize(DataSource dataSource);
+
+	 <T> void addDataItem(T dataItem);
+
+	 <T> boolean updateDataItem(T dataItem);
+
+	 <T> boolean deleteDataItem(T dataItem);
+
+	 <T> T findItemById(int itemId, Class<?> itemClass);
+
+	 <T> T findItemByFieldName(String fieldName, String searchValue,
+			Class<?> itemClass);
+
+	 <T> List<T> findAllItems(Class<?> itemClass);
+
+	 <T> int getLastInsertedId(Class<?> itemClass);
 }

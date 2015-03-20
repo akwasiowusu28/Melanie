@@ -1,7 +1,6 @@
 package com.melanie.androidactivities;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -13,17 +12,17 @@ import android.os.Bundle;
 import android.os.Handler;
 
 import com.melanie.androidactivities.support.SalesListViewAdapter;
-import com.melanie.business.controllers.ProductEntryController;
-import com.melanie.business.controllers.ProductEntryControllerImpl;
-import com.melanie.entities.Product;
+import com.melanie.business.SalesController;
+import com.melanie.business.concrete.SalesControllerImpl;
 import com.melanie.entities.Sale;
+import com.melanie.support.exceptions.MelanieArgumentException;
 
 public class SalesActivity extends Activity {
 
 	private static final int SCAN_REQUEST_CODE = 28;
 	private static final String BARCODE_LIST = "barcodes";
 	private List<Sale> sales;
-	private ProductEntryController productController;
+	private SalesController salesController;
 	private ScheduledExecutorService executorService;
 	private SalesListViewAdapter<Sale> salesListAdapter;
 	private Handler handler;
@@ -39,7 +38,7 @@ public class SalesActivity extends Activity {
 
 	private void initializeFields() {
 		executorService = Executors.newScheduledThreadPool(2);
-		productController = new ProductEntryControllerImpl();
+		salesController = new SalesControllerImpl();
 		sales = new ArrayList<Sale>();
 		salesListAdapter = new SalesListViewAdapter<Sale>(this, sales);
 		handler = new Handler();
@@ -55,7 +54,7 @@ public class SalesActivity extends Activity {
 					startActivityForResult(intent, SCAN_REQUEST_CODE);
 				}
 			}, 50, TimeUnit.MILLISECONDS);
-		}                      
+		}
 	}
 
 	@Override
@@ -69,46 +68,17 @@ public class SalesActivity extends Activity {
 
 	private void recordSalesFromBarcodes(List<String> barcodes) {
 
-		for (String barcode : barcodes) {
-
-			// first check if the list contains a product with the same barcode
-			// and just increase the quantity sold
-			Sale sale = getExistingSale(barcode);
-			if (sale == null)
-				addNewSale(barcode);
-			else {
-				int quantity = sale.getQuantitySold();
-				sale.setQuantitySold(++quantity);
-			}
+		try {
+			sales = salesController.addSales(barcodes);
 			notifySalesListUpdate();
+		} catch (MelanieArgumentException e) {
+			e.printStackTrace(); // log it
 		}
-	}
 
-	private void addNewSale(String barcode) {
-		Sale sale = new Sale();
-		Product product = productController.findProductByBarcode(barcode);
-		if (product != null) {
-			sale.setProduct(product);
-			sale.setSaleDate(new Date());
-			sale.setQuantitySold(1);
-			sales.add(sale);
-		}
-	}
-
-	private Sale getExistingSale(String barcode) {
-		Sale sale = null;
-		for (Sale existingSale : sales) {
-			if (existingSale.getProduct().getBarcodeNumber().equals(barcode)) {
-				sale = existingSale;
-				break;
-			}
-		}
-		return sale;
 	}
 
 	private void notifySalesListUpdate() {
 		handler.postDelayed(new Runnable() {
-
 			@Override
 			public void run() {
 				salesListAdapter.notifyDataSetChanged();

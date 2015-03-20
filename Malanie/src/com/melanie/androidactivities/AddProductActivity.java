@@ -35,9 +35,9 @@ import com.epson.lwprint.sdk.LWPrintParameterKey;
 import com.epson.lwprint.sdk.LWPrintPrintingPhase;
 import com.melanie.androidactivities.support.MelanieBarcodeDataProvider;
 import com.melanie.androidactivities.support.Utils;
-import com.melanie.business.controllers.ProductEntryController;
-import com.melanie.business.controllers.ProductEntryControllerImpl;
+import com.melanie.business.ProductEntryController;
 import com.melanie.entities.Category;
+import com.melanie.support.MelanieBusinessFactory;
 import com.melanie.support.exceptions.MelanieArgumentException;
 
 public class AddProductActivity extends Activity {
@@ -100,7 +100,7 @@ public class AddProductActivity extends Activity {
 	}
 
 	private void initializeFields() {
-		productController = new ProductEntryControllerImpl();
+		productController = MelanieBusinessFactory.makeProductEntryController();
 		handler = new Handler();
 		createPrintProgressDialog();
 	}

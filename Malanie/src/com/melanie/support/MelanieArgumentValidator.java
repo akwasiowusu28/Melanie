@@ -7,9 +7,10 @@ public class MelanieArgumentValidator {
 	private static final String NON_NULL_ARG_MSG = "Argument cannot be null";
 	private static final String EMPTY_STRING_ARG_MSG = "String cannot be empty";
 	
-    public <T> void VerifyNonNull(T arg) throws MelanieArgumentException
+    public <T> void VerifyNonNull(T... args) throws MelanieArgumentException
     {
-        VerifyNonNull(arg, NON_NULL_ARG_MSG);
+    	for(T arg:args)
+         VerifyNonNull(arg, NON_NULL_ARG_MSG);
     }
 
     public <T> void VerifyNonNull(T arg, String message) throws MelanieArgumentException
