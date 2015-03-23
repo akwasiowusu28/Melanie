@@ -9,13 +9,15 @@ import java.util.concurrent.TimeUnit;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
+import android.view.View;
+import android.widget.ListView;
 
 import com.melanie.androidactivities.support.SalesListViewAdapter;
+import com.melanie.androidactivities.support.Utils;
 import com.melanie.business.SalesController;
 import com.melanie.business.concrete.SalesControllerImpl;
 import com.melanie.entities.Sale;
-import com.melanie.support.exceptions.MelanieArgumentException;
+import com.melanie.support.exceptions.MelanieBusinessException;
 
 public class SalesActivity extends Activity {
 
@@ -24,8 +26,7 @@ public class SalesActivity extends Activity {
 	private List<Sale> sales;
 	private SalesController salesController;
 	private ScheduledExecutorService executorService;
-	private SalesListViewAdapter<Sale> salesListAdapter;
-	private Handler handler;
+	private SalesListViewAdapter salesListAdapter;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -33,15 +34,28 @@ public class SalesActivity extends Activity {
 		setContentView(R.layout.activity_sales);
 
 		initializeFields();
+		setupSalesListView();
 		startBarcodeScanning();
+	}
+
+	private void setupSalesListView() {
+
+		ListView listView = (ListView) findViewById(R.id.salesListView);
+		View headerView = getLayoutInflater().inflate(
+				R.layout.layout_saleitems_header, listView, false);
+		View emptyView = findViewById(R.id.emptyView);
+
+		listView.setEmptyView(emptyView);
+
+		listView.addHeaderView(headerView);
+		listView.setAdapter(salesListAdapter);
 	}
 
 	private void initializeFields() {
 		executorService = Executors.newScheduledThreadPool(2);
 		salesController = new SalesControllerImpl();
 		sales = new ArrayList<Sale>();
-		salesListAdapter = new SalesListViewAdapter<Sale>(this, sales);
-		handler = new Handler();
+		salesListAdapter = new SalesListViewAdapter(this, sales);
 	}
 
 	private void startBarcodeScanning() {
@@ -53,7 +67,7 @@ public class SalesActivity extends Activity {
 							ScanBarcodeActivity.class);
 					startActivityForResult(intent, SCAN_REQUEST_CODE);
 				}
-			}, 50, TimeUnit.MILLISECONDS);
+			}, 100, TimeUnit.MILLISECONDS);
 		}
 	}
 
@@ -70,20 +84,11 @@ public class SalesActivity extends Activity {
 
 		try {
 			sales = salesController.addSales(barcodes);
-			notifySalesListUpdate();
-		} catch (MelanieArgumentException e) {
+			Utils.notifyListUpdate(salesListAdapter);
+		} catch (MelanieBusinessException e) {
 			e.printStackTrace(); // log it
 		}
 
-	}
-
-	private void notifySalesListUpdate() {
-		handler.postDelayed(new Runnable() {
-			@Override
-			public void run() {
-				salesListAdapter.notifyDataSetChanged();
-			}
-		}, 1000);
 	}
 
 	@Override

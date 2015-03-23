@@ -8,7 +8,7 @@
     <string name="enterCategoryName">Enter category name</string>
     <string name="add">Add</string>
     <string name="addSuccessful">\s added successfully</string>
-    <string name="categoriesList">List of product categories:</string>
+    <string name="categoriesList">Product categories</string>
     <string name="title_activity_main">Welcome</string>
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_products">Products</string>
@@ -31,7 +31,7 @@
     <string name="Price">Price:</string>
     <string name="productNameHint">Enter name of product</string>
     <string name="productQuantityHint">Enter quantity of product</string>
-    <string name="productPriceHint">0.00</string>
+    <string name="amountZeroes">0.00</string>
     <string name="bluetoothNotSupported">Bluetooth is not supported on this device</string>
     <string name="printerNotFound">Printer not found</string>
     <string name="printPreparing">Preparing to print</string>
@@ -47,4 +47,13 @@
     <string name="doneText">Done</string>
     <string name="lastScan">last scan:</string>
     <string name="zeros">0000000000000</string>
+    <string name="saleItemName">Name</string>
+    <string name="qty">Qty</string>
+    <string name="each">Each</string>
+    <string name="total">Total</string>
+    <string name="totalWithColon">Total:</string>
+    <string name="discountLabel">Discount:</string>
+    <string name="amountReceived">Amount received:</string>
+    <string name="balance">Balance due:</string>
+    <string name="save">Save</string>
 </resources>

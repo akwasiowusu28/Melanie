@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="?android:attr/listPreferredItemHeight"
     android:padding="6dip" >
+
     <ImageView
         android:id="@+id/icon"
         android:layout_width="40dp"
@@ -22,6 +22,7 @@
         android:layout_toRightOf="@id/icon"
         android:ellipsize="marquee"
         android:text="@string/category_name"
+        android:textColor="#fff"
         android:textSize="12sp" />
 
     <TextView
@@ -35,17 +36,18 @@
         android:layout_toRightOf="@id/icon"
         android:gravity="center_vertical"
         android:text="@string/category_name"
+        android:textColor="#fff"
         android:textSize="16sp" />
-    
+
     <ImageView
         android:id="@+id/arrowRight"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
         android:layout_marginRight="3dp"
         android:contentDescription="@string/categoriesList"
         android:src="@drawable/navigateright" />
-    
+
 </RelativeLayout>

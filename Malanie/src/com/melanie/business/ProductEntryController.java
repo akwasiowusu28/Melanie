@@ -13,7 +13,7 @@ import com.melanie.support.exceptions.MelanieArgumentException;
  */
  public interface ProductEntryController {
 
-	 void addCategory(String categoryName)
+	 Category addCategory(String categoryName)
 			throws MelanieArgumentException;
 
 	 Category findCategory(int id);
@@ -23,7 +23,7 @@ import com.melanie.support.exceptions.MelanieArgumentException;
 	 List<Category> getAllCategories();
 
 	 void addProduct(String productName, int quantity, double price,
-			Category category) throws MelanieArgumentException;
+			Category category, String barcode) throws MelanieArgumentException;
 
 	 void removeProduct(int productId);
 

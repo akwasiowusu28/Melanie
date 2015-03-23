@@ -13,7 +13,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.hardware.Camera;
 import android.hardware.Camera.AutoFocusCallback;
 import android.hardware.Camera.Parameters;
@@ -102,7 +101,7 @@ public class ScanBarcodeActivity extends Activity {
 		Camera c = null;
 		try {
 			c = Camera.open();
-		} catch (Exception e) { //log that you can't get the camera
+		} catch (Exception e) { // log that you can't get the camera
 		}
 		return c;
 	}
@@ -138,24 +137,17 @@ public class ScanBarcodeActivity extends Activity {
 		return view;
 	}
 
-	@SuppressWarnings("deprecation")
-	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 	private Button doneButton() {
 
 		Button button = new Button(this);
 
-		FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(80, 80);
+		FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+				LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 		params.gravity = Gravity.BOTTOM | Gravity.CENTER;
 		button.setLayoutParams(params);
-
-		Drawable drawable = getResources().getDrawable(
-				R.drawable.donebuttonselector);
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
-			button.setBackgroundDrawable(drawable);
-		else
-			button.setBackground(drawable);
-
+		button.setText(R.string.doneText);
 		setButtonOnclickListner(button);
+
 		return button;
 	}
 
@@ -167,7 +159,7 @@ public class ScanBarcodeActivity extends Activity {
 				Intent intent = getIntent();
 				intent.putStringArrayListExtra(BARCODE_LIST,
 						new ArrayList<String>(scannedBarcodes));
-				setResult(RESULT_OK);
+				setResult(RESULT_OK,intent);
 				finish();
 			}
 		});

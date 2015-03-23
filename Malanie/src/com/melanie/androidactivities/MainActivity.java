@@ -26,7 +26,7 @@ public class MainActivity extends OrmLiteBaseListActivity<DataSource> {
 		super.onCreate(savedInstanceState);
 		business.initialize(getHelper());
 		setContentView(R.layout.activity_main);
-		setListAdapter(new MainPageListViewAdapter(getBaseContext(),
+		setListAdapter(new MainPageListViewAdapter(this,
 				NavigationHelper.getMainPageIcons(),
 				NavigationHelper.getMainPageNavigationItems(),
 				NavigationHelper.getMainPageNavigationDescription()));

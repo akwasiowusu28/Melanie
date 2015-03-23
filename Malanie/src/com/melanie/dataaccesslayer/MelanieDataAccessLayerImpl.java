@@ -121,7 +121,11 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 		T item = null;
 		try {
 			if (dao != null)
-				item = (T) dao.queryForEq(fieldName, searchValue).get(0);
+			{
+				List<Object> results = dao.queryForEq(fieldName, searchValue);
+				if(results != null && results.size() > 0)
+					item = (T) results.get(0);
+			}
 
 		} catch (SQLException e) {
 			throw new MelanieDataLayerException(e.getMessage());

@@ -2,6 +2,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
     tools:context="com.melanie.androidactivities.CategoriesActivity" >
 
     <include
@@ -11,53 +13,42 @@
         android:layout_alignParentTop="true"
         layout="@layout/layout_header" />
 
-    <TextView
-        android:id="@+id/categoriesListLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/header"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="15dp"
-        android:text="@string/categoriesList" />
-
-    <ListView
-        android:id="@+id/categoryList"
-        android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:layout_below="@id/categoriesListLabel"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginBottom="20dp"
-        android:listSelector="@drawable/listitemselectedbackground" />
-
-    <TextView
-        android:id="@+id/categoryNameLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/categoryList"
-        android:layout_marginLeft="10dp"
-        android:text="@string/category_name" />
-
     <LinearLayout
+        android:id="@+id/inputViews"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/categoryNameLabel"
+        android:layout_alignParentBottom="true"
         android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp" >
+        android:layout_marginRight="10dp"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/categoryNameLabel"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/category_name" />
 
         <EditText
             android:id="@+id/categoryName"
-            android:layout_width="0dp"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:hint="@string/enterCategoryName" />
 
         <Button
+            android:layout_gravity="right"
             android:id="@+id/addCategoryButton"
             android:layout_width="70dp"
             android:layout_height="wrap_content"
             android:onClick="addCategory"
-            android:text="@string/add"/>
+            android:text="@string/add" />
     </LinearLayout>
+
+    <ListView
+        android:id="@+id/categoryList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/inputViews"
+        android:layout_below="@id/header"
+        android:layout_marginBottom="20dp" />
 
 </RelativeLayout>

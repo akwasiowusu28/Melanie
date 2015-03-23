@@ -25,7 +25,7 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 		public static final String EMPTY_CATEGORY_NAME_MSG = "Category name cannot be empty";
 		public static final String CATEGORYNAME = "CategoryName";
 		public static final String PRODUCTNAME = "CategoryName";
-		public static final String BARCODE_NUMBER = "barcodeNumber";
+		public static final String BARCODE_NUMBER = "barcode";
 	}
 
 	private MelanieArgumentValidator argumentValidator;
@@ -43,12 +43,17 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 	 *            the name of the specified category
 	 */
 	@Override
-	public void addCategory(String categoryName)
+	public Category addCategory(String categoryName)
 			throws MelanieArgumentException {
 		argumentValidator.VerifyNotEmptyString(categoryName,
 				LocalConstants.EMPTY_CATEGORY_NAME_MSG);
+		Category category = null;
 		if (dataAccess != null)
-			dataAccess.addDataItem(new Category(categoryName));
+		{
+			category = new Category(categoryName);
+			dataAccess.addDataItem(category);
+		}
+		return category;	
 	}
 
 	/**
@@ -108,7 +113,7 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 	 */
 	@Override
 	public void addProduct(String productName, int quantity, double price,
-			Category category) throws MelanieArgumentException {
+			Category category, String barcode) throws MelanieArgumentException {
 
 		argumentValidator.VerifyNonNull(category);
 		argumentValidator.VerifyNotEmptyString(productName,
@@ -116,7 +121,7 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 
 		if (dataAccess != null) {
 			Product product = new Product(productName, quantity, price,
-					category);
+					category, barcode);
 			dataAccess.addDataItem(product);
 		}
 

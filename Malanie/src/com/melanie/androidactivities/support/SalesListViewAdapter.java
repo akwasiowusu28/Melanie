@@ -10,20 +10,20 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.melanie.androidactivities.R;
-import com.melanie.entities.Product;
 import com.melanie.entities.Sale;
 
 
-public class SalesListViewAdapter<T> extends ArrayAdapter<T>{
+public class SalesListViewAdapter extends ArrayAdapter<Sale>{
 
 	private Context context;
 	private int resource;
 	private List<Sale> sales;
 	
 	public SalesListViewAdapter(Context context, List<Sale> sales){
-		super(context, R.layout.layout_sales_list);
-		
+		super(context, R.layout.layout_sales_list,sales);
+		this.context = context;
 		this.sales = sales;
+		this.resource = R.layout.layout_sales_list;
 	}
 	
 	@Override
@@ -39,26 +39,38 @@ public class SalesListViewAdapter<T> extends ArrayAdapter<T>{
 			rowView = inflater.inflate(resource, parent, false);
 
 			viewHolder.productNameTextView = (TextView) rowView
-					.findViewById(R.id.saleProduct);
+					.findViewById(R.id.productNameTextView);
+			
+			viewHolder.quantityTextView = (TextView) rowView
+					.findViewById(R.id.qtyTextView);
+			
 			viewHolder.priceTextView = (TextView) rowView
-					.findViewById(R.id.salePrice);
+					.findViewById(R.id.unitPriceTextView);
 
+			viewHolder.totalPriceTextView = (TextView) rowView
+					.findViewById(R.id.totalTextView);
+			
 			rowView.setTag(viewHolder);
 		}
 		
-		Product product = sales.get(position).getProduct();
+		Sale sale = sales.get(position);
 		
-		if(product != null){
+		if(sale != null){
 			ViewHolder viewHolder = (ViewHolder)rowView.getTag();
-			viewHolder.productNameTextView.setText(product.getProductName());
-			viewHolder.priceTextView.setText(String.valueOf(product.getPrice()));
+			int quantity = sale.getQuantitySold();
+			double price = sale.getProduct().getPrice();
+			viewHolder.productNameTextView.setText(sale.getProduct().getProductName());
+			viewHolder.quantityTextView.setText(String.valueOf(quantity));
+			viewHolder.priceTextView.setText(String.valueOf(price));
+			viewHolder.totalPriceTextView.setText(String.valueOf(quantity * price));
 		}
-		
 		return rowView;
 	}
 	
 	private static class ViewHolder {
 		public TextView productNameTextView;
 		public TextView priceTextView;
+		public TextView quantityTextView;
+		public TextView totalPriceTextView;
 	}
 }

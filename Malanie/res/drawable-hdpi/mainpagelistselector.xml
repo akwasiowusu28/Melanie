@@ -1,19 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-  <item android:state_pressed="true" >
-    <shape>
-      <gradient
-       android:startColor="#E77A26"
-         android:endColor="#1DB38B"
-         android:angle="270" />
-    </shape>
-  </item>
-  <item android:state_activated="true">
-    <shape>
-      <gradient
-       android:startColor="#E77A26"
-         android:endColor="#EEFFEE"
-         android:angle="270" />
-    </shape>
-  </item>
+
+    <item android:drawable="@drawable/buttonorangeshape" android:state_pressed="true"/>
+    <item android:drawable="@drawable/buttonorangeshape" android:state_selected="true"/>
+    <item android:drawable="@android:color/background_dark"/>
+
 </selector>

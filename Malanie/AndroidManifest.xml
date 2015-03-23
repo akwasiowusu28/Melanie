@@ -15,11 +15,17 @@
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-    
-    <uses-feature android:name="android.hardware.camera"/>
-  	<uses-feature android:name="android.hardware.camera.autofocus" android:required="false"/>
-  	<uses-feature android:name="android.hardware.camera.flash" android:required="false"/>
-  	<uses-feature android:name="android.hardware.touchscreen" android:required="false"/>
+
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature
+        android:name="android.hardware.camera.autofocus"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera.flash"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="false" />
 
     <uses-sdk
         android:minSdkVersion="9"
@@ -32,10 +38,10 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name=".MainActivity"
-            android:label="@string/title_activity_main"
-            android:theme="@style/mainPageStyle" >
+            android:label="@string/title_activity_main" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -63,28 +69,27 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.melanie.androidactivities.SalesActivity" />
         </activity>
-        
         <activity
             android:name=".SalesActivity"
             android:label="@string/title_activity_sales" >
         </activity>
         <activity
             android:name=".CustomersActivity"
-            android:label="@string/title_activity_customers">
+            android:label="@string/title_activity_customers" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.melanie.androidactivities.MainActivity" />
         </activity>
         <activity
             android:name=".ReportsActivity"
-            android:label="@string/title_activity_reports">
+            android:label="@string/title_activity_reports" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.melanie.androidactivities.MainActivity" />
         </activity>
         <activity
             android:name=".SettingsActivity"
-            android:label="@string/title_activity_settings">
+            android:label="@string/title_activity_settings" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.melanie.androidactivities.MainActivity" />
