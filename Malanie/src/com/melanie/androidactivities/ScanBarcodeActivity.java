@@ -24,6 +24,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Gravity;
+import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
@@ -159,7 +160,7 @@ public class ScanBarcodeActivity extends Activity {
 				Intent intent = getIntent();
 				intent.putStringArrayListExtra(BARCODE_LIST,
 						new ArrayList<String>(scannedBarcodes));
-				setResult(RESULT_OK,intent);
+				setResult(RESULT_OK, intent);
 				finish();
 			}
 		});
@@ -200,7 +201,7 @@ public class ScanBarcodeActivity extends Activity {
 				if (sym.getType() == Symbol.EAN13) {
 					scannedBarcodes.add(barcode);
 					updatePreviewText(barcode);
-					playBeep();
+					//playBeep();
 				}
 				break;
 			}
@@ -239,6 +240,9 @@ public class ScanBarcodeActivity extends Activity {
 
 	private void releaseCamera() {
 		if (camera != null) {
+			SurfaceHolder previewHolder = cameraPreview.getHolder();
+			if (previewHolder != null)
+				previewHolder.removeCallback(cameraPreview);
 			camera.setPreviewCallback(null);
 			camera.release();
 			camera = null;

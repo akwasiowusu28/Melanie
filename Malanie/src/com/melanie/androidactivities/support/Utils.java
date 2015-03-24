@@ -1,9 +1,14 @@
 package com.melanie.androidactivities.support;
 
+import android.content.Context;
 import android.os.Handler;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Toast;
+
+import com.melanie.androidactivities.R;
+import com.melanie.support.OperationResult;
 
 public final class Utils {
 
@@ -32,5 +37,18 @@ public final class Utils {
 				((EditText) view).setText("");
 		}
 
+	}
+
+	public static void makeToastBasedOnOperationResult(Context context,
+			OperationResult result, int successStringId, int failureStringId) {
+		if (result.equals(OperationResult.SUCCESSFUL))
+			Toast.makeText(context, successStringId, Toast.LENGTH_LONG).show();
+		else
+			Toast.makeText(context, failureStringId, Toast.LENGTH_LONG).show();
+	}
+	
+	public static void makeToast(Context context, int stringId){
+		Toast.makeText(context, R.string.printerNotFound, Toast.LENGTH_LONG)
+		.show();
 	}
 }

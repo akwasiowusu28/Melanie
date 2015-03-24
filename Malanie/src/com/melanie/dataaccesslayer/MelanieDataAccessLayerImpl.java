@@ -8,18 +8,20 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.melanie.dataaccesslayer.datasource.DataSource;
 import com.melanie.dataaccesslayer.datasource.DataSourceManager;
 import com.melanie.entities.BaseEntity;
+import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieDataLayerException;
 
 /**
  * 
- * @author Akwasi Owusu
- * A class that serves as a facade to the Database access for all clients
+ * @author Akwasi Owusu A class that serves as a facade to the Database access
+ *         for all clients
  */
 @SuppressWarnings("unchecked")
 public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 
 	/**
-	 * @param dataSource the ORM datasource helper pushed from the UI
+	 * @param dataSource
+	 *            the ORM datasource helper pushed from the UI
 	 */
 	@Override
 	public void initialize(DataSource dataSource) {
@@ -28,70 +30,86 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 
 	/**
 	 * 
-	 * Use this to add an item to the database. Item should typically be anything that extends BaseEntity
-	 * @param dataItem The item to persist
-	 */
-	@Override
-	public <T> void addDataItem(T dataItem) {
-
-		Dao<Object, Integer> dao = DataSourceManager.getCachedDaoFor(dataItem
-				.getClass());
-		try {
-			if (dao != null)
-				dao.create(dataItem);
-		} catch (SQLException e) {
-			throw new MelanieDataLayerException(e.getMessage());
-		}
-	}
-
-	/**
+	 * Use this to add an item to the database. Item should typically be
+	 * anything that extends BaseEntity
 	 * 
-	 * Use this to update an item in the database. Item should typically be anything that extends BaseEntity
-	 * @param dataItem The item to update
+	 * @param dataItem
+	 *            The item to persist
 	 */
 	@Override
-	public <T> boolean updateDataItem(T dataItem) {
-		boolean updateSuccess = false;
+	public <T> OperationResult addDataItem(T dataItem) {
+		OperationResult result = OperationResult.FAILED;
 		Dao<Object, Integer> dao = DataSourceManager.getCachedDaoFor(dataItem
 				.getClass());
 		try {
-			if (dao != null && dao.idExists(((BaseEntity) dataItem).getId())) {
-				updateSuccess = true;
-				dao.update(dataItem);
+			if (dao != null) {
+				int insertReturn = dao.create(dataItem);
+		        List<T> ps = (List<T>)dao.queryForAll();
+				if (insertReturn == 1)
+					result = OperationResult.SUCCESSFUL;
 			}
 
 		} catch (SQLException e) {
 			throw new MelanieDataLayerException(e.getMessage());
 		}
-		return updateSuccess;
+		return result;
 	}
 
 	/**
 	 * 
-	 * @param dataItem The dataItem to delete. Returns true on success
+	 * Use this to update an item in the database. Item should typically be
+	 * anything that extends BaseEntity
+	 * 
+	 * @param dataItem
+	 *            The item to update
 	 */
 	@Override
-	public <T> boolean deleteDataItem(T dataItem) {
-		boolean deleteSuccess = false;
+	public <T> OperationResult updateDataItem(T dataItem) {
+		OperationResult result = OperationResult.FAILED;
 		Dao<Object, Integer> dao = DataSourceManager.getCachedDaoFor(dataItem
 				.getClass());
 		try {
 			if (dao != null && dao.idExists(((BaseEntity) dataItem).getId())) {
-				deleteSuccess = true;
-				dao.delete(dataItem);
+				int updateReturn = dao.update(dataItem);
+				if (updateReturn == 1)
+					result = OperationResult.SUCCESSFUL;
 			}
 
 		} catch (SQLException e) {
 			throw new MelanieDataLayerException(e.getMessage());
 		}
-		return deleteSuccess;
+		return result;
 	}
 
+	/**
+	 * 
+	 * @param dataItem
+	 *            The dataItem to delete. Returns true on success
+	 */
+	@Override
+	public <T> OperationResult deleteDataItem(T dataItem) {
+		OperationResult result = OperationResult.FAILED;
+		Dao<Object, Integer> dao = DataSourceManager.getCachedDaoFor(dataItem
+				.getClass());
+		try {
+			if (dao != null && dao.idExists(((BaseEntity) dataItem).getId())) {
 
-/**
- * Returns an item based on its id
- * @return Item of type T, the type of the specified class
- */
+				int deleteReturn = dao.delete(dataItem);
+				if (deleteReturn == 1)
+					result = OperationResult.SUCCESSFUL;
+			}
+
+		} catch (SQLException e) {
+			throw new MelanieDataLayerException(e.getMessage());
+		}
+		return result;
+	}
+
+	/**
+	 * Returns an item based on its id
+	 * 
+	 * @return Item of type T, the type of the specified class
+	 */
 	@Override
 	public <T> T findItemById(int itemId, Class<?> itemClass) {
 		Dao<Object, Integer> dao = DataSourceManager.getCachedDaoFor(itemClass);
@@ -109,9 +127,13 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 
 	/**
 	 * Returns an item based on it's field name
-	 * @param fieldName The name of the field
-	 * @param searchValue The value to search for in that field
-	 * @param itemClass The class of the return item
+	 * 
+	 * @param fieldName
+	 *            The name of the field
+	 * @param searchValue
+	 *            The value to search for in that field
+	 * @param itemClass
+	 *            The class of the return item
 	 * @return The item searched for by name
 	 */
 	@Override
@@ -120,10 +142,9 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 		Dao<Object, Integer> dao = DataSourceManager.getCachedDaoFor(itemClass);
 		T item = null;
 		try {
-			if (dao != null)
-			{
+			if (dao != null) {
 				List<Object> results = dao.queryForEq(fieldName, searchValue);
-				if(results != null && results.size() > 0)
+				if (results != null && results.size() > 0)
 					item = (T) results.get(0);
 			}
 
@@ -135,7 +156,9 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 
 	/**
 	 * Find all items
-	 * @param itemClass The class of the return item
+	 * 
+	 * @param itemClass
+	 *            The class of the return item
 	 * @return all Items of itemClass
 	 */
 	@Override
@@ -153,7 +176,9 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 	/**
 	 * 
 	 * Returns the id of the last inserted item
-	 * @param itemClass the class of the return item
+	 * 
+	 * @param itemClass
+	 *            the class of the return item
 	 * @return the id of the last insertedItem
 	 */
 	@Override

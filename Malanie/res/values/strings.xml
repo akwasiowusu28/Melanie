@@ -14,6 +14,8 @@
     <string name="title_activity_products">Products</string>
     <string name="products">Products</string>
     <string name="productsDesc">View or add categories and products</string>
+    <string name ="productAddSuccessful">Product successfully added</string>
+    <string name ="productAddFailed">Sorry. Could not add the product</string>
     <string name="sales">Sales</string>
     <string name="salesDesc">Record sales</string>
     <string name="customersDesc">View or add customer information</string>
@@ -56,4 +58,5 @@
     <string name="amountReceived">Amount received:</string>
     <string name="balance">Balance due:</string>
     <string name="save">Save</string>
+    <string name="scanBarcode">Scan barcode</string>
 </resources>

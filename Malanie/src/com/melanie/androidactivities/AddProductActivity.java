@@ -24,7 +24,6 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import com.epson.lwprint.sdk.LWPrint;
 import com.epson.lwprint.sdk.LWPrintCallback;
@@ -38,6 +37,7 @@ import com.melanie.androidactivities.support.Utils;
 import com.melanie.business.ProductEntryController;
 import com.melanie.entities.Category;
 import com.melanie.support.MelanieBusinessFactory;
+import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieArgumentException;
 
 public class AddProductActivity extends Activity {
@@ -152,20 +152,33 @@ public class AddProductActivity extends Activity {
 				.toString();
 		double price = Double.parseDouble(priceStr);
 
+		OperationResult result = addProductAndReturnResult(category,
+				productName, price, currentProductQuantity);
+		if (result == OperationResult.SUCCESSFUL) {
+			printBarcode();
+			clearTextFields();
+		}
+		Utils.makeToastBasedOnOperationResult(this, result,
+				R.string.productAddSuccessful, R.string.productAddFailed);
+	}
+
+	private OperationResult addProductAndReturnResult(Category category,
+			String productName, double price, int quantity) {
+		OperationResult result = OperationResult.FAILED;
 		if (category != null) {
+
 			int lastProductId = productController.getLastInsertedProductId();
 			currentBarcode = Utils.generateBarcodeString(lastProductId,
 					category.getId());
 			try {
-				productController
+				result = productController
 						.addProduct(productName, currentProductQuantity, price,
 								category, currentBarcode);
 			} catch (MelanieArgumentException e) {
 				e.printStackTrace(); // Use logger
 			}
-			printBarcode();
-			clearTextFields();
 		}
+		return result;
 	}
 
 	private void clearTextFields() {
@@ -190,8 +203,7 @@ public class AddProductActivity extends Activity {
 		if (isPrinterFound)
 			performPrint();
 		else
-			Toast.makeText(this, R.string.printerNotFound, Toast.LENGTH_LONG)
-					.show();
+			Utils.makeToast(this, R.string.printerNotFound);
 	}
 
 	private boolean canConnectBluetooth() {
@@ -200,9 +212,7 @@ public class AddProductActivity extends Activity {
 
 		bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 		if (bluetoothAdapter == null) {
-			Toast.makeText(getApplicationContext(),
-					R.string.bluetoothNotSupported, Toast.LENGTH_SHORT).show();
-			canConnect = false;
+			Utils.makeToast(this, R.string.bluetoothNotSupported);
 		} else {
 			enableBluetooth();
 			canConnect = true;

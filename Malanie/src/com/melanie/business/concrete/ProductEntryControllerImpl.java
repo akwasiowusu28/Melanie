@@ -9,7 +9,9 @@ import com.melanie.entities.Category;
 import com.melanie.entities.Product;
 import com.melanie.support.MelanieArgumentValidator;
 import com.melanie.support.MelanieDataFactory;
+import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieArgumentException;
+import com.melanie.support.exceptions.MelanieUnImplementedOperationException;
 
 /**
  * This class is the main business controller for the Products subsystem. It
@@ -25,7 +27,7 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 		public static final String EMPTY_CATEGORY_NAME_MSG = "Category name cannot be empty";
 		public static final String CATEGORYNAME = "CategoryName";
 		public static final String PRODUCTNAME = "CategoryName";
-		public static final String BARCODE_NUMBER = "barcode";
+		public static final String BARCODE = "Barcode";
 	}
 
 	private MelanieArgumentValidator argumentValidator;
@@ -51,7 +53,9 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 		if (dataAccess != null)
 		{
 			category = new Category(categoryName);
-			dataAccess.addDataItem(category);
+			 OperationResult result = dataAccess.addDataItem(category);
+			 if(result != OperationResult.SUCCESSFUL)
+				 category = null;
 		}
 		return category;	
 	}
@@ -112,9 +116,9 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 	 *            the selected category of the product
 	 */
 	@Override
-	public void addProduct(String productName, int quantity, double price,
+	public OperationResult addProduct(String productName, int quantity, double price,
 			Category category, String barcode) throws MelanieArgumentException {
-
+		OperationResult result = OperationResult.FAILED;
 		argumentValidator.VerifyNonNull(category);
 		argumentValidator.VerifyNotEmptyString(productName,
 				LocalConstants.EMPTY_PRODUCT_NAME_MSG);
@@ -122,9 +126,9 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 		if (dataAccess != null) {
 			Product product = new Product(productName, quantity, price,
 					category, barcode);
-			dataAccess.addDataItem(product);
+			result = dataAccess.addDataItem(product);
 		}
-
+       return result;
 	}
 
 	/**
@@ -134,8 +138,8 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 	 *            the id of the product to delete
 	 */
 	@Override
-	public void removeProduct(int productId) {
-		dataAccess.deleteDataItem(findProduct(productId));
+	public OperationResult removeProduct(int productId) {
+		return dataAccess.deleteDataItem(findProduct(productId));
 	}
 
 	/**
@@ -176,8 +180,8 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 	 *            the new quantity of the product
 	 */
 	@Override
-	public void updateProductQuantity(String productName, int updateQuantity) {
-		// TODO Auto-generated method stub
+	public OperationResult updateProductQuantity(String productName, int updateQuantity) {
+		throw new MelanieUnImplementedOperationException();
 	}
 
 	/**
@@ -201,8 +205,8 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 	 * @return the found product or null
 	 */
 	@Override
-	public Product findProductByBarcode(String barcodDigits) {
-		return dataAccess.findItemByFieldName(LocalConstants.BARCODE_NUMBER,
-				barcodDigits, Product.class);
+	public Product findProductByBarcode(String barcode) {
+		return dataAccess.findItemByFieldName(LocalConstants.BARCODE,
+				barcode, Product.class);
 	}
 }

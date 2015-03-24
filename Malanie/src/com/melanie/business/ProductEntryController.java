@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.melanie.entities.Category;
 import com.melanie.entities.Product;
+import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieArgumentException;
 
 /**
@@ -22,10 +23,10 @@ import com.melanie.support.exceptions.MelanieArgumentException;
 
 	 List<Category> getAllCategories();
 
-	 void addProduct(String productName, int quantity, double price,
+	 OperationResult addProduct(String productName, int quantity, double price,
 			Category category, String barcode) throws MelanieArgumentException;
 
-	 void removeProduct(int productId);
+	 OperationResult removeProduct(int productId);
 
 	 Product findProduct(int productId);
 
@@ -34,7 +35,7 @@ import com.melanie.support.exceptions.MelanieArgumentException;
 	 Product findProduct(String productName)
 			throws MelanieArgumentException;
 
-	 void updateProductQuantity(String productName, int updateQuantity)
+	 OperationResult updateProductQuantity(String productName, int updateQuantity)
 			throws MelanieArgumentException;
 
 	 int getLastInsertedProductId();

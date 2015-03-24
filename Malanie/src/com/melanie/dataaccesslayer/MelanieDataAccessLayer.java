@@ -3,15 +3,16 @@ package com.melanie.dataaccesslayer;
 import java.util.List;
 
 import com.melanie.dataaccesslayer.datasource.DataSource;
+import com.melanie.support.OperationResult;
 
  public interface MelanieDataAccessLayer {
 	 void initialize(DataSource dataSource);
 
-	 <T> void addDataItem(T dataItem);
+	 <T> OperationResult addDataItem(T dataItem);
 
-	 <T> boolean updateDataItem(T dataItem);
+	 <T> OperationResult updateDataItem(T dataItem);
 
-	 <T> boolean deleteDataItem(T dataItem);
+	 <T> OperationResult deleteDataItem(T dataItem);
 
 	 <T> T findItemById(int itemId, Class<?> itemClass);
 

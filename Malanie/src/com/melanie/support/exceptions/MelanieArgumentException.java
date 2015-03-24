@@ -1,6 +1,6 @@
 package com.melanie.support.exceptions;
 
-public class MelanieArgumentException extends Exception {
+public class MelanieArgumentException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 
 	public MelanieArgumentException(String message) {

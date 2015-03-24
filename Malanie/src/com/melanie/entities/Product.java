@@ -59,11 +59,11 @@ public class Product extends BaseEntity {
 	public void setPrice(double price) {
 		this.price = price;
 	}
-	public String getBarcodeNumber() {
+	public String getBarcode() {
 		return barcode;
 	}
-	public void setBarcodeNumber(String barcodeNumber) {
-		this.barcode = barcodeNumber;
+	public void setBarcode(String barcode) {
+		this.barcode = barcode;
 	}
 	public Category getProductCategory() {
 		return category;

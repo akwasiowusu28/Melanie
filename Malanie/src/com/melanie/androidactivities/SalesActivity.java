@@ -71,6 +71,11 @@ public class SalesActivity extends Activity {
 		}
 	}
 
+	public void launchBarcodeScanner(View view){
+		executorService = Executors.newScheduledThreadPool(2);
+		startBarcodeScanning();
+	}
+	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == SCAN_REQUEST_CODE && resultCode == RESULT_OK
@@ -83,7 +88,7 @@ public class SalesActivity extends Activity {
 	private void recordSalesFromBarcodes(List<String> barcodes) {
 
 		try {
-			sales = salesController.addSales(barcodes);
+			sales.addAll( salesController.addSales(barcodes));
 			Utils.notifyListUpdate(salesListAdapter);
 		} catch (MelanieBusinessException e) {
 			e.printStackTrace(); // log it

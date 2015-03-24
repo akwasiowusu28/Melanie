@@ -28,7 +28,7 @@ public class SalesControllerImpl implements SalesController{
 			// and just increase the quantity sold
 			Sale sale = getExistingSale(barcode);
 			if (sale == null)
-				addNewSale(barcode);
+				addNewSale(barcode.substring(0, barcode.length()-1));
 			else {
 				int quantity = sale.getQuantitySold();
 				sale.setQuantitySold(++quantity);
@@ -51,7 +51,7 @@ public class SalesControllerImpl implements SalesController{
 	private Sale getExistingSale(String barcode) {
 		Sale sale = null;
 		for (Sale existingSale : sales) {
-			if (existingSale.getProduct().getBarcodeNumber().equals(barcode)) {
+			if (existingSale.getProduct().getBarcode().equals(barcode)) {
 				sale = existingSale;
 				break;
 			}
