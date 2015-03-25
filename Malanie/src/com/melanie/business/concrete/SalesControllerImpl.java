@@ -6,29 +6,40 @@ import java.util.List;
 
 import com.melanie.business.ProductEntryController;
 import com.melanie.business.SalesController;
+import com.melanie.dataaccesslayer.MelanieDataAccessLayer;
 import com.melanie.entities.Product;
 import com.melanie.entities.Sale;
 import com.melanie.support.MelanieBusinessFactory;
+import com.melanie.support.MelanieDataFactory;
+import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieBusinessException;
+import com.melanie.support.exceptions.MelanieDataLayerException;
 
-public class SalesControllerImpl implements SalesController{
+public class SalesControllerImpl implements SalesController {
 
 	private ProductEntryController productController;
+	private MelanieDataAccessLayer dataAccess;
 	private List<Sale> sales;
-	
-	public SalesControllerImpl(){
+
+	public SalesControllerImpl() {
 		productController = MelanieBusinessFactory.makeProductEntryController();
+		dataAccess = MelanieDataFactory.makeDataAccess();
 		sales = new ArrayList<Sale>();
 	}
-	
+
 	@Override
-	public List<Sale> addSales(List<String> barcodes) throws MelanieBusinessException{
+	public List<Sale> addSales(List<String> barcodes)
+			throws MelanieBusinessException {
 		for (String barcode : barcodes) {
 			// first check if the list contains a product with the same barcode
 			// and just increase the quantity sold
 			Sale sale = getExistingSale(barcode);
 			if (sale == null)
-				addNewSale(barcode.substring(0, barcode.length()-1));
+				try {
+					addNewSale(barcode.substring(0, barcode.length() - 1));
+				} catch (MelanieBusinessException e) {
+					throw new MelanieBusinessException(e.getMessage(), e);
+				}
 			else {
 				int quantity = sale.getQuantitySold();
 				sale.setQuantitySold(++quantity);
@@ -37,9 +48,12 @@ public class SalesControllerImpl implements SalesController{
 		return sales;
 	}
 
-	private void addNewSale(String barcode) {
+	private void addNewSale(String barcode) throws MelanieBusinessException {
 		Sale sale = new Sale();
-		Product product = productController.findProductByBarcode(barcode);
+		Product product;
+
+		product = productController.findProductByBarcode(barcode);
+
 		if (product != null) {
 			sale.setProduct(product);
 			sale.setSaleDate(new Date());
@@ -47,7 +61,7 @@ public class SalesControllerImpl implements SalesController{
 			sales.add(sale);
 		}
 	}
-	
+
 	private Sale getExistingSale(String barcode) {
 		Sale sale = null;
 		for (Sale existingSale : sales) {
@@ -58,16 +72,22 @@ public class SalesControllerImpl implements SalesController{
 		}
 		return sale;
 	}
-	
-	//@SuppressWarnings("serial")
-//	private List<Sale> stub(){
-//		return new ArrayList<Sale>(){{
-//			for(int i=0; i<6; i++){
-//				Sale sale = new Sale();
-//				sale.setProduct(new Product("Shoe" + i, i*2, i*3, new Category()));
-//				sale.setQuantitySold(i*4);
-//				add(sale);
-//			}
-//		}};
-//	}
+
+	@Override
+	public OperationResult saveCurrentSales() throws MelanieBusinessException {
+		OperationResult result = OperationResult.FAILED;
+		if (dataAccess != null) {
+			for (Sale sale : sales) {
+				try {
+					dataAccess.addDataItem(sale);
+				} catch (MelanieDataLayerException e) {
+					throw new MelanieBusinessException(e.getMessage(), e);
+				}
+			}
+			result = OperationResult.SUCCESSFUL;
+		}
+
+		return result;
+	}
+
 }

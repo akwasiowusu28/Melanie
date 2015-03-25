@@ -5,7 +5,7 @@ import com.melanie.dataaccesslayer.MelanieDataAccessLayerImpl;
 
 public class MelanieDataFactory {
 
-	public static MelanieDataAccessLayer makeDataAccessLayer(){
+	public static MelanieDataAccessLayer makeDataAccess(){
 		return new MelanieDataAccessLayerImpl();
 	}
 }

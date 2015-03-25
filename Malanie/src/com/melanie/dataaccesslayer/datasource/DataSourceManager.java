@@ -36,8 +36,9 @@ public class DataSourceManager {
 	 * 
 	 * @param entityClass an entity class for which a data access object is requested
 	 * @return a data access object
+	 * @throws MelanieDataLayerException 
 	 */
-	public static Dao<Object, Integer> getCachedDaoFor(Class<?> entityClass){
+	public static Dao<Object, Integer> getCachedDaoFor(Class<?> entityClass) throws MelanieDataLayerException{
 		try {
 			return dataSource.getDao(entityClass);
 		} catch (SQLException e) {

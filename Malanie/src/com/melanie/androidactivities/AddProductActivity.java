@@ -18,8 +18,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.SparseIntArray;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -39,6 +37,7 @@ import com.melanie.entities.Category;
 import com.melanie.support.MelanieBusinessFactory;
 import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieArgumentException;
+import com.melanie.support.exceptions.MelanieBusinessException;
 
 public class AddProductActivity extends Activity {
 
@@ -72,7 +71,7 @@ public class AddProductActivity extends Activity {
 
 		initializeFields();
 
-		List<Category> categories = productController.getAllCategories();
+		List<Category> categories = getAllCategories();
 		Spinner categorySpinner = (Spinner) findViewById(R.id.categoriesSpinner);
 		categorySpinner.setAdapter(new ArrayAdapter<Category>(this,
 				android.R.layout.simple_spinner_dropdown_item, categories));
@@ -80,29 +79,20 @@ public class AddProductActivity extends Activity {
 		initializePrinter();
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.add_product, menu);
-		return true;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-		if (id == R.id.action_settings) {
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
-	}
-
 	private void initializeFields() {
 		productController = MelanieBusinessFactory.makeProductEntryController();
 		handler = new Handler();
 		createPrintProgressDialog();
+	}
+
+	private List<Category> getAllCategories() {
+		List<Category> categories = null;
+		try {
+			categories = productController.getAllCategories();
+		} catch (MelanieBusinessException e) {
+			e.printStackTrace(); // log it
+		}
+		return categories;
 	}
 
 	private void createPrintProgressDialog() {
@@ -166,16 +156,16 @@ public class AddProductActivity extends Activity {
 			String productName, double price, int quantity) {
 		OperationResult result = OperationResult.FAILED;
 		if (category != null) {
-
-			int lastProductId = productController.getLastInsertedProductId();
-			currentBarcode = Utils.generateBarcodeString(lastProductId,
-					category.getId());
 			try {
+				int lastProductId = productController
+						.getLastInsertedProductId();
+				currentBarcode = Utils.generateBarcodeString(lastProductId,
+						category.getId());
 				result = productController
 						.addProduct(productName, currentProductQuantity, price,
 								category, currentBarcode);
-			} catch (MelanieArgumentException e) {
-				e.printStackTrace(); // Use logger
+			} catch (MelanieBusinessException e) {
+				e.printStackTrace(); // log it
 			}
 		}
 		return result;

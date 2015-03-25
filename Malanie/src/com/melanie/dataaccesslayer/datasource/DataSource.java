@@ -27,10 +27,14 @@ public class DataSource extends OrmLiteSqliteOpenHelper  {
 
 	@Override
 	public void onCreate(SQLiteDatabase db, ConnectionSource connectionSource) {
-		createTables(connectionSource);
+		try {
+			createTables(connectionSource);
+		} catch (MelanieDataLayerException e) {
+			e.printStackTrace();
+		}
 	}
 
-	private void createTables(ConnectionSource connectionSource){
+	private void createTables(ConnectionSource connectionSource) throws MelanieDataLayerException{
 		
 		List<Class<?>> entityClasses = DataSourceManager.getEntityClasses();
 		for(Class<?> entityClass: entityClasses){
@@ -43,7 +47,7 @@ public class DataSource extends OrmLiteSqliteOpenHelper  {
 		}
 	}
 	
-	private void dropTables(ConnectionSource connectionSource){
+	private void dropTables(ConnectionSource connectionSource) throws MelanieDataLayerException{
 		List<Class<?>> entityClasses = DataSourceManager.getEntityClasses();
 		for(Class<?> entityClass: entityClasses){
 			try {
@@ -58,7 +62,11 @@ public class DataSource extends OrmLiteSqliteOpenHelper  {
 	public void onUpgrade(SQLiteDatabase db, ConnectionSource connectionSource, int oldVersion,
 			int newVersion) {
 		
-		dropTables(connectionSource);
+		try {
+			dropTables(connectionSource);
+		} catch (MelanieDataLayerException e) {
+			e.printStackTrace();
+		}
 		onCreate(db, connectionSource);
 	}
 	

@@ -8,7 +8,7 @@ import com.melanie.support.MelanieDataFactory;
 public class MelanieBusinessImpl implements MelanieBusiness{
 	@Override
 	public void initialize(DataSource dataSource) {
-		MelanieDataAccessLayer dataAccess = MelanieDataFactory.makeDataAccessLayer();
+		MelanieDataAccessLayer dataAccess = MelanieDataFactory.makeDataAccess();
 		if(dataAccess != null){
 			dataAccess.initialize(dataSource);
 		}

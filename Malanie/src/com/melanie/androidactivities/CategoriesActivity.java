@@ -14,7 +14,7 @@ import com.melanie.androidactivities.support.Utils;
 import com.melanie.business.ProductEntryController;
 import com.melanie.entities.Category;
 import com.melanie.support.MelanieBusinessFactory;
-import com.melanie.support.exceptions.MelanieArgumentException;
+import com.melanie.support.exceptions.MelanieBusinessException;
 
 public class CategoriesActivity extends Activity {
 
@@ -32,7 +32,11 @@ public class CategoriesActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_categories);
 
-		categories = productController.getAllCategories();
+		try {
+			categories = productController.getAllCategories();
+		} catch (MelanieBusinessException e) {
+			e.printStackTrace(); // log it
+		}
 		setupListView();
 	}
 
@@ -43,7 +47,8 @@ public class CategoriesActivity extends Activity {
 		View headerView = getLayoutInflater().inflate(
 				R.layout.single_list_header, categoriesListView, false);
 
-		TextView headerTextView = (TextView) headerView.findViewById(R.id.singleListHeader);
+		TextView headerTextView = (TextView) headerView
+				.findViewById(R.id.singleListHeader);
 		headerTextView.setText(getText(R.string.categoriesList));
 		categoriesListView.addHeaderView(headerView);
 
@@ -55,15 +60,16 @@ public class CategoriesActivity extends Activity {
 	public void addCategory(View view) {
 		TextView categoryNameView = (TextView) findViewById(R.id.categoryName);
 		String categoryName = categoryNameView.getText().toString();
-		try {
 
-			Category category = productController.addCategory(categoryName);
+		Category category;
+		try {
+			category = productController.addCategory(categoryName);
 			categories.add(category);
 			Utils.notifyListUpdate(listAdapter);
 			Utils.clearTextFields(categoryNameView);
-
-		} catch (MelanieArgumentException e) {
-			e.printStackTrace();
+		} catch (MelanieBusinessException e) {
+			e.printStackTrace(); //log it
 		}
+
 	}
 }

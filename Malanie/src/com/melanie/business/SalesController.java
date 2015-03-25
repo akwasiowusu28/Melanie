@@ -3,6 +3,7 @@ package com.melanie.business;
 import java.util.List;
 
 import com.melanie.entities.Sale;
+import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieBusinessException;
 
 /**
@@ -12,6 +13,6 @@ import com.melanie.support.exceptions.MelanieBusinessException;
  */
 public interface SalesController {
 
-	List<Sale> addSales(List<String> barcode) throws MelanieBusinessException;
-	
+	List<Sale> addSales(List<String> barcodes) throws MelanieBusinessException;
+	OperationResult saveCurrentSales() throws MelanieBusinessException;
 }
