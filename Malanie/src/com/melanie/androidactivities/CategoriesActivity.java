@@ -66,7 +66,7 @@ public class CategoriesActivity extends Activity {
 			category = productController.addCategory(categoryName);
 			categories.add(category);
 			Utils.notifyListUpdate(listAdapter);
-			Utils.clearTextFields(categoryNameView);
+			Utils.clearInputTextFields(categoryNameView);
 		} catch (MelanieBusinessException e) {
 			e.printStackTrace(); //log it
 		}

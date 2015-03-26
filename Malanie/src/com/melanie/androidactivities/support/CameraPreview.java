@@ -20,7 +20,7 @@ public class CameraPreview extends SurfaceView implements
 		SurfaceHolder.Callback {
 
 	private SurfaceHolder mHolder;
-	private Camera mCamera;
+	private Camera camera;
 	private PreviewCallback previewCallback;
 	private AutoFocusCallback autoFocusCallback;
 
@@ -31,7 +31,7 @@ public class CameraPreview extends SurfaceView implements
 
 		setWillNotDraw(false);
 		
-		mCamera = camera;
+		this.camera = camera;
 		previewCallback = previewCb;
 		autoFocusCallback = autoFocusCb;
 		mHolder = getHolder();
@@ -44,10 +44,10 @@ public class CameraPreview extends SurfaceView implements
 
 	public void surfaceCreated(SurfaceHolder holder) {
 		try {
-			mCamera.setPreviewDisplay(holder);
+			camera.setPreviewDisplay(holder);
 			resetPreviewCallBack();
-			mCamera.startPreview();
-			mCamera.autoFocus(autoFocusCallback);
+			camera.startPreview();
+			camera.autoFocus(autoFocusCallback);
 			
 		} catch (IOException e) {
 			Log.d("DBG", "Error setting camera preview: " + e.getMessage());
@@ -60,11 +60,12 @@ public class CameraPreview extends SurfaceView implements
 
 
 	public void removePreviewCallBack(){
-		mCamera.setPreviewCallback(null);
+		camera.setPreviewCallback(null);
 	}
 	
 	public void resetPreviewCallBack(){
-		mCamera.setPreviewCallback(previewCallback);
+		
+		camera.setPreviewCallback(previewCallback);
 	}
 	
 	public void surfaceChanged(SurfaceHolder holder, int format, int width,
@@ -73,18 +74,18 @@ public class CameraPreview extends SurfaceView implements
 			return;
 		}
 		try {
-			mCamera.stopPreview();
+			camera.stopPreview();
 		} catch (Exception e) {
 			// ignore: tried to stop a non-existent preview
 		}
 
 		try {
-			mCamera.setDisplayOrientation(90);
+			camera.setDisplayOrientation(90);
 
-			mCamera.setPreviewDisplay(mHolder);
+			camera.setPreviewDisplay(mHolder);
 			resetPreviewCallBack();
-			mCamera.startPreview();
-			mCamera.autoFocus(autoFocusCallback);
+			camera.startPreview();
+			camera.autoFocus(autoFocusCallback);
 		} catch (Exception e) {
 			Log.d("DBG", "Error starting camera preview: " + e.getMessage());
 		}

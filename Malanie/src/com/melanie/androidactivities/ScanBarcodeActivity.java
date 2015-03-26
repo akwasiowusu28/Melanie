@@ -44,6 +44,7 @@ public class ScanBarcodeActivity extends Activity {
 	private Handler handler;
 	private List<String> scannedBarcodes;
 	private MediaPlayer mediaPlayer;
+	private boolean isCameraReleased;
 	ImageScanner scanner;
 
 	static {
@@ -72,6 +73,7 @@ public class ScanBarcodeActivity extends Activity {
 	private void initializeFields() {
 		handler = new Handler();
 		scannedBarcodes = new ArrayList<String>();
+		isCameraReleased = false;
 	}
 
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
@@ -198,10 +200,10 @@ public class ScanBarcodeActivity extends Activity {
 			SymbolSet syms = scanner.getResults();
 			for (Symbol sym : syms) {
 				String barcode = sym.getData();
-				if (sym.getType() == Symbol.EAN13) {
+				if (isValidEAN13Barcode(barcode)) {
 					scannedBarcodes.add(barcode);
 					updatePreviewText(barcode);
-					//playBeep();
+					playBeep();
 				}
 				break;
 			}
@@ -211,6 +213,28 @@ public class ScanBarcodeActivity extends Activity {
 			TextView textView = (TextView) findViewById(R.id.barcodeDigitsTextView);
 			textView.setText(barcode);
 		}
+		
+		private boolean isValidEAN13Barcode(String barcode) {
+
+			char[] chars = barcode.toCharArray();
+
+			int sum1 = num(chars[1]) + num(chars[3]) + num(chars[5]);
+			int sum2 = 3 * (num(chars[0]) + num(chars[2]) + num(chars[4]) + num(chars[6]));
+
+			int checksum_value = sum1 + sum2;
+			int checksum_digit = 10 - (checksum_value % 10);
+			if (checksum_digit == 10)
+				checksum_value = 0;
+			
+            int lastDigit = num(chars[barcode.length()-1]); 
+			return lastDigit == checksum_value;
+
+		}
+
+		private int num(char charValue) {
+			return Character.getNumericValue(charValue);
+		}
+		
 	};
 
 	private void resetCameraPreviewCallBack() {
@@ -219,10 +243,10 @@ public class ScanBarcodeActivity extends Activity {
 
 			@Override
 			public void run() {
-
-				cameraPreview.resetPreviewCallBack();
+				if (!isCameraReleased)
+					cameraPreview.resetPreviewCallBack();
 			}
-		}, 1500);
+		}, 900);
 	}
 
 	AutoFocusCallback autoFocusCallBack = new AutoFocusCallback() {
@@ -246,6 +270,7 @@ public class ScanBarcodeActivity extends Activity {
 			camera.setPreviewCallback(null);
 			camera.release();
 			camera = null;
+			isCameraReleased = true;
 		}
 	}
 

@@ -45,7 +45,6 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 					.getClass());
 			if (dao != null) {
 				int insertReturn = dao.create(dataItem);
-		        List<T> ps = (List<T>)dao.queryForAll();
 				if (insertReturn == 1)
 					result = OperationResult.SUCCESSFUL;
 			}

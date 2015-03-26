@@ -59,4 +59,6 @@
     <string name="balance">Balance due:</string>
     <string name="save">Save</string>
     <string name="scanBarcode">Scan barcode</string>
+    <string name="salesSuccess">Sales successfully recorded</string>
+    <string name="salesFailed">Sorry, could not save sales. Please try again</string>
 </resources>

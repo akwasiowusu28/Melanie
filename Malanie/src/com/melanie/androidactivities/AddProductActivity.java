@@ -36,7 +36,6 @@ import com.melanie.business.ProductEntryController;
 import com.melanie.entities.Category;
 import com.melanie.support.MelanieBusinessFactory;
 import com.melanie.support.OperationResult;
-import com.melanie.support.exceptions.MelanieArgumentException;
 import com.melanie.support.exceptions.MelanieBusinessException;
 
 public class AddProductActivity extends Activity {
@@ -159,7 +158,7 @@ public class AddProductActivity extends Activity {
 			try {
 				int lastProductId = productController
 						.getLastInsertedProductId();
-				currentBarcode = Utils.generateBarcodeString(lastProductId,
+				currentBarcode = generateBarcodeString(lastProductId,
 						category.getId());
 				result = productController
 						.addProduct(productName, currentProductQuantity, price,
@@ -171,8 +170,16 @@ public class AddProductActivity extends Activity {
 		return result;
 	}
 
+	private String generateBarcodeString(int lastItemId, int categoryId) {
+		lastItemId++;
+		int trailingZeroes = 12 - String.valueOf(categoryId).length();
+		String format = "%0" + trailingZeroes + "d";
+		String barcodeNumber = categoryId + String.format(format, lastItemId);
+		return barcodeNumber;
+	}
+	
 	private void clearTextFields() {
-		Utils.clearTextFields(findViewById(R.id.productName),
+		Utils.clearInputTextFields(findViewById(R.id.productName),
 				findViewById(R.id.quantity), findViewById(R.id.price));
 	}
 

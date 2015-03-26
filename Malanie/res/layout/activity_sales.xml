@@ -142,7 +142,8 @@
                 android:layout_gravity="right"
                 android:layout_marginTop="7dp"
                 android:layout_toLeftOf="@+id/cancelSale"
-                android:text="@string/save" />
+                android:text="@string/save"
+                android:onClick="saveSales" />
 
             <Button
                 android:id="@+id/cancelSale"
@@ -152,7 +153,8 @@
                 android:layout_gravity="right"
                 android:layout_marginLeft="6dp"
                 android:layout_marginTop="7dp"
-                android:text="@string/cancel" />
+                android:text="@string/cancel"
+                android:onClick="cancelSales" />
         </RelativeLayout>
     </LinearLayout>
 

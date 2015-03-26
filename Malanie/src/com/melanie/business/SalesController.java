@@ -13,6 +13,6 @@ import com.melanie.support.exceptions.MelanieBusinessException;
  */
 public interface SalesController {
 
-	List<Sale> addSales(List<String> barcodes) throws MelanieBusinessException;
+	List<Sale> generateSaleItems(List<String> barcodes) throws MelanieBusinessException;
 	OperationResult saveCurrentSales() throws MelanieBusinessException;
 }

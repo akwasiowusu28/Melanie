@@ -28,7 +28,7 @@ public class SalesControllerImpl implements SalesController {
 	}
 
 	@Override
-	public List<Sale> addSales(List<String> barcodes)
+	public List<Sale> generateSaleItems(List<String> barcodes)
 			throws MelanieBusinessException {
 		for (String barcode : barcodes) {
 			// first check if the list contains a product with the same barcode
@@ -36,7 +36,7 @@ public class SalesControllerImpl implements SalesController {
 			Sale sale = getExistingSale(barcode);
 			if (sale == null)
 				try {
-					addNewSale(barcode.substring(0, barcode.length() - 1));
+					addNewSale(parseBarcodeNoChecksum(barcode));
 				} catch (MelanieBusinessException e) {
 					throw new MelanieBusinessException(e.getMessage(), e);
 				}
@@ -45,7 +45,11 @@ public class SalesControllerImpl implements SalesController {
 				sale.setQuantitySold(++quantity);
 			}
 		}
+		
 		return sales;
+		
+		
+		
 	}
 
 	private void addNewSale(String barcode) throws MelanieBusinessException {
@@ -64,8 +68,9 @@ public class SalesControllerImpl implements SalesController {
 
 	private Sale getExistingSale(String barcode) {
 		Sale sale = null;
+		String barcodeNoChecksum = parseBarcodeNoChecksum(barcode);
 		for (Sale existingSale : sales) {
-			if (existingSale.getProduct().getBarcode().equals(barcode)) {
+			if (existingSale.getProduct().getBarcode().equals(barcodeNoChecksum)) {
 				sale = existingSale;
 				break;
 			}
@@ -90,4 +95,19 @@ public class SalesControllerImpl implements SalesController {
 		return result;
 	}
 
+	private String parseBarcodeNoChecksum(String barcode){
+		return barcode.substring(0, barcode.length() - 1);
+	}
+	
+	//@SuppressWarnings("serial")
+//		private List<Sale> stub(){
+//			return new ArrayList<Sale>(){{
+//				for(int i=0; i<6; i++){
+//					Sale sale = new Sale();
+//					sale.setProduct(new Product("Shoe" + i, i*2, i*3, new Category(), null));
+//					sale.setQuantitySold(i*4);
+//					add(sale);
+//				}
+//			}};
+//		}
 }
