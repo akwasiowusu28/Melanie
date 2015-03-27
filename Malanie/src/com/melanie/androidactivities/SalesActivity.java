@@ -161,12 +161,14 @@ public class SalesActivity extends Activity {
 	}
 
 	private void updateTotalField() {
-		double total = 0;
-		for (Sale sale : sales) {
-			total += (sale.getQuantitySold() * sale.getProduct().getPrice());
+		if (!sales.isEmpty()) {
+			double total = 0;
+			for (Sale sale : sales) {
+				total += (sale.getQuantitySold() * sale.getProduct().getPrice());
+			}
+			TextView totalView = (TextView) findViewById(R.id.totalValue);
+			totalView.setText(String.valueOf(total));
 		}
-		TextView totalView = (TextView) findViewById(R.id.totalValue);
-		totalView.setText(String.valueOf(total));
 	}
 
 	@Override
@@ -208,37 +210,56 @@ public class SalesActivity extends Activity {
 		}
 
 		private void handleDiscountChanged(Editable s) {
-			if (!s.toString().equals("")) {
-				TextView totalTextView = (TextView) findViewById(R.id.totalValue);
-				double total = Double.parseDouble(totalTextView.getText()
-						.toString());
-				total -= Double.parseDouble(s.toString());
+			TextView totalTextView = (TextView) findViewById(R.id.totalValue);
+			double total = Double.parseDouble(totalTextView.getText()
+					.toString());
+			String discountText = ((EditText) findViewById(R.id.discountValue))
+					.getText().toString();
+			if (discountText.equals("")) {
+				updateTotalField();
+				total = Double.parseDouble(totalTextView.getText().toString());
+			} else if (!s.toString().equals("")) {
+				handleDiscountNormalCase(totalTextView, s, total);
+			}
+			evaluateBalanceForDiscountChange(total);
+		}
+
+		private void handleDiscountNormalCase(TextView totalTextView,
+				Editable s, double total) {
+			double discount = Double.parseDouble(s.toString());
+			if (!(discount > total)) {
+				total -= discount;
 				totalTextView.setText(String.valueOf(total));
-				evaluateBalanceForDiscountChange(total);
+			} else {
+				s.clear();
+				updateTotalField();
 			}
 		}
 
-		private void evaluateBalanceForDiscountChange(double total){
-			EditText amountReceivedText = (EditText)findViewById(R.id.amountReceived);
+		private void evaluateBalanceForDiscountChange(double total) {
+			EditText amountReceivedText = (EditText) findViewById(R.id.amountReceived);
 			String amountTextValue = amountReceivedText.getText().toString();
-			if(amountTextValue != "")
+			if (!amountTextValue.equals(""))
 				calculateBalance(Double.parseDouble(amountTextValue), total);
 		}
-		
+
 		private void handleAmountReceivedChanged(Editable s) {
-			if (!s.toString().equals("")) {
-				TextView totalTextView = (TextView) findViewById(R.id.totalValue);
-				double total = Double.parseDouble(totalTextView.getText()
-						.toString());
-				double amountReceived = Double.parseDouble(s.toString());
-				calculateBalance(amountReceived, total);
-			}
+			TextView totalTextView = (TextView) findViewById(R.id.totalValue);
+			double total = Double.parseDouble(totalTextView.getText()
+					.toString());
+			double amountReceived = 0;
+			if (!s.toString().equals(""))
+				amountReceived = Double.parseDouble(s.toString());
+			calculateBalance(amountReceived, total);
 		}
-		
-		private void calculateBalance(double amountReceived, double total){
+
+		private void calculateBalance(double amountReceived, double total) {
 			double balance = amountReceived - total;
-			((TextView) findViewById(R.id.balanceDue)).setText(String
-					.valueOf(balance));
+			TextView balanceTextView = (TextView) findViewById(R.id.balanceDue);
+			if (amountReceived != 0)
+				balanceTextView.setText(String.valueOf(balance));
+			else
+				Utils.resetTextFieldsToZeros(balanceTextView);
 		}
 	};
 

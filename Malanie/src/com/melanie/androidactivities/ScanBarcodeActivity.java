@@ -113,6 +113,8 @@ public class ScanBarcodeActivity extends Activity {
 		scanner = new ImageScanner();
 		scanner.setConfig(0, Config.X_DENSITY, 3);
 		scanner.setConfig(0, Config.Y_DENSITY, 3);
+		scanner.setConfig(Symbol.NONE, Config.ENABLE, 0);
+		scanner.setConfig(Symbol.EAN13, Config.ENABLE, 1);
 	}
 
 	private void loadScannerPreview() {
@@ -200,10 +202,10 @@ public class ScanBarcodeActivity extends Activity {
 			SymbolSet syms = scanner.getResults();
 			for (Symbol sym : syms) {
 				String barcode = sym.getData();
-				if (isValidEAN13Barcode(barcode)) {
+				if (sym.getType() == Symbol.EAN13 && isValidEAN13Barcode(barcode)) {
 					scannedBarcodes.add(barcode);
 					updatePreviewText(barcode);
-					playBeep();
+					//playBeep();
 				}
 				break;
 			}
@@ -218,16 +220,19 @@ public class ScanBarcodeActivity extends Activity {
 
 			char[] chars = barcode.toCharArray();
 
-			int sum1 = num(chars[1]) + num(chars[3]) + num(chars[5]);
-			int sum2 = 3 * (num(chars[0]) + num(chars[2]) + num(chars[4]) + num(chars[6]));
-
-			int checksum_value = sum1 + sum2;
-			int checksum_digit = 10 - (checksum_value % 10);
-			if (checksum_digit == 10)
-				checksum_value = 0;
+			int sum = 0;
+			for(int i = chars.length - 2; i >=0; i--){
+				if((i & 1) ==1)
+					sum+= num(chars[i]) * 3;
+				else
+					sum+=num(chars[i]);
+					
+			}
+			int mod10ofSum = sum % 10;
+			int checksum_digit = mod10ofSum > 0 ? 10 - (sum % 10) : 0;
 			
             int lastDigit = num(chars[barcode.length()-1]); 
-			return lastDigit == checksum_value;
+			return lastDigit == checksum_digit;
 
 		}
 
@@ -250,6 +255,7 @@ public class ScanBarcodeActivity extends Activity {
 	}
 
 	AutoFocusCallback autoFocusCallBack = new AutoFocusCallback() {
+		@Override
 		public void onAutoFocus(boolean success, Camera camera) {
 			handler.postDelayed(doAutoFocus, 1000);
 		}

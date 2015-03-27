@@ -19,6 +19,11 @@ public class Customer extends BaseEntity {
 
 	public Customer(){}
 	
+	public Customer(String name, String phoneNumber){
+		this.name = name;
+		this.phoneNumber = phoneNumber;
+	}
+	
 	public String getName() {
 		return name;
 	}

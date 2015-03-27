@@ -5,7 +5,6 @@ import java.util.List;
 import com.melanie.entities.Category;
 import com.melanie.entities.Product;
 import com.melanie.support.OperationResult;
-import com.melanie.support.exceptions.MelanieArgumentException;
 import com.melanie.support.exceptions.MelanieBusinessException;
 
 /**

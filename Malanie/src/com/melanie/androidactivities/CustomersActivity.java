@@ -1,34 +1,45 @@
 package com.melanie.androidactivities;
 
-import android.support.v7.app.ActionBarActivity;
-import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
+import com.melanie.androidactivities.support.Utils;
+import com.melanie.business.CustomersController;
+import com.melanie.support.MelanieBusinessFactory;
+import com.melanie.support.OperationResult;
+import com.melanie.support.exceptions.MelanieBusinessException;
 
-public class CustomersActivity extends ActionBarActivity {
+import android.app.Activity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.EditText;
+
+public class CustomersActivity extends Activity {
+
+	private CustomersController customersController;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_customers);
+		initializeFields();
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.customers, menu);
-		return true;
+	private void initializeFields() {
+		customersController = MelanieBusinessFactory.makeCustomersController();
 	}
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-		if (id == R.id.action_settings) {
-			return true;
+	public void addCustomer(View view) {
+		EditText customerNameView = (EditText) findViewById(R.id.customerName);
+		EditText phoneNumberView = (EditText) findViewById(R.id.phoneNumber);
+		OperationResult result = OperationResult.FAILED;
+		try {
+			result = customersController
+					.addNewCustomer(customerNameView.getText().toString(),
+							phoneNumberView.getText().toString());
+
+		} catch (MelanieBusinessException e) {
+			e.printStackTrace(); // Log it
 		}
-		return super.onOptionsItemSelected(item);
+		Utils.makeToastBasedOnOperationResult(this, result,
+				R.string.addCustomerSuccess, R.string.addCustomerFailed);
+		Utils.clearInputTextFields(customerNameView,phoneNumberView);
 	}
 }

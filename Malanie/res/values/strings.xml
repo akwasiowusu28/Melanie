@@ -49,7 +49,7 @@
     <string name="doneText">Done</string>
     <string name="lastScan">last scan:</string>
     <string name="zeros">0000000000000</string>
-    <string name="saleItemName">Name</string>
+    <string name="name">Name</string>
     <string name="qty">Qty</string>
     <string name="each">Each</string>
     <string name="total">Total</string>
@@ -60,5 +60,11 @@
     <string name="save">Save</string>
     <string name="scanBarcode">Scan barcode</string>
     <string name="salesSuccess">Sales successfully recorded</string>
+    <string name="phoneNumber">Phone number:</string>
     <string name="salesFailed">Sorry, could not save sales. Please try again</string>
+    <string name="phoneHint">111&#8211;111&#8211;1111</string>
+    <string name="customerNameHint">Eg. Ada Lovelace</string>
+    <string name="nameWithColon">Name:</string>
+    <string name="addCustomerFailed">Sorry. Could not add the customer. Please try again</string>
+    <string name="addCustomerSuccess">Customer added successfully!</string>
 </resources>
