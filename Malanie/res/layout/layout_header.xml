@@ -17,6 +17,6 @@
         android:layout_width="fill_parent"
         android:layout_height="3.5dp"
         android:layout_alignParentBottom="true"
-        android:background="#CF5300" />
+        android:background="#FF6600" />
 
 </RelativeLayout>

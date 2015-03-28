@@ -6,6 +6,7 @@ import android.util.SparseArray;
 import com.melanie.androidactivities.AddProductActivity;
 import com.melanie.androidactivities.CategoriesActivity;
 import com.melanie.androidactivities.CustomersActivity;
+import com.melanie.androidactivities.PaymentActivity;
 import com.melanie.androidactivities.ProductsMainActivity;
 import com.melanie.androidactivities.R;
 import com.melanie.androidactivities.ReportsActivity;
@@ -28,7 +29,11 @@ public class NavigationHelper {
 	 **/
 	public static Integer[] getMainPageIcons() {
 		return new Integer[] { R.drawable.product, R.drawable.sale,
-				R.drawable.customer, R.drawable.report, R.drawable.settings };
+				R.drawable.customer, R.drawable.report, R.drawable.settings,
+				
+		 /*****/
+				R.drawable.emptycart
+		};
 	}
 
 	/**
@@ -37,7 +42,13 @@ public class NavigationHelper {
 	 */
 	public static Integer[] getMainPageNavigationItems() {
 		return new Integer[] { R.string.products, R.string.sales,
-				R.string.customers, R.string.reports, R.string.Settings };
+				R.string.customers, R.string.reports, 
+				
+				R.string.Settings,
+				
+				/*******/
+				R.string.title_activity_payment,
+		};
 	}
 
 	/**
@@ -47,7 +58,11 @@ public class NavigationHelper {
 	public static Integer[] getMainPageNavigationDescription() {
 		return new Integer[] { R.string.productsDesc, R.string.salesDesc,
 				R.string.customersDesc, R.string.reportsDesc,
-				R.string.SettingsDesc };
+				R.string.SettingsDesc,
+				
+		/*****/
+				R.string.title_activity_payment
+		};
 	}
 
 	/**
@@ -63,6 +78,7 @@ public class NavigationHelper {
 				append(2, CustomersActivity.class);
 				append(3, ReportsActivity.class);
 				append(4,SettingsActivity.class);
+				append(5,PaymentActivity.class);
 			}
 		};
 	}

@@ -25,7 +25,7 @@
 
     <uses-sdk
         android:minSdkVersion="9"
-        android:targetSdkVersion="22" />
+        android:targetSdkVersion="21" />
 
     <application
         android:allowBackup="true"
@@ -86,6 +86,13 @@
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.melanie.androidactivities.MainActivity" />
+        </activity>
+        <activity
+            android:name=".PaymentActivity"
+            android:label="@string/title_activity_payment" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.melanie.androidactivities.MainActivity" />

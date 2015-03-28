@@ -5,7 +5,7 @@
     <string name="category_name">Category Name:</string>
     <string name="categories">Categories</string>
     <string name="action_settings">Settings</string>
-    <string name="enterCategoryName">Enter category name</string>
+    <string name="enterCategoryName">Eg. Poetry works</string>
     <string name="add">Add</string>
     <string name="addSuccessful">\s added successfully</string>
     <string name="categoriesList">Product categories</string>
@@ -14,8 +14,8 @@
     <string name="title_activity_products">Products</string>
     <string name="products">Products</string>
     <string name="productsDesc">View or add categories and products</string>
-    <string name ="productAddSuccessful">Product successfully added</string>
-    <string name ="productAddFailed">Sorry. Could not add the product</string>
+    <string name="productAddSuccessful">Product successfully added</string>
+    <string name="productAddFailed">Sorry. Could not add the product</string>
     <string name="sales">Sales</string>
     <string name="salesDesc">Record sales</string>
     <string name="customersDesc">View or add customer information</string>
@@ -31,7 +31,7 @@
     <string name="productName">Product name:</string>
     <string name="Quantity">Quantity:</string>
     <string name="Price">Price:</string>
-    <string name="productNameHint">Enter name of product</string>
+    <string name="productNameHint">Eg. Only the polished skeleton</string>
     <string name="productQuantityHint">Enter quantity of product</string>
     <string name="amountZeroes">0.00</string>
     <string name="bluetoothNotSupported">Bluetooth is not supported on this device</string>
@@ -63,8 +63,11 @@
     <string name="phoneNumber">Phone number:</string>
     <string name="salesFailed">Sorry, could not save sales. Please try again</string>
     <string name="phoneHint">111&#8211;111&#8211;1111</string>
-    <string name="customerNameHint">Eg. Ada Lovelace</string>
+    <string name="customerNameHint">Eg. Countee Cullen</string>
     <string name="nameWithColon">Name:</string>
     <string name="addCustomerFailed">Sorry. Could not add the customer. Please try again</string>
     <string name="addCustomerSuccess">Customer added successfully!</string>
+    <string name="title_activity_payment">PaymentActivity</string>
+    <string name="customerName">Customer name:</string>
+
 </resources>

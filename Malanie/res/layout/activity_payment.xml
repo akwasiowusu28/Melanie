@@ -4,7 +4,8 @@
     android:layout_height="match_parent"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    tools:context="com.melanie.androidactivities.SalesActivity" >
+    android:orientation="vertical"
+    tools:context="com.melanie.androidactivities.CustomersActivity" >
 
     <include
         android:id="@+id/header"
@@ -13,16 +14,37 @@
         android:layout_alignParentTop="true"
         layout="@layout/layout_header" />
 
+    <TextView
+        android:id="@+id/customerFindLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/header"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:text="@string/customerName" />
+
+    <AutoCompleteTextView
+        android:id="@+id/customerFind"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/customerFindLabel"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:inputType="textPersonName" />
+
      <ListView
         android:id="@+id/salesListView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/salesAggregatesContainer"
-        android:layout_below="@id/header"
-        android:choiceMode="none" />
-     
-    <LinearLayout
-        android:id="@+id/salesAggregatesContainer"
+        android:layout_below="@id/customerFind"
+        android:choiceMode="none"
+        android:layout_above="@+id/paymentsAggregatesContainer"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp" />
+ 
+     <LinearLayout
+        android:id="@+id/paymentsAggregatesContainer"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -59,23 +81,6 @@
         <RelativeLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content" >
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/discountLabel"
-                android:layout_alignParentLeft="true" />
-
-            <EditText
-                android:layout_alignParentRight="true"
-                android:id="@+id/discountValue"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ellipsize="start"
-                android:gravity="right"
-                android:hint="@string/amountZeroes"
-                android:inputType="numberDecimal"
-                android:textSize="18sp" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -130,18 +135,7 @@
         <RelativeLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:gravity="fill_horizontal" >
-
-            <ImageButton
-                android:id="@+id/scanBarcodeImgButton"
-                android:layout_width="80dp"
-                android:layout_height="48dp"
-                android:layout_alignParentLeft="true"
-                android:layout_gravity="left"
-                android:layout_marginTop="7dp"
-                android:contentDescription="@string/scanBarcode"
-                android:src="@drawable/barcodeicon"
-                android:onClick="launchBarcodeScanner" />
+            android:gravity="right" >
 
             <Button
                 android:id="@+id/saveSale"
@@ -157,12 +151,13 @@
                 android:id="@+id/cancelSale"
                 android:layout_width="80dp"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
                 android:layout_gravity="right"
                 android:layout_marginLeft="6dp"
+                android:layout_alignParentRight="true"
                 android:layout_marginTop="7dp"
                 android:text="@string/cancel"
                 android:onClick="cancelSales" />
         </RelativeLayout>
     </LinearLayout>
+    
 </RelativeLayout>

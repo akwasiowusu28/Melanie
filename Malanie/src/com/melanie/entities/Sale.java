@@ -26,6 +26,9 @@ public class Sale extends BaseEntity {
 	@DatabaseField
 	private double discount;
 
+	@DatabaseField(canBeNull= true, foreign = true)
+	private Customer customer;
+	
 	public Sale() {
 		super();
 	}
@@ -60,6 +63,14 @@ public class Sale extends BaseEntity {
 
 	public void setQuantitySold(int quantitySold) {
 		this.quantitySold = quantitySold;
+	}
+
+	public Customer getCustomer() {
+		return customer;
+	}
+
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
 	}
 
 }
