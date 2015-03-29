@@ -11,14 +11,13 @@ import android.widget.TextView;
 
 import com.melanie.androidactivities.R;
 
-public class SingleTextViewListAdapter<T> extends ArrayAdapter<T>{
+public class MelanieSingleTextListAdapter<T> extends ArrayAdapter<T> {
 
 	private Context context;
 	private int resource;
 	private List<T> items;
-	
-	public SingleTextViewListAdapter(Context context,
-			List<T> items) {
+
+	public MelanieSingleTextListAdapter(Context context, List<T> items) {
 		super(context, R.layout.layout_single_textview, items);
 		this.context = context;
 		this.resource = R.layout.layout_single_textview;
@@ -27,12 +26,12 @@ public class SingleTextViewListAdapter<T> extends ArrayAdapter<T>{
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		
+
 		LayoutInflater inflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		
+
 		View rowView = convertView;
-		
+
 		if (rowView == null) {
 			ViewHolder viewHolder = null;
 			viewHolder = new ViewHolder();
@@ -42,14 +41,13 @@ public class SingleTextViewListAdapter<T> extends ArrayAdapter<T>{
 					.findViewById(R.id.singleTextViewForListView);
 			rowView.setTag(viewHolder);
 		}
-		
+
 		T item = items.get(position);
-		if(item != null){
-			ViewHolder viewHolder = (ViewHolder)rowView.getTag();
+		if (item != null) {
+			ViewHolder viewHolder = (ViewHolder) rowView.getTag();
 			viewHolder.itemTextView.setText(item.toString());
 		}
-		
-		
+
 		return rowView;
 	}
 

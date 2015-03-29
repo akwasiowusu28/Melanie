@@ -9,7 +9,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.melanie.androidactivities.support.SingleTextViewListAdapter;
+import com.melanie.androidactivities.support.MelanieSingleTextListAdapter;
 import com.melanie.androidactivities.support.Utils;
 import com.melanie.business.ProductEntryController;
 import com.melanie.entities.Category;
@@ -52,7 +52,7 @@ public class CategoriesActivity extends Activity {
 		headerTextView.setText(getText(R.string.categoriesList));
 		categoriesListView.addHeaderView(headerView);
 
-		listAdapter = new SingleTextViewListAdapter<Category>(this, categories);
+		listAdapter = new MelanieSingleTextListAdapter<Category>(this, categories);
 
 		categoriesListView.setAdapter(listAdapter);
 	}

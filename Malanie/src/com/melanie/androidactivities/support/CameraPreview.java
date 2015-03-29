@@ -24,13 +24,12 @@ public class CameraPreview extends SurfaceView implements
 	private PreviewCallback previewCallback;
 	private AutoFocusCallback autoFocusCallback;
 
-	
 	public CameraPreview(Context context, Camera camera,
 			PreviewCallback previewCb, AutoFocusCallback autoFocusCb) {
 		super(context);
 
 		setWillNotDraw(false);
-		
+
 		this.camera = camera;
 		previewCallback = previewCb;
 		autoFocusCallback = autoFocusCb;
@@ -38,41 +37,42 @@ public class CameraPreview extends SurfaceView implements
 		mHolder.addCallback(this);
 
 		// deprecated setting, but required on Android versions prior to 3.0
-		if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB)
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB)
 			mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 	}
 
+	@Override
 	public void surfaceCreated(SurfaceHolder holder) {
 		try {
 			camera.setPreviewDisplay(holder);
 			resetPreviewCallBack();
 			camera.startPreview();
 			camera.autoFocus(autoFocusCallback);
-			
+
 		} catch (IOException e) {
 			Log.d("DBG", "Error setting camera preview: " + e.getMessage());
 		}
 	}
 
+	@Override
 	public void surfaceDestroyed(SurfaceHolder holder) {
 		// Camera preview released in activity
 	}
 
-
-	public void removePreviewCallBack(){
+	public void removePreviewCallBack() {
 		camera.setPreviewCallback(null);
 	}
-	
-	public void resetPreviewCallBack(){
-		
+
+	public void resetPreviewCallBack() {
+
 		camera.setPreviewCallback(previewCallback);
 	}
-	
+
+	@Override
 	public void surfaceChanged(SurfaceHolder holder, int format, int width,
 			int height) {
-		if (mHolder.getSurface() == null) {
+		if (mHolder.getSurface() == null)
 			return;
-		}
 		try {
 			camera.stopPreview();
 		} catch (Exception e) {

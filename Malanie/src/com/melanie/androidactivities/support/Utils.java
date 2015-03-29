@@ -3,12 +3,8 @@ package com.melanie.androidactivities.support;
 import android.content.Context;
 import android.os.Handler;
 import android.view.View;
-import android.view.ViewGroup.LayoutParams;
-import android.view.animation.Animation;
-import android.view.animation.Transformation;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,6 +17,12 @@ import com.melanie.support.OperationResult;
  *         functions used across multiple activities
  */
 public final class Utils {
+
+	public static class Costants {
+		public static final String CustomerId = "CustomerId";
+		public static final String BARCODES = "barcodes";
+		public static final String EMPTY_STRING = "";
+	}
 
 	private static final Handler handler = new Handler();
 
@@ -45,10 +47,9 @@ public final class Utils {
 	 * @param views
 	 */
 	public static void clearInputTextFields(View... views) {
-		for (View view : views) {
+		for (View view : views)
 			if (view instanceof EditText)
 				((EditText) view).setText("");
-		}
 
 	}
 
@@ -59,12 +60,11 @@ public final class Utils {
 	 *            The views to reset
 	 */
 	public static void resetTextFieldsToZeros(View... views) {
-		for (View view : views) {
+		for (View view : views)
 			if (view instanceof EditText)
 				((EditText) view).setText(R.string.amountZeroes);
 			else if (view instanceof TextView)
 				((TextView) view).setText(R.string.amountZeroes);
-		}
 	}
 
 	/**
@@ -101,91 +101,5 @@ public final class Utils {
 	public static void makeToast(Context context, int stringId) {
 		Toast.makeText(context, R.string.printerNotFound, Toast.LENGTH_LONG)
 				.show();
-	}
-
-	/**
-	 * Expand a view with a stretch downward animation
-	 * 
-	 * @param view
-	 *            The view to expand
-	 */
-	public static void expandView(final View view) {
-		view.measure(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-		final int targetHeight = view.getMeasuredHeight();
-
-		view.getLayoutParams().height = 0;
-		view.setVisibility(View.VISIBLE);
-		Animation a = new Animation() {
-			@Override
-			protected void applyTransformation(float interpolatedTime,
-					Transformation t) {
-				view.getLayoutParams().height = interpolatedTime == 1 ? LayoutParams.WRAP_CONTENT
-						: (int) (targetHeight * interpolatedTime);
-				view.requestLayout();
-			}
-
-			@Override
-			public boolean willChangeBounds() {
-				return true;
-			}
-		};
-
-		// 1dp/ms
-		a.setDuration((int) (targetHeight / view.getContext().getResources()
-				.getDisplayMetrics().density));
-		view.startAnimation(a);
-	}
-
-	/**
-	 * Collapse a stretched view
-	 * 
-	 * @param view
-	 *            The view to collapse
-	 */
-	public static void collapseView(final View view) {
-		final int initialHeight = view.getMeasuredHeight();
-
-		Animation a = new Animation() {
-			@Override
-			protected void applyTransformation(float interpolatedTime,
-					Transformation t) {
-				if (interpolatedTime == 1) {
-					view.setVisibility(View.GONE);
-				} else {
-					view.getLayoutParams().height = initialHeight
-							- (int) (initialHeight * interpolatedTime);
-					view.requestLayout();
-				}
-			}
-
-			@Override
-			public boolean willChangeBounds() {
-				return true;
-			}
-		};
-
-		// 1dp/ms
-		a.setDuration((int) (initialHeight / view.getContext().getResources()
-				.getDisplayMetrics().density));
-		view.startAnimation(a);
-	}
-
-	/**
-	 * To align or unalign a view to a RelativeLayout's bottom
-	 * 
-	 * @param view
-	 *            The view to align
-	 * @param isAlignToBottom
-	 *            flag to determine whether to align to bottom or not
-	 */
-	public static void AlignOrUnalignViewToParentBottom(View view,
-			boolean isAlignToBottom) {
-
-		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
-				view.getLayoutParams());
-
-		params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM,
-				isAlignToBottom ? RelativeLayout.TRUE : 0);
-		view.setLayoutParams(params);
 	}
 }

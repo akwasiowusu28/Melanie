@@ -16,24 +16,32 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.melanie.androidactivities.support.MelanieAlertDialog;
+import com.melanie.androidactivities.support.MelanieAlertDialog.MelanieAlertDialogButtonModes;
 import com.melanie.androidactivities.support.SalesListViewAdapter;
 import com.melanie.androidactivities.support.Utils;
+import com.melanie.business.CustomersController;
 import com.melanie.business.SalesController;
-import com.melanie.business.concrete.SalesControllerImpl;
+import com.melanie.entities.Customer;
 import com.melanie.entities.Sale;
+import com.melanie.support.MelanieBusinessFactory;
 import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieBusinessException;
 
 public class SalesActivity extends Activity {
 
 	private static final int SCAN_REQUEST_CODE = 28;
-	private static final String BARCODE_LIST = "barcodes";
+	private static final int CUSTOMER_REQUES_CODE = 288;
+
 	private List<Sale> sales;
 	private SalesController salesController;
+	private CustomersController customersController;
 	private ScheduledExecutorService executorService;
 	private SalesListViewAdapter salesListAdapter;
 	private TextListener discountListener;
 	private TextListener amountListener;
+	private MelanieAlertDialog alertDialog;
+	private double balance;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +52,7 @@ public class SalesActivity extends Activity {
 		setupSalesListView();
 		startBarcodeScanning();
 		setupTextChangedListeners();
+		setupAlertDialog();
 	}
 
 	private void setupSalesListView() {
@@ -61,16 +70,46 @@ public class SalesActivity extends Activity {
 
 	private void initializeFields() {
 		executorService = Executors.newScheduledThreadPool(2);
-		salesController = new SalesControllerImpl();
+		salesController = MelanieBusinessFactory.makeSalesController();
 		sales = new ArrayList<Sale>();
 		salesListAdapter = new SalesListViewAdapter(this, sales);
 		discountListener = new TextListener(R.id.discountValue);
 		amountListener = new TextListener(R.id.amountReceived);
+		customersController = MelanieBusinessFactory.makeCustomersController();
+		balance = 0;
+	}
 
+	private void setupAlertDialog() {
+		alertDialog = makeAlertDialog();
+		alertDialog.setTitle(getString(R.string.creditSaleAlertTitle));
+		alertDialog.setMessage(getString(R.string.creditSaleAlertMessage));
+		alertDialog.create();
+	}
+
+	private MelanieAlertDialog makeAlertDialog() {
+		return new MelanieAlertDialog(this,
+				MelanieAlertDialogButtonModes.YES_NO_CANCEL,
+				new MelanieAlertDialog.ButtonMethods() {
+
+					@Override
+					public void yesButtonOperation() {
+						startCustomerActivity();
+					}
+
+					@Override
+					public void noButtonOperation() {
+						performSave();
+					}
+				});
+	}
+
+	private void startCustomerActivity() {
+		Intent intent = new Intent(this, CustomersActivity.class);
+		startActivityForResult(intent, CUSTOMER_REQUES_CODE);
 	}
 
 	private void startBarcodeScanning() {
-		if (!executorService.isShutdown()) {
+		if (!executorService.isShutdown())
 			executorService.schedule(new Runnable() {
 				@Override
 				public void run() {
@@ -79,7 +118,6 @@ public class SalesActivity extends Activity {
 					startActivityForResult(intent, SCAN_REQUEST_CODE);
 				}
 			}, 100, TimeUnit.MILLISECONDS);
-		}
 	}
 
 	private void setupTextChangedListeners() {
@@ -98,18 +136,34 @@ public class SalesActivity extends Activity {
 	}
 
 	public void saveSales(View view) {
+
+		TextView balanceTextView = (TextView) findViewById(R.id.balanceDue);
+		String balanceString = balanceTextView.getText().toString();
+		if (!balanceString.equals(Utils.Costants.EMPTY_STRING))
+			balance = Double.parseDouble(balanceString);
+		if (balance < 0)
+			alertDialog.show();
+		else
+			performSave();
+	}
+
+	public void cancelSales(View view) {
+		// Maybe show a message for confirmation
+		resetAll();
+	}
+
+	private void performSave() {
 		try {
 			OperationResult result = salesController.saveCurrentSales();
-			Utils.makeToastBasedOnOperationResult(this, result,
-					R.string.salesSuccess, R.string.salesFailed);
-			resetAll();
+			updateUIAfterSave(result);
 		} catch (MelanieBusinessException e) {
 			e.printStackTrace(); // log it
 		}
 	}
 
-	public void cancelSales(View view) {
-		// Maybe show a message for confirmation
+	private void updateUIAfterSave(OperationResult result) {
+		Utils.makeToastBasedOnOperationResult(this, result,
+				R.string.salesSuccess, R.string.salesFailed);
 		resetAll();
 	}
 
@@ -140,11 +194,34 @@ public class SalesActivity extends Activity {
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == SCAN_REQUEST_CODE && resultCode == RESULT_OK
-				&& data != null) {
-			List<String> barcodes = data.getStringArrayListExtra(BARCODE_LIST);
-			recordSalesFromBarcodes(barcodes);
-		}
+		int customerId = -1;
+		if (resultCode == RESULT_OK && data != null)
+			if (requestCode == SCAN_REQUEST_CODE) {
+				List<String> barcodes = data
+						.getStringArrayListExtra(Utils.Costants.BARCODES);
+				recordSalesFromBarcodes(barcodes);
+			} else if (requestCode == CUSTOMER_REQUES_CODE) {
+				customerId = data.getIntExtra(Utils.Costants.CustomerId,
+						customerId);
+				saveCreditSaleWithCustomer(customerId);
+			}
+	}
+
+	private void saveCreditSaleWithCustomer(int customerId) {
+		Customer customer = null;
+		if (customersController != null)
+			try {
+				customer = customersController.findCustomer(customerId);
+				if (customer != null) {
+					for (Sale sale : sales)
+						sale.setCustomer(customer);
+					customer.setAmountOwed(balance);
+				}
+
+				performSave();
+			} catch (MelanieBusinessException e) {
+				e.printStackTrace(); // log it
+			}
 	}
 
 	private void recordSalesFromBarcodes(List<String> barcodes) {
@@ -163,9 +240,8 @@ public class SalesActivity extends Activity {
 	private void updateTotalField() {
 		if (!sales.isEmpty()) {
 			double total = 0;
-			for (Sale sale : sales) {
+			for (Sale sale : sales)
 				total += (sale.getQuantitySold() * sale.getProduct().getPrice());
-			}
 			TextView totalView = (TextView) findViewById(R.id.totalValue);
 			totalView.setText(String.valueOf(total));
 		}
@@ -189,24 +265,19 @@ public class SalesActivity extends Activity {
 		@Override
 		public void onTextChanged(CharSequence s, int start, int before,
 				int count) {
-			// TODO Auto-generated method stub
-
 		}
 
 		@Override
 		public void beforeTextChanged(CharSequence s, int start, int count,
 				int after) {
-			// TODO Auto-generated method stub
-
 		}
 
 		@Override
 		public void afterTextChanged(Editable s) {
-			if (senderTextViewId == R.id.discountValue) {
+			if (senderTextViewId == R.id.discountValue)
 				handleDiscountChanged(s);
-			} else if (senderTextViewId == R.id.amountReceived) {
+			else if (senderTextViewId == R.id.amountReceived)
 				handleAmountReceivedChanged(s);
-			}
 		}
 
 		private void handleDiscountChanged(Editable s) {
@@ -218,9 +289,8 @@ public class SalesActivity extends Activity {
 			if (discountText.equals("")) {
 				updateTotalField();
 				total = Double.parseDouble(totalTextView.getText().toString());
-			} else if (!s.toString().equals("")) {
+			} else if (!s.toString().equals(""))
 				handleDiscountNormalCase(totalTextView, s, total);
-			}
 			evaluateBalanceForDiscountChange(total);
 		}
 

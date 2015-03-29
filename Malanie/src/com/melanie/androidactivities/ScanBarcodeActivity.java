@@ -34,10 +34,9 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.melanie.androidactivities.support.CameraPreview;
+import com.melanie.androidactivities.support.Utils;
 
 public class ScanBarcodeActivity extends Activity {
-
-	private static final String BARCODE_LIST = "barcodes";
 
 	private Camera camera;
 	private CameraPreview cameraPreview;
@@ -162,7 +161,7 @@ public class ScanBarcodeActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				Intent intent = getIntent();
-				intent.putStringArrayListExtra(BARCODE_LIST,
+				intent.putStringArrayListExtra(Utils.Costants.BARCODES,
 						new ArrayList<String>(scannedBarcodes));
 				setResult(RESULT_OK, intent);
 				finish();

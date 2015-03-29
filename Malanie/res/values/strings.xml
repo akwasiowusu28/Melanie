@@ -69,5 +69,9 @@
     <string name="addCustomerSuccess">Customer added successfully!</string>
     <string name="title_activity_payment">PaymentActivity</string>
     <string name="customerName">Customer name:</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="creditSaleAlertTitle">Credit Sale</string>
+    <string name="creditSaleAlertMessage">Amount received not enough. Would you like to record this sale for a customer?</string>
 
 </resources>

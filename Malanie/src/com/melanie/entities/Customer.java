@@ -1,5 +1,6 @@
 package com.melanie.entities;
 
+import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 /**
@@ -11,10 +12,13 @@ import com.j256.ormlite.table.DatabaseTable;
 @DatabaseTable
 public class Customer extends BaseEntity {
 	
+	@DatabaseField
 	private String name;
 	
+	@DatabaseField
 	private String phoneNumber;
 	
+	@DatabaseField
 	private double amountOwed;
 
 	public Customer(){}
@@ -46,6 +50,11 @@ public class Customer extends BaseEntity {
 
 	public void setAmountOwed(double amountOwed) {
 		this.amountOwed = amountOwed;
+	}
+
+	@Override
+	public String toString() {
+		return this.name;
 	}
 
 }
