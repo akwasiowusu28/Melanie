@@ -23,6 +23,7 @@ import com.melanie.business.SalesController;
 import com.melanie.entities.Customer;
 import com.melanie.entities.Sale;
 import com.melanie.support.MelanieBusinessFactory;
+import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieBusinessException;
 
 public class PaymentActivity extends Activity {
@@ -57,7 +58,7 @@ public class PaymentActivity extends Activity {
 		MelanieSingleTextListAdapter<Customer> customersAdapter = new MelanieSingleTextListAdapter<Customer>(
 				this, customers);
 
-		AutoCompleteTextView customerNameTextView = (AutoCompleteTextView) findViewById(R.id.customerName);
+		AutoCompleteTextView customerNameTextView = (AutoCompleteTextView) findViewById(R.id.customerFind);
 		customerNameTextView.setAdapter(customersAdapter);
 		customerNameTextView.setOnItemClickListener(autoCompleteListener);
 	}
@@ -74,7 +75,8 @@ public class PaymentActivity extends Activity {
 
 	private void updateSalesBasedOnSelectedAutoComplete() {
 		try {
-			sales = salesController.findSalesByCustomer(selectedCustomer);
+			sales.clear();
+			sales.addAll(salesController.findSalesByCustomer(selectedCustomer));
 			Utils.notifyListUpdate(salesListAdapter);
 		} catch (MelanieBusinessException e) {
 			e.printStackTrace(); // log it
@@ -82,7 +84,7 @@ public class PaymentActivity extends Activity {
 	}
 
 	private void setupAmountTextChangedListener() {
-		EditText amountReceivedText = (EditText) findViewById(R.id.amountReceived);
+		EditText amountReceivedText = (EditText) findViewById(R.id.paidAmount);
 		amountReceivedText.addTextChangedListener(amountTextChangedListener);
 	}
 
@@ -114,6 +116,51 @@ public class PaymentActivity extends Activity {
 			TextView totalView = (TextView) findViewById(R.id.totalValue);
 			totalView.setText(String.valueOf(total));
 		}
+	}
+
+	public void savePayment(View view) {
+		String amountReceivedString = ((EditText) findViewById(R.id.amountReceived))
+				.getText().toString();
+		String balanceString = ((TextView) findViewById(R.id.balanceDue))
+				.getText().toString();
+
+		double balance = 0, amountReceived = 0;
+
+		if (!amountReceivedString.equals(Utils.Costants.EMPTY_STRING))
+			amountReceived = Double.parseDouble(amountReceivedString);
+
+		if (!balanceString.equals(Utils.Costants.EMPTY_STRING))
+			balance = Double.parseDouble(balanceString);
+
+		OperationResult result = savePayment(amountReceived, balance);
+
+		Utils.makeToastBasedOnOperationResult(this, result,
+				R.string.paymentSuccess, R.string.paymentFailed);
+		resetAll();
+	}
+
+	private OperationResult savePayment(double amountReceived, double balance) {
+		OperationResult result = OperationResult.FAILED;
+		try {
+			result = salesController.recordPayment(selectedCustomer, sales,
+					amountReceived, 0, balance);
+		} catch (MelanieBusinessException e) {
+			e.printStackTrace(); // TODO log it
+		}
+		return result;
+	}
+
+	public void clearFields(View view) {
+
+		resetAll();
+	}
+
+	private void resetAll() {
+		sales.clear();
+		Utils.notifyListUpdate(salesListAdapter);
+		Utils.clearInputTextFields(findViewById(R.id.paidAmount));
+		Utils.resetTextFieldsToZeros(findViewById(R.id.totalToPay),
+				findViewById(R.id.paymentBalance));
 	}
 
 	private TextWatcher amountTextChangedListener = new TextWatcher() {

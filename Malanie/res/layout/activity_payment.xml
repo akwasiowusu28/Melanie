@@ -46,7 +46,7 @@
 
     <LinearLayout
         android:id="@+id/paymentsAggregatesContainer"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_margin="10dp"
@@ -67,7 +67,7 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/totalValue"
+                android:id="@+id/totalToPay"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
@@ -133,7 +133,7 @@
         </RelativeLayout>
 
         <RelativeLayout
-            android:layout_width="fill_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="right" >
 
@@ -144,7 +144,7 @@
                 android:layout_gravity="right"
                 android:layout_marginTop="7dp"
                 android:layout_toLeftOf="@+id/cancelSale"
-                android:onClick="saveSales"
+                android:onClick="savePayment"
                 android:text="@string/save" />
 
             <Button
@@ -155,8 +155,8 @@
                 android:layout_gravity="right"
                 android:layout_marginLeft="6dp"
                 android:layout_marginTop="7dp"
-                android:onClick="cancelPayment"
-                android:text="@string/cancel" />
+                android:onClick="clearFields"
+                android:text="@string/clear" />
         </RelativeLayout>
     </LinearLayout>
 

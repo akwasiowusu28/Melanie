@@ -4,9 +4,10 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 /**
- * The Product entity 
+ * The Product entity
+ * 
  * @author Akwasi Owusu
- *
+ * 
  */
 
 @DatabaseTable
@@ -14,23 +15,23 @@ public class Product extends BaseEntity {
 
 	@DatabaseField
 	private String productName;
-	
+
 	@DatabaseField
 	private int quantity;
-	
+
 	@DatabaseField
 	private double price;
-	
+
 	@DatabaseField
 	private String barcode;
-	
-	@DatabaseField(canBeNull= true, foreign = true)
+
+	@DatabaseField(columnName = "CategoryId", canBeNull = true, foreign = true)
 	private Category category;
-	
+
 	public Product() {
 		super();
 	}
-	
+
 	public Product(String productName, int quantity, double price,
 			Category category, String barcode) {
 		super();
@@ -44,47 +45,56 @@ public class Product extends BaseEntity {
 	public String getProductName() {
 		return productName;
 	}
+
 	public void setProductName(String productName) {
 		this.productName = productName;
 	}
+
 	public int getQuantity() {
 		return quantity;
 	}
+
 	public void setQuantity(int quantity) {
 		this.quantity = quantity;
 	}
+
 	public double getPrice() {
 		return price;
 	}
+
 	public void setPrice(double price) {
 		this.price = price;
 	}
+
 	public String getBarcode() {
 		return barcode;
 	}
+
 	public void setBarcode(String barcode) {
 		this.barcode = barcode;
 	}
+
 	public Category getProductCategory() {
 		return category;
 	}
+
 	public void setProductCategory(Category category) {
 		this.category = category;
 	}
-	
+
 	@Override
-	public boolean equals(Object obj){
+	public boolean equals(Object obj) {
 		boolean equals = false;
-		
-		if(obj instanceof Product){
-			Product product = (Product)obj;
-			equals = product.barcode.equals(this.barcode);
+
+		if (obj instanceof Product) {
+			Product product = (Product) obj;
+			equals = product.barcode.equals(barcode);
 		}
 		return equals;
 	}
-	
+
 	@Override
-	public int hashCode(){
+	public int hashCode() {
 		return super.hashCode();
 	}
 }

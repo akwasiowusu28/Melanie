@@ -73,5 +73,8 @@
     <string name="no">No</string>
     <string name="creditSaleAlertTitle">Credit Sale</string>
     <string name="creditSaleAlertMessage">Amount received not enough. Would you like to record this sale for a customer?</string>
+    <string name="paymentSuccess">Payment successfully recorded!</string>
+    <string name="paymentFailed">Could not record payment</string>
+    <string name="clear">Clear</string>
 
 </resources>

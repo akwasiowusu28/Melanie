@@ -8,6 +8,7 @@ import com.melanie.business.ProductEntryController;
 import com.melanie.business.SalesController;
 import com.melanie.dataaccesslayer.MelanieDataAccessLayer;
 import com.melanie.entities.Customer;
+import com.melanie.entities.Payment;
 import com.melanie.entities.Product;
 import com.melanie.entities.Sale;
 import com.melanie.support.MelanieBusinessFactory;
@@ -18,7 +19,7 @@ import com.melanie.support.exceptions.MelanieDataLayerException;
 
 public class SalesControllerImpl implements SalesController {
 
-	private static final String CUSTOMER = "Customer";
+	private static final String CUSTOMER = "CustomerId";
 
 	private ProductEntryController productController;
 	private MelanieDataAccessLayer dataAccess;
@@ -80,11 +81,13 @@ public class SalesControllerImpl implements SalesController {
 	}
 
 	@Override
-	public OperationResult saveCurrentSales() throws MelanieBusinessException {
+	public OperationResult saveCurrentSales(Customer customer)
+			throws MelanieBusinessException {
 		OperationResult result = OperationResult.FAILED;
 		if (dataAccess != null) {
 			for (Sale sale : sales)
 				try {
+					sale.setCustomer(customer);
 					dataAccess.addDataItem(sale);
 				} catch (MelanieDataLayerException e) {
 					throw new MelanieBusinessException(e.getMessage(), e);
@@ -114,6 +117,21 @@ public class SalesControllerImpl implements SalesController {
 		return customerSales;
 	}
 
+	@Override
+	public OperationResult recordPayment(Customer customer, List<Sale> sale,
+			double amountReceived, double discount, double balance)
+			throws MelanieBusinessException {
+		OperationResult result = OperationResult.FAILED;
+		try {
+			Payment payment = new Payment(customer, sales, amountReceived,
+					discount, balance);
+			if (dataAccess != null)
+				result = dataAccess.addDataItem(payment);
+		} catch (MelanieDataLayerException e) {
+			throw new MelanieBusinessException(e.getMessage(), e);
+		}
+		return result;
+	}
 	// @SuppressWarnings("serial")
 	// private List<Sale> stub(){
 	// return new ArrayList<Sale>(){{

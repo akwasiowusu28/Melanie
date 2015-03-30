@@ -23,12 +23,12 @@ public class Sale extends BaseEntity {
 	@DatabaseField
 	private int quantitySold;
 
-	@DatabaseField
-	private double discount;
-
-	@DatabaseField(canBeNull= true, foreign = true)
+	@DatabaseField(columnName = "CustomerId", canBeNull = true, foreign = true)
 	private Customer customer;
-	
+
+	@DatabaseField(columnName = "PaymentId", canBeNull = true, foreign = true)
+	private Payment payment;
+
 	public Sale() {
 		super();
 	}
@@ -39,14 +39,6 @@ public class Sale extends BaseEntity {
 
 	public void setSaleDate(Date saleDate) {
 		this.saleDate = saleDate;
-	}
-
-	public double getDiscount() {
-		return discount;
-	}
-
-	public void setDiscount(double discount) {
-		this.discount = discount;
 	}
 
 	public Product getProduct() {
@@ -71,6 +63,14 @@ public class Sale extends BaseEntity {
 
 	public void setCustomer(Customer customer) {
 		this.customer = customer;
+	}
+
+	public Payment getPayment() {
+		return payment;
+	}
+
+	public void setPayment(Payment payment) {
+		this.payment = payment;
 	}
 
 }

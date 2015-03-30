@@ -3,6 +3,7 @@ package com.melanie.androidactivities;
 import java.util.List;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -24,7 +25,7 @@ public class CustomersActivity extends Activity {
 
 	private CustomersController customersController;
 	private List<Customer> customers;
-	private Customer selectedCustomer;
+	private Customer customer;
 	private boolean isEdit;
 	private boolean wasLaunchedFromSales;
 
@@ -39,16 +40,22 @@ public class CustomersActivity extends Activity {
 
 	private void initializeFields() {
 		customersController = MelanieBusinessFactory.makeCustomersController();
-		selectedCustomer = null;
+		customer = null;
 		isEdit = false;
 		wasLaunchedFromSales = wasLaunchedFromSales();
 	}
 
 	private boolean wasLaunchedFromSales() {
-		String callerClassName = getCallingActivity().getShortClassName()
-				.substring(1);
-		String salesActivityClassName = SalesActivity.class.getSimpleName();
-		return callerClassName.equals(salesActivityClassName);
+		boolean value = false;
+		ComponentName callerActivity = getCallingActivity();
+
+		if (callerActivity != null) {
+			String callerClassName = callerActivity.getShortClassName()
+					.substring(1);
+			String salesActivityClassName = SalesActivity.class.getSimpleName();
+			value = callerClassName.equals(salesActivityClassName);
+		}
+		return value;
 	}
 
 	private void initializeCustomers() {
@@ -73,10 +80,10 @@ public class CustomersActivity extends Activity {
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position,
 				long id) {
-			selectedCustomer = customers.get(position);
+			customer = customers.get(position);
 			EditText phoneNumberView = (EditText) findViewById(R.id.phoneNumber);
-			if (selectedCustomer != null)
-				phoneNumberView.setText(selectedCustomer.getPhoneNumber());
+			if (customer != null)
+				phoneNumberView.setText(customer.getPhoneNumber());
 			isEdit = true;
 			updateButtonText();
 		}
@@ -104,13 +111,14 @@ public class CustomersActivity extends Activity {
 		OperationResult result = OperationResult.FAILED;
 		try {
 			if (isEdit) {
-				selectedCustomer.setName(customerName);
-				selectedCustomer.setPhoneNumber(phoneNumber);
-				result = customersController.updateCustomer(selectedCustomer);
+				customer.setName(customerName);
+				customer.setPhoneNumber(phoneNumber);
+				result = customersController.updateCustomer(customer);
 				isEdit = false;
 			} else
-				result = customersController.addNewCustomer(customerName,
-						phoneNumber);
+				customer = customersController.cacheAndReturnNewCustomer(
+						customerName, phoneNumber);
+			result = customersController.addCachedNewCustomer();
 		} catch (MelanieBusinessException e) {
 			e.printStackTrace(); // Log it
 		}
@@ -126,7 +134,7 @@ public class CustomersActivity extends Activity {
 	private void finishIfLaunchedFromSales() {
 		if (wasLaunchedFromSales) {
 			Intent intent = getIntent();
-			intent.putExtra(Utils.Costants.CustomerId, selectedCustomer.getId());
+			intent.putExtra(Utils.Costants.CustomerId, customer.getId());
 			setResult(RESULT_OK, intent);
 			finish();
 		}

@@ -13,14 +13,14 @@
         android:layout_alignParentTop="true"
         layout="@layout/layout_header" />
 
-     <ListView
+    <ListView
         android:id="@+id/salesListView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/salesAggregatesContainer"
         android:layout_below="@id/header"
         android:choiceMode="none" />
-     
+
     <LinearLayout
         android:id="@+id/salesAggregatesContainer"
         android:layout_width="fill_parent"
@@ -30,25 +30,24 @@
         android:orientation="vertical" >
 
         <RelativeLayout
-            
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
             android:layout_marginTop="4dp" >
 
             <TextView
-                android:layout_alignParentLeft="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
                 android:text="@string/total"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/totalValue"
-                android:layout_alignParentRight="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
                 android:layout_marginRight="10dp"
                 android:gravity="right"
                 android:text="@string/amountZeroes"
@@ -63,14 +62,14 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/discountLabel"
-                android:layout_alignParentLeft="true" />
+                android:layout_alignParentLeft="true"
+                android:text="@string/discountLabel" />
 
             <EditText
-                android:layout_alignParentRight="true"
                 android:id="@+id/discountValue"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
                 android:ellipsize="start"
                 android:gravity="right"
                 android:hint="@string/amountZeroes"
@@ -83,18 +82,18 @@
             android:layout_height="wrap_content" >
 
             <TextView
-                android:layout_alignParentLeft="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
                 android:text="@string/amountReceived"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
             <EditText
-                android:layout_alignParentRight="true"
                 android:id="@+id/amountReceived"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
                 android:ellipsize="start"
                 android:gravity="right"
                 android:hint="@string/amountZeroes"
@@ -108,18 +107,18 @@
             android:layout_height="wrap_content" >
 
             <TextView
-                android:layout_alignParentLeft="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
                 android:text="@string/balance"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
             <TextView
-                android:layout_alignParentRight="true"
                 android:id="@+id/balanceDue"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
                 android:layout_marginRight="10dp"
                 android:gravity="right"
                 android:text="@string/amountZeroes"
@@ -140,8 +139,8 @@
                 android:layout_gravity="left"
                 android:layout_marginTop="7dp"
                 android:contentDescription="@string/scanBarcode"
-                android:src="@drawable/barcodeicon"
-                android:onClick="launchBarcodeScanner" />
+                android:onClick="launchBarcodeScanner"
+                android:src="@drawable/barcodeicon" />
 
             <Button
                 android:id="@+id/saveSale"
@@ -150,8 +149,8 @@
                 android:layout_gravity="right"
                 android:layout_marginTop="7dp"
                 android:layout_toLeftOf="@+id/cancelSale"
-                android:text="@string/save"
-                android:onClick="saveSales" />
+                android:onClick="saveSales"
+                android:text="@string/save" />
 
             <Button
                 android:id="@+id/cancelSale"
@@ -161,8 +160,9 @@
                 android:layout_gravity="right"
                 android:layout_marginLeft="6dp"
                 android:layout_marginTop="7dp"
-                android:text="@string/cancel"
-                android:onClick="cancelSales" />
+                android:onClick="clearFields"
+                android:text="@string/clear" />
         </RelativeLayout>
     </LinearLayout>
+
 </RelativeLayout>

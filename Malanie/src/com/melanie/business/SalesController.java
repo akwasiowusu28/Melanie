@@ -18,8 +18,13 @@ public interface SalesController {
 	List<Sale> generateSaleItems(List<String> barcodes)
 			throws MelanieBusinessException;
 
-	OperationResult saveCurrentSales() throws MelanieBusinessException;
+	OperationResult saveCurrentSales(Customer customer)
+			throws MelanieBusinessException;
 
 	List<Sale> findSalesByCustomer(Customer customer)
+			throws MelanieBusinessException;
+
+	OperationResult recordPayment(Customer customer, List<Sale> sale,
+			double amount, double discount, double balance)
 			throws MelanieBusinessException;
 }

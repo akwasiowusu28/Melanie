@@ -13,9 +13,9 @@ import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieDataLayerException;
 
 /**
+ * A class that serves as a facade to Database access for all clients
  * 
- * @author Akwasi Owusu A class that serves as a facade to the Database access
- *         for all clients
+ * @author Akwasi Owusu
  */
 @SuppressWarnings("unchecked")
 public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {

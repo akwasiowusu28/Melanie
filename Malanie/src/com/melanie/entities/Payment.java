@@ -1,6 +1,10 @@
 package com.melanie.entities;
 
+import java.util.Collection;
+import java.util.List;
+
 import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 
 /**
@@ -22,11 +26,27 @@ public class Payment extends BaseEntity {
 	@DatabaseField
 	private double balance;
 
-	@DatabaseField(canBeNull = true, foreign = true)
+	@DatabaseField
+	private double discount;
+
+	@DatabaseField(columnName = "CustomerId", canBeNull = true, foreign = true)
 	private Customer customer;
+
+	@ForeignCollectionField
+	Collection<Sale> sales; // Change to List<Sale> when using with backendless
 
 	public Payment() {
 		super();
+	}
+
+	public Payment(Customer customer, List<Sale> sales, double amountReceived,
+			double discount, double balance) {
+		super();
+		this.customer = customer;
+		this.sales = sales;
+		this.amountReceived = amountReceived;
+		this.discount = discount;
+		this.balance = balance;
 	}
 
 	public int getPaymentDate() {
@@ -61,4 +81,19 @@ public class Payment extends BaseEntity {
 		this.customer = customer;
 	}
 
+	public double getDiscount() {
+		return discount;
+	}
+
+	public void setDiscount(double discount) {
+		this.discount = discount;
+	}
+
+	public Collection<Sale> getSales() {
+		return sales;
+	}
+
+	public void setSales(Collection<Sale> sales) {
+		this.sales = sales;
+	}
 }

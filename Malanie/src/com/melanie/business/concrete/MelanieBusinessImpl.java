@@ -5,14 +5,12 @@ import com.melanie.dataaccesslayer.MelanieDataAccessLayer;
 import com.melanie.dataaccesslayer.datasource.DataSource;
 import com.melanie.support.MelanieDataFactory;
 
-public class MelanieBusinessImpl implements MelanieBusiness{
+public class MelanieBusinessImpl implements MelanieBusiness {
 	@Override
 	public void initialize(DataSource dataSource) {
 		MelanieDataAccessLayer dataAccess = MelanieDataFactory.makeDataAccess();
-		if(dataAccess != null){
+		if (dataAccess != null)
 			dataAccess.initialize(dataSource);
-		}
-		
 	}
 
 }

@@ -31,17 +31,16 @@ import com.melanie.support.exceptions.MelanieBusinessException;
 public class SalesActivity extends Activity {
 
 	private static final int SCAN_REQUEST_CODE = 28;
-	private static final int CUSTOMER_REQUES_CODE = 288;
+	private static final int CUSTOMER_REQUEST_CODE = 288;
 
 	private List<Sale> sales;
 	private SalesController salesController;
 	private CustomersController customersController;
 	private ScheduledExecutorService executorService;
 	private SalesListViewAdapter salesListAdapter;
-	private TextListener discountListener;
-	private TextListener amountListener;
+	private TextListener discountListener, amountListener;
 	private MelanieAlertDialog alertDialog;
-	private double balance;
+	private double balance, amountReceived, discount;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -98,14 +97,14 @@ public class SalesActivity extends Activity {
 
 					@Override
 					public void noButtonOperation() {
-						performSave();
+						performSave(null);
 					}
 				});
 	}
 
 	private void startCustomerActivity() {
 		Intent intent = new Intent(this, CustomersActivity.class);
-		startActivityForResult(intent, CUSTOMER_REQUES_CODE);
+		startActivityForResult(intent, CUSTOMER_REQUEST_CODE);
 	}
 
 	private void startBarcodeScanning() {
@@ -137,28 +136,62 @@ public class SalesActivity extends Activity {
 
 	public void saveSales(View view) {
 
-		TextView balanceTextView = (TextView) findViewById(R.id.balanceDue);
-		String balanceString = balanceTextView.getText().toString();
-		if (!balanceString.equals(Utils.Costants.EMPTY_STRING))
-			balance = Double.parseDouble(balanceString);
+		recordTotals();
 		if (balance < 0)
 			alertDialog.show();
 		else
-			performSave();
+			performSave(null);
 	}
 
-	public void cancelSales(View view) {
+	private void recordTotals() {
+		String discountString = ((EditText) findViewById(R.id.discountValue))
+				.getText().toString();
+		String amountReceivedString = ((EditText) findViewById(R.id.amountReceived))
+				.getText().toString();
+		String balanceString = ((TextView) findViewById(R.id.balanceDue))
+				.getText().toString();
+
+		if (!discountString.equals(Utils.Costants.EMPTY_STRING))
+			discount = Double.parseDouble(discountString);
+
+		if (!amountReceivedString.equals(Utils.Costants.EMPTY_STRING))
+			amountReceived = Double.parseDouble(amountReceivedString);
+
+		if (!balanceString.equals(Utils.Costants.EMPTY_STRING))
+			balance = Double.parseDouble(balanceString);
+	}
+
+	public void clearFields(View view) {
 		// Maybe show a message for confirmation
 		resetAll();
 	}
 
-	private void performSave() {
+	private void performSave(Customer customer) {
+
+		OperationResult result = saveSales(customer);
+		savePayment(customer);
+		updateUIAfterSave(result);
+	}
+
+	private OperationResult saveSales(Customer customer) {
+		OperationResult result = OperationResult.FAILED;
 		try {
-			OperationResult result = salesController.saveCurrentSales();
-			updateUIAfterSave(result);
+			result = salesController.saveCurrentSales(customer);
 		} catch (MelanieBusinessException e) {
-			e.printStackTrace(); // log it
+			e.printStackTrace(); // TODO log it
 		}
+		return result;
+	}
+
+	private OperationResult savePayment(Customer customer) {
+		OperationResult result = OperationResult.FAILED;
+		try {
+			result = salesController.recordPayment(customer, sales,
+					amountReceived, discount, balance);
+		} catch (MelanieBusinessException e) {
+			e.printStackTrace(); // TODO log it
+		}
+		return result;
 	}
 
 	private void updateUIAfterSave(OperationResult result) {
@@ -200,7 +233,7 @@ public class SalesActivity extends Activity {
 				List<String> barcodes = data
 						.getStringArrayListExtra(Utils.Costants.BARCODES);
 				recordSalesFromBarcodes(barcodes);
-			} else if (requestCode == CUSTOMER_REQUES_CODE) {
+			} else if (requestCode == CUSTOMER_REQUEST_CODE) {
 				customerId = data.getIntExtra(Utils.Costants.CustomerId,
 						customerId);
 				saveCreditSaleWithCustomer(customerId);
@@ -212,15 +245,12 @@ public class SalesActivity extends Activity {
 		if (customersController != null)
 			try {
 				customer = customersController.findCustomer(customerId);
-				if (customer != null) {
-					for (Sale sale : sales)
-						sale.setCustomer(customer);
+				if (customer != null)
 					customer.setAmountOwed(balance);
-				}
 
-				performSave();
+				performSave(customer);
 			} catch (MelanieBusinessException e) {
-				e.printStackTrace(); // log it
+				e.printStackTrace(); // TODO log it
 			}
 	}
 

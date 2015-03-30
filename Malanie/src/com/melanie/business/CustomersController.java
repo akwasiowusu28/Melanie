@@ -6,10 +6,19 @@ import com.melanie.entities.Customer;
 import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieBusinessException;
 
+/**
+ * Provides methods for recording and retrieval of customer information
+ * 
+ * @author Akwasi Owusu
+ * 
+ */
+
 public interface CustomersController {
 
-	OperationResult addNewCustomer(String name, String phoneNumber)
+	Customer cacheAndReturnNewCustomer(String name, String phoneNumber)
 			throws MelanieBusinessException;
+
+	OperationResult addCachedNewCustomer() throws MelanieBusinessException;
 
 	List<Customer> getAllCustomers() throws MelanieBusinessException;
 
