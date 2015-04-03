@@ -168,8 +168,10 @@ public class SalesActivity extends Activity {
 
 	private void performSave(Customer customer) {
 
+		// savePayment and saveSales are supposed to be in one transaction
+		savePayment(customer); // save the payment before saving the sales
+								// because the sales are composed of the payment
 		OperationResult result = saveSales(customer);
-		savePayment(customer);
 		updateUIAfterSave(result);
 	}
 

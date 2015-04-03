@@ -44,13 +44,14 @@ public class CustomersControllerImpl implements CustomersController {
 	 * @return {@link OperationResult}
 	 */
 	@Override
-	public OperationResult addCachedNewCustomer() throws MelanieBusinessException {
+	public OperationResult addCachedNewCustomer()
+			throws MelanieBusinessException {
 
 		OperationResult result = OperationResult.FAILED;
 
 		if (dataAccess != null && customer != null)
 			try {
-				result = dataAccess.addDataItem(customer);
+				result = dataAccess.addDataItem(customer, Customer.class);
 			} catch (MelanieDataLayerException e) {
 				throw new MelanieBusinessException(e.getMessage(), e);
 			}
@@ -82,7 +83,7 @@ public class CustomersControllerImpl implements CustomersController {
 
 		if (dataAccess != null)
 			try {
-				result = dataAccess.updateDataItem(customer);
+				result = dataAccess.updateDataItem(customer, Customer.class);
 			} catch (MelanieDataLayerException e) {
 				throw new MelanieBusinessException(e.getMessage(), e);
 			}

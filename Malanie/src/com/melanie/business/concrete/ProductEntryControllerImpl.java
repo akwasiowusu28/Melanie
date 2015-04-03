@@ -35,7 +35,7 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 	private MelanieDataAccessLayer dataAccess;
 
 	public ProductEntryControllerImpl() {
-		argumentValidator =  MelanieSupportFactory.makeValidator();
+		argumentValidator = MelanieSupportFactory.makeValidator();
 		dataAccess = MelanieDataFactory.makeDataAccess();
 	}
 
@@ -55,7 +55,7 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 			category = new Category(categoryName);
 			OperationResult result;
 			try {
-				result = dataAccess.addDataItem(category);
+				result = dataAccess.addDataItem(category, Category.class);
 				if (result != OperationResult.SUCCESSFUL)
 					category = null;
 			} catch (MelanieDataLayerException e) {
@@ -148,7 +148,7 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 			Product product = new Product(productName, quantity, price,
 					category, barcode);
 			try {
-				result = dataAccess.addDataItem(product);
+				result = dataAccess.addDataItem(product, Product.class);
 			} catch (MelanieDataLayerException e) {
 				throw new MelanieBusinessException(e.getMessage(), e);
 			}
@@ -167,7 +167,8 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 	public OperationResult removeProduct(int productId)
 			throws MelanieBusinessException {
 		try {
-			return dataAccess.deleteDataItem(findProduct(productId));
+			return dataAccess.deleteDataItem(findProduct(productId),
+					Product.class);
 		} catch (MelanieDataLayerException e) {
 			throw new MelanieBusinessException(e.getMessage(), e);
 		}

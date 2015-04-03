@@ -2,15 +2,15 @@ package com.melanie.business.concrete;
 
 import com.melanie.business.MelanieBusiness;
 import com.melanie.dataaccesslayer.MelanieDataAccessLayer;
-import com.melanie.dataaccesslayer.datasource.DataSource;
 import com.melanie.support.MelanieDataFactory;
 
 public class MelanieBusinessImpl implements MelanieBusiness {
+
 	@Override
-	public void initialize(DataSource dataSource) {
+	public <T> void initialize(T dataContext) {
 		MelanieDataAccessLayer dataAccess = MelanieDataFactory.makeDataAccess();
 		if (dataAccess != null)
-			dataAccess.initialize(dataSource);
+			dataAccess.initialize(dataContext);
 	}
 
 }

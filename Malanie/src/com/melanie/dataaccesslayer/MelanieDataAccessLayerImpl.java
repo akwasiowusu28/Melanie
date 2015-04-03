@@ -25,8 +25,8 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 	 *            the ORM datasource helper pushed from the UI
 	 */
 	@Override
-	public void initialize(DataSource dataSource) {
-		DataSourceManager.initialize(dataSource);
+	public <T> void initialize(T dataContext) {
+		DataSourceManager.initialize((DataSource) dataContext);
 	}
 
 	/**
@@ -39,12 +39,12 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 	 * @throws MelanieDataLayerException
 	 */
 	@Override
-	public <T> OperationResult addDataItem(T dataItem)
+	public <T> OperationResult addDataItem(T dataItem, Class<T> itemClass)
 			throws MelanieDataLayerException {
 		OperationResult result = OperationResult.FAILED;
 		try {
 			Dao<Object, Integer> dao = DataSourceManager
-					.getCachedDaoFor(dataItem.getClass());
+					.getCachedDaoFor(itemClass);
 			if (dao != null) {
 				int insertReturn = dao.create(dataItem);
 				if (insertReturn == 1)
@@ -67,13 +67,13 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 	 * @throws MelanieDataLayerException
 	 */
 	@Override
-	public <T> OperationResult updateDataItem(T dataItem)
+	public <T> OperationResult updateDataItem(T dataItem, Class<T> itemClass)
 			throws MelanieDataLayerException {
 		OperationResult result = OperationResult.FAILED;
 
 		try {
 			Dao<Object, Integer> dao = DataSourceManager
-					.getCachedDaoFor(dataItem.getClass());
+					.getCachedDaoFor(itemClass);
 			if (dao != null && dao.idExists(((BaseEntity) dataItem).getId())) {
 				int updateReturn = dao.update(dataItem);
 				if (updateReturn == 1)
@@ -93,13 +93,13 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 	 * @throws MelanieDataLayerException
 	 */
 	@Override
-	public <T> OperationResult deleteDataItem(T dataItem)
+	public <T> OperationResult deleteDataItem(T dataItem, Class<T> itemClass)
 			throws MelanieDataLayerException {
 		OperationResult result = OperationResult.FAILED;
 
 		try {
 			Dao<Object, Integer> dao = DataSourceManager
-					.getCachedDaoFor(dataItem.getClass());
+					.getCachedDaoFor(itemClass);
 			if (dao != null && dao.idExists(((BaseEntity) dataItem).getId())) {
 
 				int deleteReturn = dao.delete(dataItem);
@@ -120,7 +120,7 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 	 * @throws MelanieDataLayerException
 	 */
 	@Override
-	public <T> T findItemById(int itemId, Class<?> itemClass)
+	public <T> T findItemById(int itemId, Class<T> itemClass)
 			throws MelanieDataLayerException {
 		T item = null;
 		try {
@@ -150,7 +150,7 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 	 */
 	@Override
 	public <T> T findItemByFieldName(String fieldName, String searchValue,
-			Class<?> itemClass) throws MelanieDataLayerException {
+			Class<T> itemClass) throws MelanieDataLayerException {
 		T item = null;
 		try {
 			Dao<Object, Integer> dao = DataSourceManager
@@ -176,7 +176,7 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 	 * @throws MelanieDataLayerException
 	 */
 	@Override
-	public <T> List<T> findAllItems(Class<?> itemClass)
+	public <T> List<T> findAllItems(Class<T> itemClass)
 			throws MelanieDataLayerException {
 
 		List<T> items = null;
@@ -200,7 +200,7 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 	 * @throws MelanieDataLayerException
 	 */
 	@Override
-	public <T> int getLastInsertedId(Class<?> itemClass)
+	public <T> int getLastInsertedId(Class<T> itemClass)
 			throws MelanieDataLayerException {
 		int id = -1;
 		try {
@@ -222,7 +222,7 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 
 	@Override
 	public <T> List<T> findItemsByFieldName(String fieldName,
-			String searchValue, Class<?> itemClass)
+			String searchValue, Class<T> itemClass)
 			throws MelanieDataLayerException {
 		List<T> items = new ArrayList<T>();
 
@@ -239,6 +239,25 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 			throw new MelanieDataLayerException(e.getMessage(), e);
 		}
 		return items;
+	}
+
+	@Override
+	public <T> OperationResult refreshItem(T dataItem, Class<T> itemClass)
+			throws MelanieDataLayerException {
+		OperationResult result = OperationResult.FAILED;
+		try {
+			Dao<Object, Integer> dao = DataSourceManager
+					.getCachedDaoFor(itemClass);
+			if (dao != null && dao.idExists(((BaseEntity) dataItem).getId())) {
+				int updateReturn = dao.refresh(dataItem);
+				if (updateReturn == 1)
+					result = OperationResult.SUCCESSFUL;
+			}
+
+		} catch (SQLException e) {
+			throw new MelanieDataLayerException(e.getMessage(), e);
+		}
+		return result;
 	}
 
 }

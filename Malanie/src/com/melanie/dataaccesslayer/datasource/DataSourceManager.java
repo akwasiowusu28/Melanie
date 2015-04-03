@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.backendless.Backendless;
 import com.j256.ormlite.dao.Dao;
 import com.melanie.entities.Category;
 import com.melanie.entities.Customer;
@@ -20,6 +21,10 @@ import com.melanie.support.exceptions.MelanieDataLayerException;
  * 
  */
 public class DataSourceManager {
+
+	private static final String APPLICATION_ID = "09B34DD5-7EA5-294B-FF3A-EB779F8EEF00";
+	private static final String SECRET_KEY = "C4580BEA-9513-1DB0-FFF1-98AA763D3300";
+	private static final String VERSION = "v1";
 
 	private static List<Class<?>> entityClasses = new ArrayList<Class<?>>() {
 		private static final long serialVersionUID = 1L;
@@ -81,5 +86,9 @@ public class DataSourceManager {
 	 */
 	public static void clearDataSource() {
 		dataSource = null;
+	}
+
+	public static <T> void initializeBackendless(T dataContext) {
+		Backendless.initApp(dataContext, APPLICATION_ID, SECRET_KEY, VERSION);
 	}
 }

@@ -19,11 +19,12 @@ import com.melanie.support.exceptions.MelanieDataLayerException;
 
 public class SalesControllerImpl implements SalesController {
 
-	private static final String CUSTOMER = "CustomerId";
+	private static final String CUSTOMERID = "CustomerId";
 
 	private ProductEntryController productController;
 	private MelanieDataAccessLayer dataAccess;
 	private List<Sale> sales;
+	private Payment payment;
 
 	public SalesControllerImpl() {
 		productController = MelanieBusinessFactory.makeProductEntryController();
@@ -87,8 +88,9 @@ public class SalesControllerImpl implements SalesController {
 		if (dataAccess != null) {
 			for (Sale sale : sales)
 				try {
+					sale.setPayment(payment);
 					sale.setCustomer(customer);
-					dataAccess.addDataItem(sale);
+					dataAccess.addDataItem(sale, Sale.class);
 				} catch (MelanieDataLayerException e) {
 					throw new MelanieBusinessException(e.getMessage(), e);
 				}
@@ -109,8 +111,13 @@ public class SalesControllerImpl implements SalesController {
 		List<Sale> customerSales = new ArrayList<Sale>();
 		if (dataAccess != null)
 			try {
-				customerSales = dataAccess.findItemsByFieldName(CUSTOMER,
+				customerSales = dataAccess.findItemsByFieldName(CUSTOMERID,
 						String.valueOf(customer.getId()), Sale.class);
+				for (Sale sale : customerSales) {
+					dataAccess.refreshItem(sale.getProduct(), Product.class);
+					dataAccess.refreshItem(sale.getCustomer(), Customer.class);
+					dataAccess.refreshItem(sale.getPayment(), Payment.class);
+				}
 			} catch (MelanieDataLayerException e) {
 				throw new MelanieBusinessException(e.getMessage(), e);
 			}
@@ -123,10 +130,10 @@ public class SalesControllerImpl implements SalesController {
 			throws MelanieBusinessException {
 		OperationResult result = OperationResult.FAILED;
 		try {
-			Payment payment = new Payment(customer, sales, amountReceived,
-					discount, balance);
+			payment = new Payment(customer, sales, amountReceived, discount,
+					balance);
 			if (dataAccess != null)
-				result = dataAccess.addDataItem(payment);
+				result = dataAccess.addDataItem(payment, Payment.class);
 		} catch (MelanieDataLayerException e) {
 			throw new MelanieBusinessException(e.getMessage(), e);
 		}
