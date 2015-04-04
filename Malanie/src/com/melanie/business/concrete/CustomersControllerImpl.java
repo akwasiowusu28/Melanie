@@ -7,6 +7,7 @@ import com.melanie.business.CustomersController;
 import com.melanie.dataaccesslayer.MelanieDataAccessLayer;
 import com.melanie.entities.Customer;
 import com.melanie.support.MelanieDataFactory;
+import com.melanie.support.MelanieOperationCallBack;
 import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieBusinessException;
 import com.melanie.support.exceptions.MelanieDataLayerException;
@@ -64,12 +65,15 @@ public class CustomersControllerImpl implements CustomersController {
 	 * @return list of all customers
 	 */
 	@Override
-	public List<Customer> getAllCustomers() throws MelanieBusinessException {
+	public List<Customer> getAllCustomers(
+			MelanieOperationCallBack operationCallBack)
+			throws MelanieBusinessException {
 
 		List<Customer> customers = new ArrayList<Customer>();
 		try {
 			if (dataAccess != null)
-				customers = dataAccess.findAllItems(Customer.class);
+				customers = dataAccess.findAllItems(Customer.class,
+						operationCallBack);
 		} catch (MelanieDataLayerException e) {
 			throw new MelanieBusinessException(e.getMessage(), e);
 		}
@@ -91,14 +95,16 @@ public class CustomersControllerImpl implements CustomersController {
 	}
 
 	@Override
-	public Customer findCustomer(int customerId)
+	public Customer findCustomer(int customerId,
+			MelanieOperationCallBack operationCallBack)
 			throws MelanieBusinessException {
 
 		Customer customer = null;
 
 		try {
 			if (dataAccess != null)
-				customer = dataAccess.findItemById(customerId, Customer.class);
+				customer = dataAccess.findItemById(customerId, Customer.class,
+						operationCallBack);
 		} catch (MelanieDataLayerException e) {
 			throw new MelanieBusinessException(e.getMessage(), e);
 		}

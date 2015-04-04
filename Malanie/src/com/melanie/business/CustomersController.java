@@ -3,6 +3,7 @@ package com.melanie.business;
 import java.util.List;
 
 import com.melanie.entities.Customer;
+import com.melanie.support.MelanieOperationCallBack;
 import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieBusinessException;
 
@@ -20,10 +21,13 @@ public interface CustomersController {
 
 	OperationResult addCachedNewCustomer() throws MelanieBusinessException;
 
-	List<Customer> getAllCustomers() throws MelanieBusinessException;
+	List<Customer> getAllCustomers(MelanieOperationCallBack operationCallBack)
+			throws MelanieBusinessException;
 
 	OperationResult updateCustomer(Customer customer)
 			throws MelanieBusinessException;
 
-	Customer findCustomer(int customerId) throws MelanieBusinessException;
+	Customer findCustomer(int customerId,
+			MelanieOperationCallBack operationCallBack)
+			throws MelanieBusinessException;
 }

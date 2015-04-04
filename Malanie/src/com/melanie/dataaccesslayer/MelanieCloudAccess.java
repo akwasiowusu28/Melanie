@@ -12,9 +12,11 @@ import com.melanie.support.exceptions.MelanieDataLayerException;
 
 // Consider doing the Async Callback thingy for this class
 @SuppressWarnings("unchecked")
-public class MelanieDataAccessLayerImplCloud {
+public class MelanieCloudAccess {
 
-	public <T> void initialize(T dataContext) {
+	private static final String ID = "Id";
+
+	public static <T> void initialize(T dataContext) {
 		DataSourceManager.initializeBackendless(dataContext);
 	}
 
@@ -49,17 +51,15 @@ public class MelanieDataAccessLayerImplCloud {
 
 	}
 
-	public <T> T findItemById(String itemId, Class<T> itemClass,
+	public <T> void findItemById(int itemId, Class<T> itemClass,
 			MelanieOperationCallBack operationCallBack)
 			throws MelanieDataLayerException {
-		T item = null;
 		try {
-			Backendless.Persistence.of(itemClass).findById(itemId,
-					new BackendAsynCallBack<T>(operationCallBack));
+			findItemByFieldName(ID, String.valueOf(itemId), itemClass,
+					operationCallBack);
 		} catch (Exception e) {
 			throw new MelanieDataLayerException(e.getMessage(), e);
 		}
-		return item;
 	}
 
 	public <T> T findItemByFieldName(String fieldName, String searchValue,
@@ -122,11 +122,6 @@ public class MelanieDataAccessLayerImplCloud {
 		} catch (Exception e) {
 			throw new MelanieDataLayerException(e.getMessage(), e);
 		}
-	}
-
-	public <T> void refreshItem(T dataItem, Class<T> itemClass,
-			MelanieOperationCallBack operationCallBack) {
-
 	}
 
 	private class BackendAsynCallBack<T> extends BackendlessCallback<T> {

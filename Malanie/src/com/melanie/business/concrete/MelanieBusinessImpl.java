@@ -1,6 +1,7 @@
 package com.melanie.business.concrete;
 
 import com.melanie.business.MelanieBusiness;
+import com.melanie.dataaccesslayer.MelanieCloudAccess;
 import com.melanie.dataaccesslayer.MelanieDataAccessLayer;
 import com.melanie.support.MelanieDataFactory;
 
@@ -11,6 +12,11 @@ public class MelanieBusinessImpl implements MelanieBusiness {
 		MelanieDataAccessLayer dataAccess = MelanieDataFactory.makeDataAccess();
 		if (dataAccess != null)
 			dataAccess.initialize(dataContext);
+	}
+
+	@Override
+	public <T> void initializeAlternate(T dataContext) {
+		MelanieCloudAccess.initialize(dataContext);
 	}
 
 }

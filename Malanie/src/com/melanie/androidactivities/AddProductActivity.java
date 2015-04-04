@@ -1,5 +1,6 @@
 package com.melanie.androidactivities;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
@@ -35,9 +36,11 @@ import com.melanie.androidactivities.support.Utils;
 import com.melanie.business.ProductEntryController;
 import com.melanie.entities.Category;
 import com.melanie.support.MelanieBusinessFactory;
+import com.melanie.support.MelanieOperationCallBack;
 import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieBusinessException;
 
+@SuppressWarnings("unchecked")
 public class AddProductActivity extends Activity {
 
 	private ProductEntryController productController;
@@ -62,6 +65,8 @@ public class AddProductActivity extends Activity {
 	private ScheduledExecutorService executorService;
 
 	private int printPhaseMessage;
+	private ArrayAdapter<Category> categoriesAdapter;
+	private List<Category> categories;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -70,10 +75,8 @@ public class AddProductActivity extends Activity {
 
 		initializeFields();
 
-		List<Category> categories = getAllCategories();
 		Spinner categorySpinner = (Spinner) findViewById(R.id.categoriesSpinner);
-		categorySpinner.setAdapter(new ArrayAdapter<Category>(this,
-				android.R.layout.simple_spinner_dropdown_item, categories));
+		categorySpinner.setAdapter(categoriesAdapter);
 
 		initializePrinter();
 	}
@@ -81,15 +84,30 @@ public class AddProductActivity extends Activity {
 	private void initializeFields() {
 		productController = MelanieBusinessFactory.makeProductEntryController();
 		handler = new Handler();
+		categories = getAllCategories();
+		categoriesAdapter = new ArrayAdapter<Category>(this,
+				android.R.layout.simple_spinner_dropdown_item, categories);
 		createPrintProgressDialog();
 	}
 
 	private List<Category> getAllCategories() {
-		List<Category> categories = null;
+		List<Category> categories = new ArrayList<Category>();
 		try {
-			categories = productController.getAllCategories();
+			categories = productController
+					.getAllCategories(new MelanieOperationCallBack() {
+						@Override
+						public <T> void onOperationSuccessful(List<T> results) {
+							AddProductActivity.this.categories.clear();
+							AddProductActivity.this.categories
+									.addAll((List<Category>) results);
+							Utils.notifyListUpdate(categoriesAdapter);
+						}
+					});
+			if (!categories.isEmpty())
+				this.categories.addAll(categories);
+
 		} catch (MelanieBusinessException e) {
-			e.printStackTrace(); // log it
+			e.printStackTrace(); // TODO: log it
 		}
 		return categories;
 	}
@@ -154,7 +172,7 @@ public class AddProductActivity extends Activity {
 	private OperationResult addProductAndReturnResult(Category category,
 			String productName, double price, int quantity) {
 		OperationResult result = OperationResult.FAILED;
-		if (category != null) {
+		if (category != null)
 			try {
 				int lastProductId = productController
 						.getLastInsertedProductId();
@@ -166,7 +184,6 @@ public class AddProductActivity extends Activity {
 			} catch (MelanieBusinessException e) {
 				e.printStackTrace(); // log it
 			}
-		}
 		return result;
 	}
 
@@ -177,7 +194,7 @@ public class AddProductActivity extends Activity {
 		String barcodeNumber = categoryId + String.format(format, lastItemId);
 		return barcodeNumber;
 	}
-	
+
 	private void clearTextFields() {
 		Utils.clearInputTextFields(findViewById(R.id.productName),
 				findViewById(R.id.quantity), findViewById(R.id.price));
@@ -208,9 +225,9 @@ public class AddProductActivity extends Activity {
 		boolean canConnect = false;
 
 		bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-		if (bluetoothAdapter == null) {
+		if (bluetoothAdapter == null)
 			Utils.makeToast(this, R.string.bluetoothNotSupported);
-		} else {
+		else {
 			enableBluetooth();
 			canConnect = true;
 		}
@@ -379,7 +396,6 @@ public class AddProductActivity extends Activity {
 		private static final int ASSET_MANAGER = 3;
 		private static final int BARCODE = 4;
 
-		@SuppressWarnings("unchecked")
 		@Override
 		protected Void doInBackground(Object... params) {
 			LWPrint printer = (LWPrint) params[PRINTER];

@@ -7,6 +7,6 @@ public class MelanieOperationCallBack {
 	public <T> void onOperationSuccessful(List<T> results) {
 	}
 
-	public <T> void onOperationSuccessful(T responseObject) {
+	public <T> void onOperationSuccessful(T result) {
 	}
 }

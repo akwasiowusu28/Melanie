@@ -9,8 +9,8 @@ import com.j256.ormlite.android.apptools.OrmLiteBaseListActivity;
 import com.melanie.androidactivities.support.MainPageListViewAdapter;
 import com.melanie.androidactivities.support.NavigationHelper;
 import com.melanie.business.MelanieBusiness;
-import com.melanie.business.concrete.MelanieBusinessImpl;
 import com.melanie.dataaccesslayer.datasource.DataSource;
+import com.melanie.support.MelanieBusinessFactory;
 
 public class MainActivity extends OrmLiteBaseListActivity<DataSource> {
 
@@ -18,7 +18,7 @@ public class MainActivity extends OrmLiteBaseListActivity<DataSource> {
 
 	public MainActivity() {
 		super();
-		business = new MelanieBusinessImpl();
+		business = MelanieBusinessFactory.makeMelanieBusiness();
 	}
 
 	@Override
@@ -26,10 +26,10 @@ public class MainActivity extends OrmLiteBaseListActivity<DataSource> {
 		super.onCreate(savedInstanceState);
 
 		// ORMLite
-		// business.initialize(getHelper());
+		business.initialize(getHelper());
 
 		// Backendless
-		business.initialize(this);
+		business.initializeAlternate(this);
 
 		setContentView(R.layout.activity_main);
 		setListAdapter(new MainPageListViewAdapter(this,
@@ -44,5 +44,4 @@ public class MainActivity extends OrmLiteBaseListActivity<DataSource> {
 				.getMelanieMainActivities().get(position));
 		startActivity(intent);
 	}
-
 }

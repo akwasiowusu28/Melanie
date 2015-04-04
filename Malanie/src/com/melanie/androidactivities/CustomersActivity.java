@@ -1,5 +1,6 @@
 package com.melanie.androidactivities;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
@@ -18,9 +19,11 @@ import com.melanie.androidactivities.support.Utils;
 import com.melanie.business.CustomersController;
 import com.melanie.entities.Customer;
 import com.melanie.support.MelanieBusinessFactory;
+import com.melanie.support.MelanieOperationCallBack;
 import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieBusinessException;
 
+@SuppressWarnings("unchecked")
 public class CustomersActivity extends Activity {
 
 	private CustomersController customersController;
@@ -28,6 +31,7 @@ public class CustomersActivity extends Activity {
 	private Customer customer;
 	private boolean isEdit;
 	private boolean wasLaunchedFromSales;
+	private MelanieSingleTextListAdapter<Customer> customersAdapter;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -59,11 +63,31 @@ public class CustomersActivity extends Activity {
 	}
 
 	private void initializeCustomers() {
+		customers = getAllCustomers();
+	}
+
+	private List<Customer> getAllCustomers() {
+		List<Customer> customers = new ArrayList<Customer>();
 		try {
-			customers = customersController.getAllCustomers();
+			customers = customersController
+					.getAllCustomers(new MelanieOperationCallBack() {
+
+						@Override
+						public <T> void onOperationSuccessful(List<T> results) {
+
+							CustomersActivity.this.customers.clear();
+							CustomersActivity.this.customers
+									.addAll((List<Customer>) results);
+							Utils.notifyListUpdate(customersAdapter);
+						}
+					});
+			if (!customers.isEmpty())
+				this.customers.addAll(customers);
+
 		} catch (MelanieBusinessException e) {
-			e.printStackTrace(); // log it
+			e.printStackTrace(); // TODO: log it
 		}
+		return customers;
 	}
 
 	private void setupAutoCompleteCustomers() {

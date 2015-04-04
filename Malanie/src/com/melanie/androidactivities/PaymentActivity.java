@@ -23,9 +23,11 @@ import com.melanie.business.SalesController;
 import com.melanie.entities.Customer;
 import com.melanie.entities.Sale;
 import com.melanie.support.MelanieBusinessFactory;
+import com.melanie.support.MelanieOperationCallBack;
 import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieBusinessException;
 
+@SuppressWarnings("unchecked")
 public class PaymentActivity extends Activity {
 
 	private List<Sale> sales;
@@ -42,16 +44,31 @@ public class PaymentActivity extends Activity {
 		initializeFields();
 		setupSalesListView();
 		setupAmountTextChangedListener();
-		initializeCustomers();
+		customers = getAllCustomers();
 		setupAutoCompleteCustomers();
 	}
 
-	private void initializeCustomers() {
+	private List<Customer> getAllCustomers() {
+		List<Customer> customers = new ArrayList<Customer>();
 		try {
-			customers = customersController.getAllCustomers();
+			customers = customersController
+					.getAllCustomers(new MelanieOperationCallBack() {
+
+						@Override
+						public <T> void onOperationSuccessful(List<T> results) {
+
+							PaymentActivity.this.customers.clear();
+							PaymentActivity.this.customers
+									.addAll((List<Customer>) results);
+						}
+					});
+			if (!customers.isEmpty())
+				this.customers.addAll(customers);
+
 		} catch (MelanieBusinessException e) {
-			e.printStackTrace(); // log it
+			e.printStackTrace(); // TODO: log it
 		}
+		return customers;
 	}
 
 	private void setupAutoCompleteCustomers() {
@@ -76,7 +93,17 @@ public class PaymentActivity extends Activity {
 	private void updateSalesBasedOnSelectedAutoComplete() {
 		try {
 			sales.clear();
-			sales.addAll(salesController.findSalesByCustomer(selectedCustomer));
+			List<Sale> tempSales = salesController.findSalesByCustomer(
+					selectedCustomer, new MelanieOperationCallBack() {
+
+						@Override
+						public <T> void onOperationSuccessful(List<T> results) {
+							sales.clear();
+							sales.addAll((List<Sale>) results);
+						}
+
+					});
+			sales.addAll(tempSales);
 			Utils.notifyListUpdate(salesListAdapter);
 		} catch (MelanieBusinessException e) {
 			e.printStackTrace(); // log it

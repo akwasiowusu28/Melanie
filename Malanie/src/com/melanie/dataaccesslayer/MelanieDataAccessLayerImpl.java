@@ -9,6 +9,7 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.melanie.dataaccesslayer.datasource.DataSource;
 import com.melanie.dataaccesslayer.datasource.DataSourceManager;
 import com.melanie.entities.BaseEntity;
+import com.melanie.support.MelanieOperationCallBack;
 import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieDataLayerException;
 
@@ -19,6 +20,13 @@ import com.melanie.support.exceptions.MelanieDataLayerException;
  */
 @SuppressWarnings("unchecked")
 public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
+
+	private MelanieCloudAccess cloudAccess;
+
+	public MelanieDataAccessLayerImpl() {
+		super();
+		cloudAccess = new MelanieCloudAccess();
+	}
 
 	/**
 	 * @param dataSource
@@ -46,9 +54,16 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 			Dao<Object, Integer> dao = DataSourceManager
 					.getCachedDaoFor(itemClass);
 			if (dao != null) {
+				if (dao.countOf() == 50)
+					DataUtil.removeLeastRecentlyUsedItem(dao, itemClass);
+				DataUtil.updateItemRecentUse(dataItem);
 				int insertReturn = dao.create(dataItem);
-				if (insertReturn == 1)
+				if (insertReturn == 1) {
 					result = OperationResult.SUCCESSFUL;
+					// Save the data in cloud as well
+					cloudAccess.addDataItem(dataItem, itemClass,
+							new MelanieOperationCallBack());
+				}
 			}
 
 		} catch (SQLException e) {
@@ -75,9 +90,13 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 			Dao<Object, Integer> dao = DataSourceManager
 					.getCachedDaoFor(itemClass);
 			if (dao != null && dao.idExists(((BaseEntity) dataItem).getId())) {
+				DataUtil.updateItemRecentUse(dataItem);
 				int updateReturn = dao.update(dataItem);
 				if (updateReturn == 1)
 					result = OperationResult.SUCCESSFUL;
+
+				cloudAccess.updateDataItem(dataItem, itemClass,
+						new MelanieOperationCallBack());
 			}
 
 		} catch (SQLException e) {
@@ -101,11 +120,17 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 			Dao<Object, Integer> dao = DataSourceManager
 					.getCachedDaoFor(itemClass);
 			if (dao != null && dao.idExists(((BaseEntity) dataItem).getId())) {
-
 				int deleteReturn = dao.delete(dataItem);
 				if (deleteReturn == 1)
 					result = OperationResult.SUCCESSFUL;
 			}
+			cloudAccess.deleteDataItem(dataItem, itemClass,
+					new MelanieOperationCallBack()); // TODO: double check
+														// behaviour.
+														// currently
+														// providing
+														// no implementation
+														// for methods
 
 		} catch (SQLException e) {
 			throw new MelanieDataLayerException(e.getMessage(), e);
@@ -120,15 +145,20 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 	 * @throws MelanieDataLayerException
 	 */
 	@Override
-	public <T> T findItemById(int itemId, Class<T> itemClass)
+	public <T> T findItemById(int itemId, Class<T> itemClass,
+			MelanieOperationCallBack operationCallBack)
 			throws MelanieDataLayerException {
 		T item = null;
 		try {
 			Dao<Object, Integer> dao = DataSourceManager
 					.getCachedDaoFor(itemClass);
-			if (dao != null && dao.idExists(itemId))
-
+			if (dao != null && dao.idExists(itemId)) {
 				item = (T) dao.queryForId(itemId);
+				DataUtil.updateItemRecentUse(item);
+			} else
+				cloudAccess.findItemById(itemId, itemClass,
+						new DataUtil.DataCallBack<T>(operationCallBack,
+								itemClass));
 
 		} catch (SQLException e) {
 			throw new MelanieDataLayerException(e.getMessage(), e);
@@ -150,15 +180,21 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 	 */
 	@Override
 	public <T> T findItemByFieldName(String fieldName, String searchValue,
-			Class<T> itemClass) throws MelanieDataLayerException {
+			Class<T> itemClass, MelanieOperationCallBack operationCallBack)
+			throws MelanieDataLayerException {
 		T item = null;
 		try {
 			Dao<Object, Integer> dao = DataSourceManager
 					.getCachedDaoFor(itemClass);
 			if (dao != null) {
 				List<Object> results = dao.queryForEq(fieldName, searchValue);
-				if (results != null && results.size() > 0)
+				if (results != null && results.size() > 0) {
 					item = (T) results.get(0);
+					DataUtil.updateItemRecentUse(item);
+				} else
+					cloudAccess.findItemByFieldName(fieldName, searchValue,
+							itemClass, new DataUtil.DataCallBack<T>(
+									operationCallBack, itemClass));
 			}
 
 		} catch (SQLException e) {
@@ -176,16 +212,16 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 	 * @throws MelanieDataLayerException
 	 */
 	@Override
-	public <T> List<T> findAllItems(Class<T> itemClass)
+	public <T> List<T> findAllItems(Class<T> itemClass,
+			MelanieOperationCallBack operationCallBack)
 			throws MelanieDataLayerException {
 
-		List<T> items = null;
-		try {
-			Dao<Object, Integer> dao = DataSourceManager
-					.getCachedDaoFor(itemClass);
-			items = (List<T>) dao.queryForAll();
-		} catch (SQLException e) {
-			throw new MelanieDataLayerException(e.getMessage(), e);
+		List<T> items = DataUtil.findAllItemsFromCache(itemClass);
+		if (items.size() == 50) {
+			for (T item : items)
+				DataUtil.updateItemRecentUse(item);
+			cloudAccess.findAllItems(itemClass, new DataUtil.DataCallBack<T>(
+					operationCallBack, itemClass));
 		}
 		return items;
 	}
@@ -222,7 +258,8 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 
 	@Override
 	public <T> List<T> findItemsByFieldName(String fieldName,
-			String searchValue, Class<T> itemClass)
+			String searchValue, Class<T> itemClass,
+			MelanieOperationCallBack operationCallBack)
 			throws MelanieDataLayerException {
 		List<T> items = new ArrayList<T>();
 
@@ -231,8 +268,11 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 					.getCachedDaoFor(itemClass);
 			if (dao != null) {
 				List<Object> results = dao.queryForEq(fieldName, searchValue);
-				if (results != null && results.size() > 0)
+				if (results != null && results.size() > 0) {
 					items = (List<T>) results;
+					for (T item : items)
+						DataUtil.updateItemRecentUse(item);
+				}
 			}
 
 		} catch (SQLException e) {
@@ -250,8 +290,10 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 					.getCachedDaoFor(itemClass);
 			if (dao != null && dao.idExists(((BaseEntity) dataItem).getId())) {
 				int updateReturn = dao.refresh(dataItem);
-				if (updateReturn == 1)
+				if (updateReturn == 1) {
+					DataUtil.updateItemRecentUse(dataItem);
 					result = OperationResult.SUCCESSFUL;
+				}
 			}
 
 		} catch (SQLException e) {

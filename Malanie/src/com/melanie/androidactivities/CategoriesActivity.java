@@ -1,5 +1,6 @@
 package com.melanie.androidactivities;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
@@ -14,8 +15,10 @@ import com.melanie.androidactivities.support.Utils;
 import com.melanie.business.ProductEntryController;
 import com.melanie.entities.Category;
 import com.melanie.support.MelanieBusinessFactory;
+import com.melanie.support.MelanieOperationCallBack;
 import com.melanie.support.exceptions.MelanieBusinessException;
 
+@SuppressWarnings("unchecked")
 public class CategoriesActivity extends Activity {
 
 	private ProductEntryController productController;
@@ -32,12 +35,31 @@ public class CategoriesActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_categories);
 
-		try {
-			categories = productController.getAllCategories();
-		} catch (MelanieBusinessException e) {
-			e.printStackTrace(); // log it
-		}
+		categories = getAllCategories();
+
 		setupListView();
+	}
+
+	private List<Category> getAllCategories() {
+		List<Category> categories = new ArrayList<Category>();
+		try {
+			categories = productController
+					.getAllCategories(new MelanieOperationCallBack() {
+						@Override
+						public <T> void onOperationSuccessful(List<T> results) {
+							CategoriesActivity.this.categories.clear();
+							CategoriesActivity.this.categories
+									.addAll((List<Category>) results);
+							Utils.notifyListUpdate(listAdapter);
+						}
+					});
+			if (!categories.isEmpty())
+				this.categories.addAll(categories);
+
+		} catch (MelanieBusinessException e) {
+			e.printStackTrace(); // TODO: log it
+		}
+		return categories;
 	}
 
 	private void setupListView() {
@@ -52,7 +74,8 @@ public class CategoriesActivity extends Activity {
 		headerTextView.setText(getText(R.string.categoriesList));
 		categoriesListView.addHeaderView(headerView);
 
-		listAdapter = new MelanieSingleTextListAdapter<Category>(this, categories);
+		listAdapter = new MelanieSingleTextListAdapter<Category>(this,
+				categories);
 
 		categoriesListView.setAdapter(listAdapter);
 	}
@@ -68,7 +91,7 @@ public class CategoriesActivity extends Activity {
 			Utils.notifyListUpdate(listAdapter);
 			Utils.clearInputTextFields(categoryNameView);
 		} catch (MelanieBusinessException e) {
-			e.printStackTrace(); //log it
+			e.printStackTrace(); // log it
 		}
 
 	}

@@ -13,6 +13,7 @@ import com.melanie.entities.Product;
 import com.melanie.entities.Sale;
 import com.melanie.support.MelanieBusinessFactory;
 import com.melanie.support.MelanieDataFactory;
+import com.melanie.support.MelanieOperationCallBack;
 import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieBusinessException;
 import com.melanie.support.exceptions.MelanieDataLayerException;
@@ -56,11 +57,22 @@ public class SalesControllerImpl implements SalesController {
 	}
 
 	private void addNewSale(String barcode) throws MelanieBusinessException {
-		Sale sale = new Sale();
 		Product product;
 
-		product = productController.findProductByBarcode(barcode);
+		product = productController.findProductByBarcode(barcode,
+				new MelanieOperationCallBack() {
 
+					@Override
+					public <T> void onOperationSuccessful(T result) {
+						addProductToSale((Product) result);
+					}
+				});
+
+		addProductToSale(product);
+	}
+
+	private void addProductToSale(Product product) {
+		Sale sale = new Sale();
 		if (product != null) {
 			sale.setProduct(product);
 			sale.setSaleDate(new Date());
@@ -105,14 +117,16 @@ public class SalesControllerImpl implements SalesController {
 	}
 
 	@Override
-	public List<Sale> findSalesByCustomer(Customer customer)
+	public List<Sale> findSalesByCustomer(Customer customer,
+			MelanieOperationCallBack operationCallBack)
 			throws MelanieBusinessException {
 
 		List<Sale> customerSales = new ArrayList<Sale>();
 		if (dataAccess != null)
 			try {
 				customerSales = dataAccess.findItemsByFieldName(CUSTOMERID,
-						String.valueOf(customer.getId()), Sale.class);
+						String.valueOf(customer.getId()), Sale.class,
+						operationCallBack);
 				for (Sale sale : customerSales) {
 					dataAccess.refreshItem(sale.getProduct(), Product.class);
 					dataAccess.refreshItem(sale.getCustomer(), Customer.class);

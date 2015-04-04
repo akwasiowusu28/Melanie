@@ -1,5 +1,9 @@
 package com.melanie.androidactivities.support;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+
 import android.content.Context;
 import android.os.Handler;
 import android.view.View;
@@ -36,7 +40,8 @@ public final class Utils {
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
-				adapter.notifyDataSetChanged();
+				if (adapter != null)
+					adapter.notifyDataSetChanged();
 			}
 		});
 	}
@@ -101,5 +106,11 @@ public final class Utils {
 	public static void makeToast(Context context, int stringId) {
 		Toast.makeText(context, R.string.printerNotFound, Toast.LENGTH_LONG)
 				.show();
+	}
+
+	public static <T> List<T> removeDuplicates(List<T> items) {
+		List<T> tempItems = new ArrayList<T>();
+		tempItems.addAll(new HashSet<T>(items));
+		return tempItems;
 	}
 }

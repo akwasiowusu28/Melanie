@@ -10,11 +10,11 @@ import com.melanie.entities.Product;
 import com.melanie.support.MelanieArgumentValidator;
 import com.melanie.support.MelanieArgumentValidatorImpl;
 import com.melanie.support.MelanieDataFactory;
+import com.melanie.support.MelanieOperationCallBack;
 import com.melanie.support.MelanieSupportFactory;
 import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieBusinessException;
 import com.melanie.support.exceptions.MelanieDataLayerException;
-import com.melanie.support.exceptions.MelanieUnImplementedOperationException;
 
 /**
  * This class is the main business controller for the Products subsystem. It
@@ -74,9 +74,19 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 	 * @return Category the found category or null
 	 */
 	@Override
-	public Category findCategory(int id) {
-		// TODO Auto-generated method stub
-		return null;
+	public Category findCategory(int id,
+			MelanieOperationCallBack operationCallBack)
+			throws MelanieBusinessException {
+		Category category = null;
+		if (dataAccess != null)
+			try {
+				category = dataAccess.findItemById(id, Category.class,
+						operationCallBack);
+
+			} catch (MelanieDataLayerException e) {
+				throw new MelanieBusinessException(e.getMessage(), e);
+			}
+		return category;
 	}
 
 	/**
@@ -90,7 +100,8 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 	 */
 
 	@Override
-	public Category findCategory(String categoryName)
+	public Category findCategory(String categoryName,
+			MelanieOperationCallBack operationCallBack)
 			throws MelanieBusinessException {
 		new MelanieArgumentValidatorImpl().VerifyNotEmptyString(categoryName);
 		Category category = null;
@@ -98,7 +109,7 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 			try {
 				category = dataAccess.findItemByFieldName(
 						LocalConstants.CATEGORYNAME, categoryName,
-						Category.class);
+						Category.class, operationCallBack);
 			} catch (MelanieDataLayerException e) {
 				throw new MelanieBusinessException(e.getMessage(), e);
 			}
@@ -112,11 +123,14 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 	 * @throws MelanieBusinessException
 	 */
 	@Override
-	public List<Category> getAllCategories() throws MelanieBusinessException {
+	public List<Category> getAllCategories(
+			MelanieOperationCallBack operationCallBack)
+			throws MelanieBusinessException {
 		List<Category> allCategories = new ArrayList<Category>();
 		if (dataAccess != null)
 			try {
-				allCategories = dataAccess.findAllItems(Category.class);
+				allCategories = dataAccess.findAllItems(Category.class,
+						operationCallBack);
 			} catch (MelanieDataLayerException e) {
 				throw new MelanieBusinessException(e.getMessage(), e);
 			}
@@ -167,11 +181,22 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 	public OperationResult removeProduct(int productId)
 			throws MelanieBusinessException {
 		try {
-			return dataAccess.deleteDataItem(findProduct(productId),
-					Product.class);
-		} catch (MelanieDataLayerException e) {
-			throw new MelanieBusinessException(e.getMessage(), e);
+			findProduct(productId, new MelanieOperationCallBack() {
+
+				@Override
+				public <T> void onOperationSuccessful(T result) {
+					try {
+						dataAccess.deleteDataItem((Product) result,
+								Product.class);
+					} catch (MelanieDataLayerException e) {
+						e.printStackTrace(); // TODO: log it
+					}
+				}
+
+			});
+		} finally {
 		}
+		return OperationResult.SUCCESSFUL;
 	}
 
 	/**
@@ -182,11 +207,14 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 	 * @throws MelanieBusinessException
 	 */
 	@Override
-	public Product findProduct(int productId) throws MelanieBusinessException {
+	public Product findProduct(int productId,
+			MelanieOperationCallBack operationCallBack)
+			throws MelanieBusinessException {
 		Product product = null;
 		if (dataAccess != null)
 			try {
-				product = dataAccess.findItemById(productId, Product.class);
+				product = dataAccess.findItemById(productId, Product.class,
+						operationCallBack);
 			} catch (MelanieDataLayerException e) {
 				throw new MelanieBusinessException(e.getMessage(), e);
 			}
@@ -201,13 +229,15 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 	 * @throws MelanieBusinessException
 	 */
 	@Override
-	public Product findProduct(String productName)
+	public Product findProduct(String productName,
+			MelanieOperationCallBack operationCallBack)
 			throws MelanieBusinessException {
 		Product product = null;
 		if (dataAccess != null)
 			try {
 				product = dataAccess.findItemByFieldName(
-						LocalConstants.PRODUCTNAME, productName, Product.class);
+						LocalConstants.PRODUCTNAME, productName, Product.class,
+						operationCallBack);
 			} catch (MelanieDataLayerException e) {
 				throw new MelanieBusinessException(e.getMessage(), e);
 			}
@@ -221,11 +251,23 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 	 *            the name of the product to update
 	 * @param updateQuantity
 	 *            the new quantity of the product
+	 * @throws MelanieBusinessException
 	 */
 	@Override
-	public OperationResult updateProductQuantity(String productName,
-			int updateQuantity) {
-		throw new MelanieUnImplementedOperationException();
+	public OperationResult updateProductQuantity(Product product,
+			int updateQuantity) throws MelanieBusinessException {
+		OperationResult result = OperationResult.FAILED;
+		if (product != null) {
+			product.setQuantity(updateQuantity);
+			if (dataAccess != null)
+				try {
+					result = dataAccess.updateDataItem(product, Product.class);
+
+				} catch (MelanieDataLayerException e) {
+					throw new MelanieBusinessException(e.getMessage(), e);
+				}
+		}
+		return result;
 	}
 
 	/**
@@ -255,13 +297,14 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 	 * @throws MelanieBusinessException
 	 */
 	@Override
-	public Product findProductByBarcode(String barcode)
+	public Product findProductByBarcode(String barcode,
+			MelanieOperationCallBack operationCallBack)
 			throws MelanieBusinessException {
 		Product product = null;
 		argumentValidator.VerifyNotEmptyString(barcode);
 		try {
 			product = dataAccess.findItemByFieldName(LocalConstants.BARCODE,
-					barcode, Product.class);
+					barcode, Product.class, operationCallBack);
 		} catch (MelanieDataLayerException e) {
 			throw new MelanieBusinessException(e.getMessage(), e);
 		}

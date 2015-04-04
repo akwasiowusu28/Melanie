@@ -25,6 +25,7 @@ import com.melanie.business.SalesController;
 import com.melanie.entities.Customer;
 import com.melanie.entities.Sale;
 import com.melanie.support.MelanieBusinessFactory;
+import com.melanie.support.MelanieOperationCallBack;
 import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieBusinessException;
 
@@ -246,14 +247,26 @@ public class SalesActivity extends Activity {
 		Customer customer = null;
 		if (customersController != null)
 			try {
-				customer = customersController.findCustomer(customerId);
-				if (customer != null)
-					customer.setAmountOwed(balance);
-
-				performSave(customer);
+				customer = customersController.findCustomer(customerId,
+						new MelanieOperationCallBack() {
+							@Override
+							public <T> void onOperationSuccessful(T result) {
+								Customer customer = (Customer) result;
+								saveSalesForCustomer(customer);
+							}
+						});
+				saveSalesForCustomer(customer);
 			} catch (MelanieBusinessException e) {
 				e.printStackTrace(); // TODO log it
 			}
+	}
+
+	private void saveSalesForCustomer(Customer customer) {
+
+		if (customer != null)
+			customer.setAmountOwed(balance);
+
+		performSave(customer);
 	}
 
 	private void recordSalesFromBarcodes(List<String> barcodes) {
