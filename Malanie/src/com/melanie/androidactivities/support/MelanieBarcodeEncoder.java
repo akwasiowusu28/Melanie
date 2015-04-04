@@ -1,7 +1,5 @@
 package com.melanie.androidactivities.support;
 
-import java.util.Map;
-
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Color;
@@ -10,7 +8,6 @@ import android.net.Uri;
 import com.planetarydoom.barcode.core.BarcodeFormat;
 import com.planetarydoom.barcode.core.BitMatrix;
 import com.planetarydoom.barcode.core.EAN13Writer;
-import com.planetarydoom.barcode.core.EncodeHintType;
 import com.planetarydoom.barcode.core.Writer;
 import com.planetarydoom.barcode.core.WriterException;
 
@@ -20,16 +17,14 @@ public class MelanieBarcodeEncoder {
 	private String characterEncoding = "ISO-8859-1";
 	private int bitmapHeight = 250, bitmapWidth = 250;
 
-	public Bitmap generateEAN13Barcode(String data,
-			BarcodeFormat mBarcodeFormat, Map<EncodeHintType, ?> hints)
-			throws WriterException {
+	public Bitmap generateEAN13Barcode(String data) throws WriterException {
 		Writer writer = null;
 
 		writer = new EAN13Writer();
 
 		String finaldata = Uri.encode(data, characterEncoding);
-		BitMatrix bm = writer.encode(finaldata, mBarcodeFormat, bitmapWidth,
-				bitmapHeight);
+		BitMatrix bm = writer.encode(finaldata, BarcodeFormat.EAN_13,
+				bitmapWidth, bitmapHeight);
 		ImageBitmap = Bitmap.createBitmap(bitmapWidth, bitmapHeight,
 				Config.ARGB_8888);
 

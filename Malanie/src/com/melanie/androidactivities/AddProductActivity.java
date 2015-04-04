@@ -22,6 +22,7 @@ import android.util.SparseIntArray;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 
 import com.epson.lwprint.sdk.LWPrint;
@@ -32,6 +33,7 @@ import com.epson.lwprint.sdk.LWPrintDiscoverPrinterCallback;
 import com.epson.lwprint.sdk.LWPrintParameterKey;
 import com.epson.lwprint.sdk.LWPrintPrintingPhase;
 import com.melanie.androidactivities.support.MelanieBarcodeDataProvider;
+import com.melanie.androidactivities.support.MelanieBarcodeEncoder;
 import com.melanie.androidactivities.support.Utils;
 import com.melanie.business.ProductEntryController;
 import com.melanie.entities.Category;
@@ -39,6 +41,7 @@ import com.melanie.support.MelanieBusinessFactory;
 import com.melanie.support.MelanieOperationCallBack;
 import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieBusinessException;
+import com.planetarydoom.barcode.core.WriterException;
 
 @SuppressWarnings("unchecked")
 public class AddProductActivity extends Activity {
@@ -79,6 +82,15 @@ public class AddProductActivity extends Activity {
 		categorySpinner.setAdapter(categoriesAdapter);
 
 		initializePrinter();
+
+		ImageView b = (ImageView) findViewById(R.id.barcodeImage);
+		try {
+			b.setImageBitmap(new MelanieBarcodeEncoder()
+					.generateEAN13Barcode("1000000000023"));
+		} catch (WriterException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	private void initializeFields() {
