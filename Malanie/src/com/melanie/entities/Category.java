@@ -5,8 +5,9 @@ import com.j256.ormlite.table.DatabaseTable;
 
 /**
  * The Category entity
+ * 
  * @author Akwasi Owusu
- *
+ * 
  */
 
 @DatabaseTable
@@ -15,12 +16,12 @@ public class Category extends BaseEntity {
 	public Category() {
 		super();
 	}
-    
+
 	public Category(String categoryName) {
 		super();
 		this.categoryName = categoryName;
 	}
-	
+
 	@DatabaseField
 	private String categoryName;
 
@@ -33,7 +34,7 @@ public class Category extends BaseEntity {
 	}
 
 	@Override
-	public String toString(){
-		return this.categoryName;
+	public String toString() {
+		return categoryName;
 	}
 }

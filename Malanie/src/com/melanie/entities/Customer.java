@@ -5,29 +5,31 @@ import com.j256.ormlite.table.DatabaseTable;
 
 /**
  * The Customer entity
+ * 
  * @author Akwasi Owusu
- *
+ * 
  */
 
 @DatabaseTable
 public class Customer extends BaseEntity {
-	
+
 	@DatabaseField
 	private String name;
-	
+
 	@DatabaseField
 	private String phoneNumber;
-	
+
 	@DatabaseField
 	private double amountOwed;
 
-	public Customer(){}
-	
-	public Customer(String name, String phoneNumber){
+	public Customer() {
+	}
+
+	public Customer(String name, String phoneNumber) {
 		this.name = name;
 		this.phoneNumber = phoneNumber;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
@@ -54,7 +56,7 @@ public class Customer extends BaseEntity {
 
 	@Override
 	public String toString() {
-		return this.name;
+		return name;
 	}
 
 }

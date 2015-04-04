@@ -49,21 +49,21 @@ public class PaymentActivity extends Activity {
 	}
 
 	private List<Customer> getAllCustomers() {
-		List<Customer> customers = new ArrayList<Customer>();
+		customers = new ArrayList<Customer>();
 		try {
-			customers = customersController
+			List<Customer> tempCustomers = null;
+			tempCustomers = customersController
 					.getAllCustomers(new MelanieOperationCallBack() {
 
 						@Override
 						public <T> void onOperationSuccessful(List<T> results) {
 
-							PaymentActivity.this.customers.clear();
-							PaymentActivity.this.customers
-									.addAll((List<Customer>) results);
+							customers.clear();
+							customers.addAll((List<Customer>) results);
 						}
 					});
-			if (!customers.isEmpty())
-				this.customers.addAll(customers);
+			if (tempCustomers != null && !tempCustomers.isEmpty())
+				customers.addAll(tempCustomers);
 
 		} catch (MelanieBusinessException e) {
 			e.printStackTrace(); // TODO: log it

@@ -50,25 +50,13 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 	public <T> OperationResult addDataItem(T dataItem, Class<T> itemClass)
 			throws MelanieDataLayerException {
 		OperationResult result = OperationResult.FAILED;
-		try {
-			Dao<Object, Integer> dao = DataSourceManager
-					.getCachedDaoFor(itemClass);
-			if (dao != null) {
-				if (dao.countOf() == 50)
-					DataUtil.removeLeastRecentlyUsedItem(dao, itemClass);
-				DataUtil.updateItemRecentUse(dataItem);
-				int insertReturn = dao.create(dataItem);
-				if (insertReturn == 1) {
-					result = OperationResult.SUCCESSFUL;
-					// Save the data in cloud as well
-					cloudAccess.addDataItem(dataItem, itemClass,
-							new MelanieOperationCallBack());
-				}
-			}
 
-		} catch (SQLException e) {
-			throw new MelanieDataLayerException(e.getMessage(), e);
-		}
+		result = DataUtil.updateDataCache(dataItem);
+
+		// Save the data in cloud as well
+		cloudAccess.addDataItem(dataItem, itemClass,
+				new MelanieOperationCallBack());
+
 		return result;
 	}
 
@@ -86,22 +74,11 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 			throws MelanieDataLayerException {
 		OperationResult result = OperationResult.FAILED;
 
-		try {
-			Dao<Object, Integer> dao = DataSourceManager
-					.getCachedDaoFor(itemClass);
-			if (dao != null && dao.idExists(((BaseEntity) dataItem).getId())) {
-				DataUtil.updateItemRecentUse(dataItem);
-				int updateReturn = dao.update(dataItem);
-				if (updateReturn == 1)
-					result = OperationResult.SUCCESSFUL;
+		result = DataUtil.updateDataCache(dataItem);
 
-				cloudAccess.updateDataItem(dataItem, itemClass,
-						new MelanieOperationCallBack());
-			}
+		cloudAccess.updateDataItem(dataItem, itemClass,
+				new MelanieOperationCallBack());
 
-		} catch (SQLException e) {
-			throw new MelanieDataLayerException(e.getMessage(), e);
-		}
 		return result;
 	}
 
@@ -154,11 +131,10 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 					.getCachedDaoFor(itemClass);
 			if (dao != null && dao.idExists(itemId)) {
 				item = (T) dao.queryForId(itemId);
-				DataUtil.updateItemRecentUse(item);
+				DataUtil.updateDataCache(item);
 			} else
 				cloudAccess.findItemById(itemId, itemClass,
-						new DataUtil.DataCallBack<T>(operationCallBack,
-								itemClass));
+						new DataUtil.DataCallBack<T>(operationCallBack));
 
 		} catch (SQLException e) {
 			throw new MelanieDataLayerException(e.getMessage(), e);
@@ -190,11 +166,11 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 				List<Object> results = dao.queryForEq(fieldName, searchValue);
 				if (results != null && results.size() > 0) {
 					item = (T) results.get(0);
-					DataUtil.updateItemRecentUse(item);
+					DataUtil.updateDataCache(item);
 				} else
 					cloudAccess.findItemByFieldName(fieldName, searchValue,
 							itemClass, new DataUtil.DataCallBack<T>(
-									operationCallBack, itemClass));
+									operationCallBack));
 			}
 
 		} catch (SQLException e) {
@@ -217,11 +193,11 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 			throws MelanieDataLayerException {
 
 		List<T> items = DataUtil.findAllItemsFromCache(itemClass);
-		if (items.size() == 50) {
+		if (items.size() >= 3) {
 			for (T item : items)
-				DataUtil.updateItemRecentUse(item);
+				DataUtil.updateDataCache(item);
 			cloudAccess.findAllItems(itemClass, new DataUtil.DataCallBack<T>(
-					operationCallBack, itemClass));
+					operationCallBack));
 		}
 		return items;
 	}
@@ -271,7 +247,7 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 				if (results != null && results.size() > 0) {
 					items = (List<T>) results;
 					for (T item : items)
-						DataUtil.updateItemRecentUse(item);
+						DataUtil.updateDataCache(item);
 				}
 			}
 
@@ -291,7 +267,7 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 			if (dao != null && dao.idExists(((BaseEntity) dataItem).getId())) {
 				int updateReturn = dao.refresh(dataItem);
 				if (updateReturn == 1) {
-					DataUtil.updateItemRecentUse(dataItem);
+					DataUtil.updateDataCache(dataItem);
 					result = OperationResult.SUCCESSFUL;
 				}
 			}

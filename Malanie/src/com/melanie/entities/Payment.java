@@ -73,20 +73,20 @@ public class Payment extends BaseEntity {
 		this.balance = balance;
 	}
 
-	public Customer getCustomer() {
-		return customer;
-	}
-
-	public void setCustomer(Customer customer) {
-		this.customer = customer;
-	}
-
 	public double getDiscount() {
 		return discount;
 	}
 
 	public void setDiscount(double discount) {
 		this.discount = discount;
+	}
+
+	public Customer getCustomer() {
+		return customer;
+	}
+
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
 	}
 
 	public Collection<Sale> getSales() {
@@ -96,4 +96,5 @@ public class Payment extends BaseEntity {
 	public void setSales(Collection<Sale> sales) {
 		this.sales = sales;
 	}
+
 }

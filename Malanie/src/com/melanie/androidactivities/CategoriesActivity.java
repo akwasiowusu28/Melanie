@@ -41,20 +41,20 @@ public class CategoriesActivity extends Activity {
 	}
 
 	private List<Category> getAllCategories() {
-		List<Category> categories = new ArrayList<Category>();
+		categories = new ArrayList<Category>();
 		try {
-			categories = productController
+			List<Category> tempCategories = null;
+			tempCategories = productController
 					.getAllCategories(new MelanieOperationCallBack() {
 						@Override
 						public <T> void onOperationSuccessful(List<T> results) {
-							CategoriesActivity.this.categories.clear();
-							CategoriesActivity.this.categories
-									.addAll((List<Category>) results);
+							categories.clear();
+							categories.addAll((List<Category>) results);
 							Utils.notifyListUpdate(listAdapter);
 						}
 					});
-			if (!categories.isEmpty())
-				this.categories.addAll(categories);
+			if (tempCategories != null && !tempCategories.isEmpty())
+				categories.addAll(tempCategories);
 
 		} catch (MelanieBusinessException e) {
 			e.printStackTrace(); // TODO: log it

@@ -74,11 +74,11 @@ public class Product extends BaseEntity {
 		this.barcode = barcode;
 	}
 
-	public Category getProductCategory() {
+	public Category getCategory() {
 		return category;
 	}
 
-	public void setProductCategory(Category category) {
+	public void setCategory(Category category) {
 		this.category = category;
 	}
 

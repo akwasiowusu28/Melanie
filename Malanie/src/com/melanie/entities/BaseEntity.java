@@ -30,20 +30,20 @@ public abstract class BaseEntity implements Comparable<BaseEntity> {
 		this.id = id;
 	}
 
+	public Date getRecentUse() {
+		return recentUse;
+	}
+
+	public void setRecentUse(Date recentUse) {
+		this.recentUse = recentUse;
+	}
+
 	public String getObjectId() {
 		return objectId;
 	}
 
 	public void setObjectId(String objectId) {
 		this.objectId = objectId;
-	}
-
-	public Date recentUse() {
-		return recentUse;
-	}
-
-	public void setRecentUse(Date lastRecentlyUsed) {
-		recentUse = lastRecentlyUsed;
 	}
 
 	@Override
