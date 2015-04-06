@@ -2,7 +2,11 @@ package com.melanie.business.concrete;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Queue;
 
 import com.melanie.business.ProductEntryController;
 import com.melanie.business.SalesController;
@@ -21,76 +25,75 @@ import com.melanie.support.exceptions.MelanieDataLayerException;
 public class SalesControllerImpl implements SalesController {
 
 	private static final String CUSTOMERID = "CustomerId";
+	private static final String ADDNEWSALE = "addNewSale";
 
 	private ProductEntryController productController;
 	private MelanieDataAccessLayer dataAccess;
 	private List<Sale> sales;
 	private Payment payment;
+	private Queue<String> notFoundProducts;
 
 	public SalesControllerImpl() {
 		productController = MelanieBusinessFactory.makeProductEntryController();
 		dataAccess = MelanieDataFactory.makeDataAccess();
 		sales = new ArrayList<Sale>();
+		notFoundProducts = new LinkedList<String>();
 	}
 
 	@Override
 	public List<Sale> generateSaleItems(List<String> barcodes)
 			throws MelanieBusinessException {
-		for (String barcode : barcodes) {
-			// first check if the list contains a product with the same barcode
-			// and just increase the quantity sold
-			Sale sale = getExistingSale(barcode);
-			if (sale == null)
-				try {
-					addNewSale(parseBarcodeNoChecksum(barcode));
-				} catch (MelanieBusinessException e) {
-					throw new MelanieBusinessException(e.getMessage(), e);
-				}
-			else {
-				int quantity = sale.getQuantitySold();
-				sale.setQuantitySold(++quantity);
-			}
-		}
 
+		Map<String, Integer> itemGroup = new HashMap<String, Integer>();
+		for (String barcode : barcodes)
+			if (!itemGroup.containsKey(barcode))
+				itemGroup.put(barcode, 1);
+			else {
+				Integer itemCount = itemGroup.get(barcode);
+				itemCount++;
+			}
+
+		for (String barcode : itemGroup.keySet())
+			try {
+				if (!notFoundProducts.contains(barcode))
+					addNewSale(parseBarcodeNoChecksum(barcode),
+							itemGroup.get(barcode));
+			} catch (MelanieBusinessException e) {
+				throw new MelanieBusinessException(e.getMessage(), e); // TODO:
+																		// log
+																		// it
+			}
 		return sales;
 
 	}
 
-	private void addNewSale(String barcode) throws MelanieBusinessException {
+	private void addNewSale(final String barcode, final int count)
+			throws MelanieBusinessException {
 		Product product;
 
 		product = productController.findProductByBarcode(barcode,
-				new MelanieOperationCallBack() {
+				new MelanieOperationCallBack<Product>(this.getClass()
+						.getSimpleName() + ADDNEWSALE) {
 
 					@Override
-					public <T> void onOperationSuccessful(T result) {
-						addProductToSale((Product) result);
+					public void onOperationSuccessful(Product result) {
+						if (result == null)
+							addBarcodeToNotFoundList(barcode);
+						addProductToSale(result, count);
 					}
 				});
 
-		addProductToSale(product);
+		addProductToSale(product, count);
 	}
 
-	private void addProductToSale(Product product) {
-		Sale sale = new Sale();
+	private void addProductToSale(Product product, int count) {
 		if (product != null) {
+			Sale sale = new Sale();
 			sale.setProduct(product);
 			sale.setSaleDate(new Date());
-			sale.setQuantitySold(1);
+			sale.setQuantitySold(count);
 			sales.add(sale);
 		}
-	}
-
-	private Sale getExistingSale(String barcode) {
-		Sale sale = null;
-		String barcodeNoChecksum = parseBarcodeNoChecksum(barcode);
-		for (Sale existingSale : sales)
-			if (existingSale.getProduct().getBarcode()
-					.equals(barcodeNoChecksum)) {
-				sale = existingSale;
-				break;
-			}
-		return sale;
 	}
 
 	@Override
@@ -98,14 +101,16 @@ public class SalesControllerImpl implements SalesController {
 			throws MelanieBusinessException {
 		OperationResult result = OperationResult.FAILED;
 		if (dataAccess != null) {
-			for (Sale sale : sales)
-				try {
+			try {
+				dataAccess.refreshItem(payment, Payment.class);
+				for (Sale sale : sales) {
 					sale.setPayment(payment);
 					sale.setCustomer(customer);
 					dataAccess.addDataItem(sale, Sale.class);
-				} catch (MelanieDataLayerException e) {
-					throw new MelanieBusinessException(e.getMessage(), e);
 				}
+			} catch (MelanieDataLayerException e) {
+				throw new MelanieBusinessException(e.getMessage(), e);
+			}
 			result = OperationResult.SUCCESSFUL;
 		}
 
@@ -118,7 +123,7 @@ public class SalesControllerImpl implements SalesController {
 
 	@Override
 	public List<Sale> findSalesByCustomer(Customer customer,
-			MelanieOperationCallBack operationCallBack)
+			MelanieOperationCallBack<Sale> operationCallBack)
 			throws MelanieBusinessException {
 
 		List<Sale> customerSales = new ArrayList<Sale>();
@@ -152,6 +157,12 @@ public class SalesControllerImpl implements SalesController {
 			throw new MelanieBusinessException(e.getMessage(), e);
 		}
 		return result;
+	}
+
+	private void addBarcodeToNotFoundList(String barcode) {
+		if (notFoundProducts.size() >= 20)
+			notFoundProducts.remove();
+		notFoundProducts.add(barcode);
 	}
 	// @SuppressWarnings("serial")
 	// private List<Sale> stub(){

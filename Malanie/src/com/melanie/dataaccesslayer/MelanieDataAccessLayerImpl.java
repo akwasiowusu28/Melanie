@@ -18,6 +18,7 @@ import com.melanie.support.exceptions.MelanieDataLayerException;
  * 
  * @author Akwasi Owusu
  */
+
 @SuppressWarnings("unchecked")
 public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 
@@ -50,12 +51,9 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 	public <T> OperationResult addDataItem(T dataItem, Class<T> itemClass)
 			throws MelanieDataLayerException {
 		OperationResult result = OperationResult.FAILED;
-
-		result = DataUtil.updateDataCache(dataItem);
-
 		// Save the data in cloud as well
 		cloudAccess.addDataItem(dataItem, itemClass,
-				new MelanieOperationCallBack());
+				new DataUtil.DataCallBack<T>(null));
 
 		return result;
 	}
@@ -72,14 +70,10 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 	@Override
 	public <T> OperationResult updateDataItem(T dataItem, Class<T> itemClass)
 			throws MelanieDataLayerException {
-		OperationResult result = OperationResult.FAILED;
-
-		result = DataUtil.updateDataCache(dataItem);
-
 		cloudAccess.updateDataItem(dataItem, itemClass,
-				new MelanieOperationCallBack());
+				new DataUtil.DataCallBack<T>(null));
 
-		return result;
+		return OperationResult.SUCCESSFUL; // very optimistic :-D
 	}
 
 	/**
@@ -101,13 +95,7 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 				if (deleteReturn == 1)
 					result = OperationResult.SUCCESSFUL;
 			}
-			cloudAccess.deleteDataItem(dataItem, itemClass,
-					new MelanieOperationCallBack()); // TODO: double check
-														// behaviour.
-														// currently
-														// providing
-														// no implementation
-														// for methods
+			cloudAccess.deleteDataItem(dataItem, itemClass, null);
 
 		} catch (SQLException e) {
 			throw new MelanieDataLayerException(e.getMessage(), e);
@@ -123,14 +111,14 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 	 */
 	@Override
 	public <T> T findItemById(int itemId, Class<T> itemClass,
-			MelanieOperationCallBack operationCallBack)
+			MelanieOperationCallBack<T> operationCallBack)
 			throws MelanieDataLayerException {
 		T item = null;
 		try {
 			Dao<Object, Integer> dao = DataSourceManager
 					.getCachedDaoFor(itemClass);
 			if (dao != null && dao.idExists(itemId)) {
-				item = (T) dao.queryForId(itemId);
+				item = itemClass.cast(dao.queryForId(itemId));
 				DataUtil.updateDataCache(item);
 			} else
 				cloudAccess.findItemById(itemId, itemClass,
@@ -156,7 +144,7 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 	 */
 	@Override
 	public <T> T findItemByFieldName(String fieldName, String searchValue,
-			Class<T> itemClass, MelanieOperationCallBack operationCallBack)
+			Class<T> itemClass, MelanieOperationCallBack<T> operationCallBack)
 			throws MelanieDataLayerException {
 		T item = null;
 		try {
@@ -165,7 +153,7 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 			if (dao != null) {
 				List<Object> results = dao.queryForEq(fieldName, searchValue);
 				if (results != null && results.size() > 0) {
-					item = (T) results.get(0);
+					item = itemClass.cast(results.get(0));
 					DataUtil.updateDataCache(item);
 				} else
 					cloudAccess.findItemByFieldName(fieldName, searchValue,
@@ -189,11 +177,11 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 	 */
 	@Override
 	public <T> List<T> findAllItems(Class<T> itemClass,
-			MelanieOperationCallBack operationCallBack)
+			MelanieOperationCallBack<T> operationCallBack)
 			throws MelanieDataLayerException {
 
 		List<T> items = DataUtil.findAllItemsFromCache(itemClass);
-		if (items.size() >= 3) {
+		if (items.isEmpty() || items.size() >= 3) {
 			for (T item : items)
 				DataUtil.updateDataCache(item);
 			cloudAccess.findAllItems(itemClass, new DataUtil.DataCallBack<T>(
@@ -235,7 +223,7 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 	@Override
 	public <T> List<T> findItemsByFieldName(String fieldName,
 			String searchValue, Class<T> itemClass,
-			MelanieOperationCallBack operationCallBack)
+			MelanieOperationCallBack<T> operationCallBack)
 			throws MelanieDataLayerException {
 		List<T> items = new ArrayList<T>();
 

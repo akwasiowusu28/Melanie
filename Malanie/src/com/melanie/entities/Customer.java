@@ -55,6 +55,23 @@ public class Customer extends BaseEntity {
 	}
 
 	@Override
+	public boolean equals(Object another) {
+		boolean equals = false;
+		if (this == another)
+			equals = true;
+		else if (another instanceof Customer) {
+			Customer anotherCustomer = (Customer) another;
+			equals = anotherCustomer.name.equals(name);
+		}
+		return equals;
+	}
+
+	@Override
+	public int hashCode() {
+		return name.hashCode();
+	}
+
+	@Override
 	public String toString() {
 		return name;
 	}

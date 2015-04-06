@@ -17,6 +17,7 @@ public abstract class BaseEntity implements Comparable<BaseEntity> {
 
 	@DatabaseField(generatedId = true, allowGeneratedIdInsert = true)
 	private int id;
+
 	@DatabaseField
 	private Date recentUse;
 

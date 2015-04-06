@@ -23,7 +23,7 @@ public interface SalesController {
 			throws MelanieBusinessException;
 
 	List<Sale> findSalesByCustomer(Customer customer,
-			MelanieOperationCallBack operationCallBack)
+			MelanieOperationCallBack<Sale> operationCallBack)
 			throws MelanieBusinessException;
 
 	OperationResult recordPayment(Customer customer, List<Sale> sale,

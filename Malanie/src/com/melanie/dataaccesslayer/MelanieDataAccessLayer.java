@@ -20,22 +20,22 @@ public interface MelanieDataAccessLayer {
 			throws MelanieDataLayerException;
 
 	<T> T findItemById(int itemId, Class<T> itemClass,
-			MelanieOperationCallBack operationCallBack)
+			MelanieOperationCallBack<T> operationCallBack)
 			throws MelanieDataLayerException;
 
 	<T> T findItemByFieldName(String fieldName, String searchValue,
-			Class<T> itemClass, MelanieOperationCallBack operationCallBack)
+			Class<T> itemClass, MelanieOperationCallBack<T> operationCallBack)
 			throws MelanieDataLayerException;
 
 	<T> List<T> findAllItems(Class<T> itemClass,
-			MelanieOperationCallBack operationCallBack)
+			MelanieOperationCallBack<T> operationCallBack)
 			throws MelanieDataLayerException;
 
 	<T> int getLastInsertedId(Class<T> itemClass)
 			throws MelanieDataLayerException;
 
 	<T> List<T> findItemsByFieldName(String fieldName, String searchValue,
-			Class<T> itemClass, MelanieOperationCallBack operationCallBack)
+			Class<T> itemClass, MelanieOperationCallBack<T> operationCallBack)
 			throws MelanieDataLayerException;
 
 	<T> OperationResult refreshItem(T dataItem, Class<T> itemClass)

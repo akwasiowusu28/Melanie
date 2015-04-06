@@ -169,6 +169,11 @@ public class SalesActivity extends Activity {
 
 	private void performSave(Customer customer) {
 
+		try {
+			customersController.updateCustomer(customer);
+		} catch (MelanieBusinessException e) {
+			e.printStackTrace();// TODO Log it
+		}
 		// savePayment and saveSales are supposed to be in one transaction
 		savePayment(customer); // save the payment before saving the sales
 								// because the sales are composed of the payment
@@ -248,10 +253,11 @@ public class SalesActivity extends Activity {
 		if (customersController != null)
 			try {
 				customer = customersController.findCustomer(customerId,
-						new MelanieOperationCallBack() {
+						new MelanieOperationCallBack<Customer>(this.getClass()
+								.getSimpleName()) {
 							@Override
-							public <T> void onOperationSuccessful(T result) {
-								Customer customer = (Customer) result;
+							public void onOperationSuccessful(Customer result) {
+								Customer customer = result;
 								saveSalesForCustomer(customer);
 							}
 						});
@@ -264,7 +270,7 @@ public class SalesActivity extends Activity {
 	private void saveSalesForCustomer(Customer customer) {
 
 		if (customer != null)
-			customer.setAmountOwed(balance);
+			customer.setAmountOwed(customer.getAmountOwed() + balance);
 
 		performSave(customer);
 	}

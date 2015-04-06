@@ -27,7 +27,6 @@ import com.melanie.support.MelanieOperationCallBack;
 import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieBusinessException;
 
-@SuppressWarnings("unchecked")
 public class PaymentActivity extends Activity {
 
 	private List<Sale> sales;
@@ -53,13 +52,16 @@ public class PaymentActivity extends Activity {
 		try {
 			List<Customer> tempCustomers = null;
 			tempCustomers = customersController
-					.getAllCustomers(new MelanieOperationCallBack() {
+					.getAllCustomers(new MelanieOperationCallBack<Customer>(
+							this.getClass().getSimpleName()) {
 
 						@Override
-						public <T> void onOperationSuccessful(List<T> results) {
+						public void onOperationSuccessful(List<Customer> results) {
 
-							customers.clear();
-							customers.addAll((List<Customer>) results);
+							List<Customer> newCustomers = results;
+							for (Customer customer : newCustomers)
+								if (!customers.contains(customer))
+									customers.add(customer);
 						}
 					});
 			if (tempCustomers != null && !tempCustomers.isEmpty())
@@ -94,12 +96,15 @@ public class PaymentActivity extends Activity {
 		try {
 			sales.clear();
 			List<Sale> tempSales = salesController.findSalesByCustomer(
-					selectedCustomer, new MelanieOperationCallBack() {
+					selectedCustomer, new MelanieOperationCallBack<Sale>(this
+							.getClass().getSimpleName()) {
 
 						@Override
-						public <T> void onOperationSuccessful(List<T> results) {
-							sales.clear();
-							sales.addAll((List<Sale>) results);
+						public void onOperationSuccessful(List<Sale> results) {
+							List<Sale> newSales = results;
+							for (Sale sale : newSales)
+								if (!sales.contains(sale))
+									sales.add(sale);
 						}
 
 					});
@@ -195,13 +200,11 @@ public class PaymentActivity extends Activity {
 		@Override
 		public void onTextChanged(CharSequence s, int start, int before,
 				int count) {
-
 		}
 
 		@Override
 		public void beforeTextChanged(CharSequence s, int start, int count,
 				int after) {
-
 		}
 
 		@Override

@@ -66,7 +66,7 @@ public class CustomersControllerImpl implements CustomersController {
 	 */
 	@Override
 	public List<Customer> getAllCustomers(
-			MelanieOperationCallBack operationCallBack)
+			MelanieOperationCallBack<Customer> operationCallBack)
 			throws MelanieBusinessException {
 
 		List<Customer> customers = new ArrayList<Customer>();
@@ -96,7 +96,7 @@ public class CustomersControllerImpl implements CustomersController {
 
 	@Override
 	public Customer findCustomer(int customerId,
-			MelanieOperationCallBack operationCallBack)
+			MelanieOperationCallBack<Customer> operationCallBack)
 			throws MelanieBusinessException {
 
 		Customer customer = null;

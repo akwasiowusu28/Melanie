@@ -83,11 +83,12 @@ public class Product extends BaseEntity {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(Object anotherProduct) {
 		boolean equals = false;
-
-		if (obj instanceof Product) {
-			Product product = (Product) obj;
+		if (this == anotherProduct)
+			equals = true;
+		else if (anotherProduct instanceof Product) {
+			Product product = (Product) anotherProduct;
 			equals = product.barcode.equals(barcode);
 		}
 		return equals;
@@ -95,6 +96,6 @@ public class Product extends BaseEntity {
 
 	@Override
 	public int hashCode() {
-		return super.hashCode();
+		return barcode.hashCode();
 	}
 }

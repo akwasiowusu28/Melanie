@@ -107,11 +107,14 @@ public class AddProductActivity extends Activity {
 		try {
 			List<Category> tempCategories = null;
 			tempCategories = productController
-					.getAllCategories(new MelanieOperationCallBack() {
+					.getAllCategories(new MelanieOperationCallBack<Category>(
+							this.getClass().getSimpleName()) {
 						@Override
-						public <T> void onOperationSuccessful(List<T> results) {
-							categories.clear();
-							categories.addAll((List<Category>) results);
+						public void onOperationSuccessful(List<Category> results) {
+							List<Category> newCategories = results;
+							for (Category category : newCategories)
+								if (!categories.contains(category))
+									categories.add(category);
 							Utils.notifyListUpdate(categoriesAdapter);
 						}
 					});

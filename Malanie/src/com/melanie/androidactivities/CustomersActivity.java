@@ -23,7 +23,6 @@ import com.melanie.support.MelanieOperationCallBack;
 import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieBusinessException;
 
-@SuppressWarnings("unchecked")
 public class CustomersActivity extends Activity {
 
 	private CustomersController customersController;
@@ -71,13 +70,16 @@ public class CustomersActivity extends Activity {
 		try {
 			List<Customer> tempCustomers = null;
 			tempCustomers = customersController
-					.getAllCustomers(new MelanieOperationCallBack() {
+					.getAllCustomers(new MelanieOperationCallBack<Customer>(
+							this.getClass().getSimpleName()) {
 
 						@Override
-						public <T> void onOperationSuccessful(List<T> results) {
+						public void onOperationSuccessful(List<Customer> results) {
 
-							customers.clear();
-							customers.addAll((List<Customer>) results);
+							List<Customer> newCustomers = results;
+							for (Customer customer : newCustomers)
+								if (!customers.contains(customer))
+									customers.add(customer);
 							Utils.notifyListUpdate(customersAdapter);
 						}
 					});
@@ -138,13 +140,15 @@ public class CustomersActivity extends Activity {
 				customer.setName(customerName);
 				customer.setPhoneNumber(phoneNumber);
 				result = customersController.updateCustomer(customer);
-				isEdit = false;
-			} else
+			} else {
 				customer = customersController.cacheAndReturnNewCustomer(
 						customerName, phoneNumber);
-			result = customersController.addCachedNewCustomer();
+				result = customersController.addCachedNewCustomer();
+			}
 		} catch (MelanieBusinessException e) {
 			e.printStackTrace(); // Log it
+		} finally {
+			isEdit = false;
 		}
 		return result;
 	}

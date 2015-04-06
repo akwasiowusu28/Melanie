@@ -17,6 +17,8 @@ import com.melanie.support.exceptions.MelanieDataLayerException;
 @SuppressWarnings("unchecked")
 public final class DataUtil {
 
+	private static final String DATAUTIL = "DataUtil";
+
 	private static <T> void updateItemRecentUse(T dataItem) {
 		((BaseEntity) dataItem).setRecentUse(new Date());
 	}
@@ -73,20 +75,21 @@ public final class DataUtil {
 		return result;
 	}
 
-	public static class DataCallBack<T> extends MelanieOperationCallBack {
+	public static class DataCallBack<T> extends MelanieOperationCallBack<T> {
 
-		private MelanieOperationCallBack businessCallBack;
+		private MelanieOperationCallBack<T> businessCallBack;
 
-		public DataCallBack(MelanieOperationCallBack businessCallback) {
+		public DataCallBack(MelanieOperationCallBack<T> businessCallback) {
+			super(DataUtil.class.getSimpleName());
 			businessCallBack = businessCallback;
 		}
 
 		@Override
-		public <E> void onOperationSuccessful(List<E> results) {
+		public void onOperationSuccessful(List<T> results) {
 			if (businessCallBack != null)
 				businessCallBack.onOperationSuccessful(results);
 			try {
-				for (E result : results)
+				for (T result : results)
 					updateDataCache(result);
 			} catch (MelanieDataLayerException e) {
 				e.printStackTrace(); // TODO: log it
@@ -94,7 +97,7 @@ public final class DataUtil {
 		}
 
 		@Override
-		public <E> void onOperationSuccessful(E result) {
+		public void onOperationSuccessful(T result) {
 			if (businessCallBack != null)
 				businessCallBack.onOperationSuccessful(result);
 			try {

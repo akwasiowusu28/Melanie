@@ -34,6 +34,23 @@ public class Category extends BaseEntity {
 	}
 
 	@Override
+	public boolean equals(Object another) {
+		boolean equals = false;
+		if (this == another)
+			equals = true;
+		else if (another instanceof Category) {
+			Category anotherCategory = (Category) another;
+			equals = anotherCategory.categoryName.equals(categoryName);
+		}
+		return equals;
+	}
+
+	@Override
+	public int hashCode() {
+		return categoryName.hashCode();
+	}
+
+	@Override
 	public String toString() {
 		return categoryName;
 	}

@@ -2,11 +2,21 @@ package com.melanie.support;
 
 import java.util.List;
 
-public class MelanieOperationCallBack {
+public class MelanieOperationCallBack<T> {
 
-	public <T> void onOperationSuccessful(List<T> results) {
+	private String sender;
+
+	public MelanieOperationCallBack(String sender) {
+		this.sender = sender;
 	}
 
-	public <T> void onOperationSuccessful(T result) {
+	public void onOperationSuccessful(List<T> results) {
+	}
+
+	public void onOperationSuccessful(T result) {
+	}
+
+	public String getSender() {
+		return sender;
 	}
 }

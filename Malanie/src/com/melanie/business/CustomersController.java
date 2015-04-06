@@ -21,13 +21,14 @@ public interface CustomersController {
 
 	OperationResult addCachedNewCustomer() throws MelanieBusinessException;
 
-	List<Customer> getAllCustomers(MelanieOperationCallBack operationCallBack)
+	List<Customer> getAllCustomers(
+			MelanieOperationCallBack<Customer> operationCallBack)
 			throws MelanieBusinessException;
 
 	OperationResult updateCustomer(Customer customer)
 			throws MelanieBusinessException;
 
 	Customer findCustomer(int customerId,
-			MelanieOperationCallBack operationCallBack)
+			MelanieOperationCallBack<Customer> operationCallBack)
 			throws MelanieBusinessException;
 }
