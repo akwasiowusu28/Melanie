@@ -17,8 +17,6 @@ import com.melanie.support.exceptions.MelanieDataLayerException;
 @SuppressWarnings("unchecked")
 public final class DataUtil {
 
-	private static final String DATAUTIL = "DataUtil";
-
 	private static <T> void updateItemRecentUse(T dataItem) {
 		((BaseEntity) dataItem).setRecentUse(new Date());
 	}
@@ -85,9 +83,9 @@ public final class DataUtil {
 		}
 
 		@Override
-		public void onOperationSuccessful(List<T> results) {
+		public void onCollectionOperationSuccessful(List<T> results) {
 			if (businessCallBack != null)
-				businessCallBack.onOperationSuccessful(results);
+				businessCallBack.onCollectionOperationSuccessful(results);
 			try {
 				for (T result : results)
 					updateDataCache(result);

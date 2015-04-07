@@ -110,7 +110,7 @@ public class AddProductActivity extends Activity {
 					.getAllCategories(new MelanieOperationCallBack<Category>(
 							this.getClass().getSimpleName()) {
 						@Override
-						public void onOperationSuccessful(List<Category> results) {
+						public void onCollectionOperationSuccessful(List<Category> results) {
 							List<Category> newCategories = results;
 							for (Category category : newCategories)
 								if (!categories.contains(category))

@@ -21,6 +21,7 @@ public abstract class BaseEntity implements Comparable<BaseEntity> {
 	@DatabaseField
 	private Date recentUse;
 
+	@DatabaseField
 	private String objectId;
 
 	public int getId() {

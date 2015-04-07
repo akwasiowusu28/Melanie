@@ -50,7 +50,7 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 	@Override
 	public <T> OperationResult addDataItem(T dataItem, Class<T> itemClass)
 			throws MelanieDataLayerException {
-		OperationResult result = OperationResult.FAILED;
+		OperationResult result = OperationResult.SUCCESSFUL;
 		// Save the data in cloud as well
 		cloudAccess.addDataItem(dataItem, itemClass,
 				new DataUtil.DataCallBack<T>(null));

@@ -19,7 +19,7 @@ public interface CustomersController {
 	Customer cacheAndReturnNewCustomer(String name, String phoneNumber)
 			throws MelanieBusinessException;
 
-	OperationResult addCachedNewCustomer() throws MelanieBusinessException;
+	OperationResult addOrUpdateCachedCustomer() throws MelanieBusinessException;
 
 	List<Customer> getAllCustomers(
 			MelanieOperationCallBack<Customer> operationCallBack)
@@ -27,6 +27,8 @@ public interface CustomersController {
 
 	OperationResult updateCustomer(Customer customer)
 			throws MelanieBusinessException;
+
+	public Customer getCachedCustomer();
 
 	Customer findCustomer(int customerId,
 			MelanieOperationCallBack<Customer> operationCallBack)

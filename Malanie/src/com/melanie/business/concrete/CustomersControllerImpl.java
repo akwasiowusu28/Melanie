@@ -22,7 +22,7 @@ import com.melanie.support.exceptions.MelanieDataLayerException;
 public class CustomersControllerImpl implements CustomersController {
 
 	private MelanieDataAccessLayer dataAccess;
-	private Customer customer;
+	private static Customer customer;
 
 	public CustomersControllerImpl() {
 		dataAccess = MelanieDataFactory.makeDataAccess();
@@ -32,6 +32,15 @@ public class CustomersControllerImpl implements CustomersController {
 	public Customer cacheAndReturnNewCustomer(String name, String phoneNumber)
 			throws MelanieBusinessException {
 		customer = new Customer(name, phoneNumber);
+		return customer;
+	}
+
+	public void cacheCustomerForCreditSaleTranscation(Customer customerToCache) {
+		customer = customerToCache;
+	}
+
+	@Override
+	public Customer getCachedCustomer() {
 		return customer;
 	}
 
@@ -45,7 +54,7 @@ public class CustomersControllerImpl implements CustomersController {
 	 * @return {@link OperationResult}
 	 */
 	@Override
-	public OperationResult addCachedNewCustomer()
+	public OperationResult addOrUpdateCachedCustomer()
 			throws MelanieBusinessException {
 
 		OperationResult result = OperationResult.FAILED;

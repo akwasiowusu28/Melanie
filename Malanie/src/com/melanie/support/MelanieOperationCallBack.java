@@ -10,7 +10,7 @@ public class MelanieOperationCallBack<T> {
 		this.sender = sender;
 	}
 
-	public void onOperationSuccessful(List<T> results) {
+	public void onCollectionOperationSuccessful(List<T> results) {
 	}
 
 	public void onOperationSuccessful(T result) {

@@ -170,14 +170,17 @@ public class SalesActivity extends Activity {
 	private void performSave(Customer customer) {
 
 		try {
-			customersController.updateCustomer(customer);
+			// customersController.updateCustomer(customer);
+			customersController.addOrUpdateCachedCustomer();
 		} catch (MelanieBusinessException e) {
 			e.printStackTrace();// TODO Log it
 		}
 		// savePayment and saveSales are supposed to be in one transaction
-		savePayment(customer); // save the payment before saving the sales
-								// because the sales are composed of the payment
-		OperationResult result = saveSales(customer);
+		OperationResult result = savePayment(customer); // save the payment
+														// before saving the
+														// sales
+		// because the sales are composed of the payment
+		// OperationResult result = saveSales(customer);
 		updateUIAfterSave(result);
 	}
 
@@ -241,30 +244,29 @@ public class SalesActivity extends Activity {
 				List<String> barcodes = data
 						.getStringArrayListExtra(Utils.Costants.BARCODES);
 				recordSalesFromBarcodes(barcodes);
-			} else if (requestCode == CUSTOMER_REQUEST_CODE) {
-				customerId = data.getIntExtra(Utils.Costants.CustomerId,
-						customerId);
+			} else if (requestCode == CUSTOMER_REQUEST_CODE)
+				// customerId = data.getIntExtra(Utils.Costants.CustomerId,
+				// customerId);
 				saveCreditSaleWithCustomer(customerId);
-			}
 	}
 
 	private void saveCreditSaleWithCustomer(int customerId) {
-		Customer customer = null;
-		if (customersController != null)
-			try {
-				customer = customersController.findCustomer(customerId,
-						new MelanieOperationCallBack<Customer>(this.getClass()
-								.getSimpleName()) {
-							@Override
-							public void onOperationSuccessful(Customer result) {
-								Customer customer = result;
-								saveSalesForCustomer(customer);
-							}
-						});
-				saveSalesForCustomer(customer);
-			} catch (MelanieBusinessException e) {
-				e.printStackTrace(); // TODO log it
-			}
+		Customer customer = customersController.getCachedCustomer();
+		// if (customersController != null)
+		// try {
+		// customer = customersController.findCustomer(customerId,
+		// new MelanieOperationCallBack<Customer>(this.getClass()
+		// .getSimpleName()) {
+		// @Override
+		// public void onOperationSuccessful(Customer result) {
+		// Customer customer = result;
+		// saveSalesForCustomer(customer);
+		// }
+		// });
+		saveSalesForCustomer(customer);
+		// } catch (MelanieBusinessException e) {
+		// e.printStackTrace(); // TODO log it
+		// }
 	}
 
 	private void saveSalesForCustomer(Customer customer) {
@@ -279,7 +281,20 @@ public class SalesActivity extends Activity {
 
 		try {
 			sales.clear();
-			sales.addAll(salesController.generateSaleItems(barcodes));
+			sales.addAll(salesController.generateSaleItems(
+					barcodes,
+					new MelanieOperationCallBack<Sale>(SalesActivity.class
+							.getSimpleName()) {
+
+						@Override
+						public void onCollectionOperationSuccessful(
+								List<Sale> results) {
+							sales.clear();
+							sales.addAll(results);
+							Utils.notifyListUpdate(salesListAdapter);
+							updateTotalField();
+						}
+					}));
 			Utils.notifyListUpdate(salesListAdapter);
 			updateTotalField();
 		} catch (MelanieBusinessException e) {

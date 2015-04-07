@@ -32,6 +32,7 @@ public class SalesControllerImpl implements SalesController {
 	private List<Sale> sales;
 	private Payment payment;
 	private Queue<String> notFoundProducts;
+	private int operationCount = 0;
 
 	public SalesControllerImpl() {
 		productController = MelanieBusinessFactory.makeProductEntryController();
@@ -41,9 +42,10 @@ public class SalesControllerImpl implements SalesController {
 	}
 
 	@Override
-	public List<Sale> generateSaleItems(List<String> barcodes)
+	public List<Sale> generateSaleItems(List<String> barcodes,
+			MelanieOperationCallBack<Sale> uiCallBack)
 			throws MelanieBusinessException {
-
+		operationCount = 0;
 		Map<String, Integer> itemGroup = new HashMap<String, Integer>();
 		for (String barcode : barcodes)
 			if (!itemGroup.containsKey(barcode))
@@ -51,13 +53,19 @@ public class SalesControllerImpl implements SalesController {
 			else {
 				Integer itemCount = itemGroup.get(barcode);
 				itemCount++;
+				itemGroup.put(barcode, itemCount);
 			}
 
 		for (String barcode : itemGroup.keySet())
 			try {
-				if (!notFoundProducts.contains(barcode))
-					addNewSale(parseBarcodeNoChecksum(barcode),
-							itemGroup.get(barcode));
+				String parsedBarcode = parseBarcodeNoChecksum(barcode);
+				int quantity = itemGroup.get(barcode);
+				Sale sale = getExistingSale(parsedBarcode);
+				if (sale != null)
+					sale.setQuantitySold(sale.getQuantitySold() + quantity);
+				else if (!notFoundProducts.contains(parsedBarcode))
+					addNewSale(parsedBarcode, quantity, itemGroup.keySet()
+							.size(), uiCallBack);
 			} catch (MelanieBusinessException e) {
 				throw new MelanieBusinessException(e.getMessage(), e); // TODO:
 																		// log
@@ -67,7 +75,8 @@ public class SalesControllerImpl implements SalesController {
 
 	}
 
-	private void addNewSale(final String barcode, final int count)
+	private void addNewSale(final String barcode, final int count,
+			final int total, final MelanieOperationCallBack<Sale> uiCallBack)
 			throws MelanieBusinessException {
 		Product product;
 
@@ -79,7 +88,12 @@ public class SalesControllerImpl implements SalesController {
 					public void onOperationSuccessful(Product result) {
 						if (result == null)
 							addBarcodeToNotFoundList(barcode);
+						operationCount++;
 						addProductToSale(result, count);
+						if (uiCallBack != null && operationCount == total) {
+							uiCallBack.onCollectionOperationSuccessful(sales);
+							operationCount = 0;
+						}
 					}
 				});
 
@@ -94,6 +108,16 @@ public class SalesControllerImpl implements SalesController {
 			sale.setQuantitySold(count);
 			sales.add(sale);
 		}
+	}
+
+	private Sale getExistingSale(String barcode) {
+		Sale sale = null;
+		for (Sale existingSale : sales)
+			if (existingSale.getProduct().getBarcode().equals(barcode)) {
+				sale = existingSale;
+				break;
+			}
+		return sale;
 	}
 
 	@Override

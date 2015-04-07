@@ -16,7 +16,8 @@ import com.melanie.support.exceptions.MelanieBusinessException;
  */
 public interface SalesController {
 
-	List<Sale> generateSaleItems(List<String> barcodes)
+	List<Sale> generateSaleItems(List<String> barcodes,
+			MelanieOperationCallBack<Sale> salesCallBack)
 			throws MelanieBusinessException;
 
 	OperationResult saveCurrentSales(Customer customer)

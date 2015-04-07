@@ -2,6 +2,7 @@ package com.melanie.androidactivities.support;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 
 import android.content.Context;
@@ -112,5 +113,19 @@ public final class Utils {
 		List<T> tempItems = new ArrayList<T>();
 		tempItems.addAll(new HashSet<T>(items));
 		return tempItems;
+	}
+
+	public static <T> void filterOutMissingItems(List<T> sourceItems,
+			List<T> targetItems) {
+		for (T item : sourceItems)
+			if (!targetItems.contains(item))
+				targetItems.add(item);
+		
+		Iterator<T> iterator = targetItems.iterator();
+		while (iterator.hasNext()) {
+		 T item = iterator.next();	
+		 if(!sourceItems.contains(item))
+			 iterator.remove();
+		}
 	}
 }

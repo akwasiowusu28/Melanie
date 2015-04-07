@@ -56,7 +56,7 @@ public class PaymentActivity extends Activity {
 							this.getClass().getSimpleName()) {
 
 						@Override
-						public void onOperationSuccessful(List<Customer> results) {
+						public void onCollectionOperationSuccessful(List<Customer> results) {
 
 							List<Customer> newCustomers = results;
 							for (Customer customer : newCustomers)
@@ -100,7 +100,7 @@ public class PaymentActivity extends Activity {
 							.getClass().getSimpleName()) {
 
 						@Override
-						public void onOperationSuccessful(List<Sale> results) {
+						public void onCollectionOperationSuccessful(List<Sale> results) {
 							List<Sale> newSales = results;
 							for (Sale sale : newSales)
 								if (!sales.contains(sale))

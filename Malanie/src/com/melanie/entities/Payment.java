@@ -2,7 +2,6 @@ package com.melanie.entities;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
@@ -34,14 +33,14 @@ public class Payment extends BaseEntity {
 	private Customer customer;
 
 	@ForeignCollectionField
-	Collection<Sale> sales; // Change to List<Sale> when using with backendless
+	Collection<Sale> sales;
 
 	public Payment() {
 		super();
 	}
 
-	public Payment(Customer customer, List<Sale> sales, double amountReceived,
-			double discount, double balance) {
+	public Payment(Customer customer, Collection<Sale> sales,
+			double amountReceived, double discount, double balance) {
 		super();
 		this.customer = customer;
 		this.sales = sales;
@@ -98,43 +97,4 @@ public class Payment extends BaseEntity {
 	public void setSales(Collection<Sale> sales) {
 		this.sales = sales;
 	}
-
-	@Override
-	public boolean equals(Object another) {
-		boolean equals = false;
-		if (this == another)
-			equals = true;
-		else if (another instanceof Payment) {
-			Payment anotherPayment = (Payment) another;
-			boolean dateEquals = anotherPayment.paymentDate.equals(paymentDate);
-			boolean amountEquals = anotherPayment.amountReceived == amountReceived;
-			boolean customerEquals = anotherPayment.customer.equals(customer);
-			boolean salesEquals = true;
-			if (anotherPayment.sales.size() == sales.size()) {
-				Sale[] thisPaymentSales = (Sale[]) sales.toArray();
-				Sale[] anotherPaymentSales = (Sale[]) anotherPayment.sales
-						.toArray();
-				for (int i = 0; i < thisPaymentSales.length; i++)
-					if (!thisPaymentSales[i].equals(anotherPaymentSales[i])) {
-						salesEquals = false;
-						break;
-					}
-
-			} else
-				salesEquals = false;
-
-			equals = dateEquals && amountEquals && salesEquals
-					&& customerEquals;
-		}
-		return equals;
-	}
-
-	@Override
-	public int hashCode() {
-		int hash = 1;
-		hash = hash * 31 + paymentDate.hashCode();
-		hash = hash * 31 + (customer == null ? 0 : customer.hashCode());
-		return hash;
-	}
-
 }

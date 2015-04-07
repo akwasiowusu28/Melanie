@@ -74,7 +74,8 @@ public class CustomersActivity extends Activity {
 							this.getClass().getSimpleName()) {
 
 						@Override
-						public void onOperationSuccessful(List<Customer> results) {
+						public void onCollectionOperationSuccessful(
+								List<Customer> results) {
 
 							List<Customer> newCustomers = results;
 							for (Customer customer : newCustomers)
@@ -93,8 +94,8 @@ public class CustomersActivity extends Activity {
 	}
 
 	private void setupAutoCompleteCustomers() {
-		MelanieSingleTextListAdapter<Customer> customersAdapter = new MelanieSingleTextListAdapter<Customer>(
-				this, customers);
+		customersAdapter = new MelanieSingleTextListAdapter<Customer>(this,
+				customers);
 
 		AutoCompleteTextView customerNameTextView = (AutoCompleteTextView) findViewById(R.id.customerName);
 		customerNameTextView.setAdapter(customersAdapter);
@@ -139,11 +140,15 @@ public class CustomersActivity extends Activity {
 			if (isEdit) {
 				customer.setName(customerName);
 				customer.setPhoneNumber(phoneNumber);
-				result = customersController.updateCustomer(customer);
 			} else {
 				customer = customersController.cacheAndReturnNewCustomer(
 						customerName, phoneNumber);
-				result = customersController.addCachedNewCustomer();
+
+				if (!wasLaunchedFromSales)
+					if (isEdit)
+						result = customersController.updateCustomer(customer);
+					else
+						result = customersController.addOrUpdateCachedCustomer();
 			}
 		} catch (MelanieBusinessException e) {
 			e.printStackTrace(); // Log it
@@ -162,7 +167,7 @@ public class CustomersActivity extends Activity {
 	private void finishIfLaunchedFromSales() {
 		if (wasLaunchedFromSales) {
 			Intent intent = getIntent();
-			intent.putExtra(Utils.Costants.CustomerId, customer.getId());
+			// intent.putExtra(Utils.Costants.CustomerId, customer.getId());
 			setResult(RESULT_OK, intent);
 			finish();
 		}
