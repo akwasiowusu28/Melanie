@@ -40,4 +40,7 @@ public interface MelanieDataAccessLayer {
 
 	<T> OperationResult refreshItem(T dataItem, Class<T> itemClass)
 			throws MelanieDataLayerException;
+
+	<T> OperationResult addDataItemToLocalDataStoreOnly(T dataItem,
+			Class<T> itemClass) throws MelanieDataLayerException;
 }

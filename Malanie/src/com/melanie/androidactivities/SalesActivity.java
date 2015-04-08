@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -34,6 +35,7 @@ public class SalesActivity extends Activity {
 	private static final int SCAN_REQUEST_CODE = 28;
 	private static final int CUSTOMER_REQUEST_CODE = 288;
 
+	private Handler handler;
 	private List<Sale> sales;
 	private SalesController salesController;
 	private CustomersController customersController;
@@ -69,6 +71,7 @@ public class SalesActivity extends Activity {
 	}
 
 	private void initializeFields() {
+		handler = new Handler(getMainLooper());
 		executorService = Executors.newScheduledThreadPool(2);
 		salesController = MelanieBusinessFactory.makeSalesController();
 		sales = new ArrayList<Sale>();
@@ -168,19 +171,10 @@ public class SalesActivity extends Activity {
 	}
 
 	private void performSave(Customer customer) {
+		salesController.createNewPayment(customer, sales, amountReceived,
+				discount, balance);
 
-		try {
-			// customersController.updateCustomer(customer);
-			customersController.addOrUpdateCachedCustomer();
-		} catch (MelanieBusinessException e) {
-			e.printStackTrace();// TODO Log it
-		}
-		// savePayment and saveSales are supposed to be in one transaction
-		OperationResult result = savePayment(customer); // save the payment
-														// before saving the
-														// sales
-		// because the sales are composed of the payment
-		// OperationResult result = saveSales(customer);
+		OperationResult result = saveSales(customer);
 		updateUIAfterSave(result);
 	}
 
@@ -188,17 +182,6 @@ public class SalesActivity extends Activity {
 		OperationResult result = OperationResult.FAILED;
 		try {
 			result = salesController.saveCurrentSales(customer);
-		} catch (MelanieBusinessException e) {
-			e.printStackTrace(); // TODO log it
-		}
-		return result;
-	}
-
-	private OperationResult savePayment(Customer customer) {
-		OperationResult result = OperationResult.FAILED;
-		try {
-			result = salesController.recordPayment(customer, sales,
-					amountReceived, discount, balance);
 		} catch (MelanieBusinessException e) {
 			e.printStackTrace(); // TODO log it
 		}
@@ -214,7 +197,7 @@ public class SalesActivity extends Activity {
 	private void resetAll() {
 		sales.clear();
 		removeTextListener();
-		Utils.notifyListUpdate(salesListAdapter);
+		Utils.notifyListUpdate(salesListAdapter, handler);
 		Utils.clearInputTextFields(findViewById(R.id.amountReceived),
 				findViewById(R.id.discountValue));
 		Utils.resetTextFieldsToZeros(findViewById(R.id.totalValue),
@@ -244,37 +227,24 @@ public class SalesActivity extends Activity {
 				List<String> barcodes = data
 						.getStringArrayListExtra(Utils.Costants.BARCODES);
 				recordSalesFromBarcodes(barcodes);
-			} else if (requestCode == CUSTOMER_REQUEST_CODE)
-				// customerId = data.getIntExtra(Utils.Costants.CustomerId,
-				// customerId);
+			} else if (requestCode == CUSTOMER_REQUEST_CODE) {
+				customerId = data.getIntExtra(Utils.Costants.CustomerId,
+						customerId);
 				saveCreditSaleWithCustomer(customerId);
+			}
 	}
 
 	private void saveCreditSaleWithCustomer(int customerId) {
-		Customer customer = customersController.getCachedCustomer();
-		// if (customersController != null)
-		// try {
-		// customer = customersController.findCustomer(customerId,
-		// new MelanieOperationCallBack<Customer>(this.getClass()
-		// .getSimpleName()) {
-		// @Override
-		// public void onOperationSuccessful(Customer result) {
-		// Customer customer = result;
-		// saveSalesForCustomer(customer);
-		// }
-		// });
-		saveSalesForCustomer(customer);
-		// } catch (MelanieBusinessException e) {
-		// e.printStackTrace(); // TODO log it
-		// }
-	}
-
-	private void saveSalesForCustomer(Customer customer) {
-
-		if (customer != null)
-			customer.setAmountOwed(customer.getAmountOwed() + balance);
-
-		performSave(customer);
+		Customer customer = null;
+		if (customersController != null)
+			try {
+				customer = customersController.findCustomer(customerId, null);
+				if (customer != null)
+					customer.setAmountOwed(customer.getAmountOwed() + balance);
+				performSave(customer);
+			} catch (MelanieBusinessException e) {
+				e.printStackTrace(); // TODO log it
+			}
 	}
 
 	private void recordSalesFromBarcodes(List<String> barcodes) {
@@ -291,11 +261,11 @@ public class SalesActivity extends Activity {
 								List<Sale> results) {
 							sales.clear();
 							sales.addAll(results);
-							Utils.notifyListUpdate(salesListAdapter);
+							Utils.notifyListUpdate(salesListAdapter, handler);
 							updateTotalField();
 						}
 					}));
-			Utils.notifyListUpdate(salesListAdapter);
+			Utils.notifyListUpdate(salesListAdapter, handler);
 			updateTotalField();
 		} catch (MelanieBusinessException e) {
 			e.printStackTrace(); // log it

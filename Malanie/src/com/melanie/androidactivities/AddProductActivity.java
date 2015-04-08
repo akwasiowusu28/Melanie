@@ -95,7 +95,7 @@ public class AddProductActivity extends Activity {
 
 	private void initializeFields() {
 		productController = MelanieBusinessFactory.makeProductEntryController();
-		handler = new Handler();
+		handler = new Handler(getMainLooper());
 		categories = getAllCategories();
 		categoriesAdapter = new ArrayAdapter<Category>(this,
 				android.R.layout.simple_spinner_dropdown_item, categories);
@@ -110,12 +110,12 @@ public class AddProductActivity extends Activity {
 					.getAllCategories(new MelanieOperationCallBack<Category>(
 							this.getClass().getSimpleName()) {
 						@Override
-						public void onCollectionOperationSuccessful(List<Category> results) {
+						public void onCollectionOperationSuccessful(
+								List<Category> results) {
 							List<Category> newCategories = results;
-							for (Category category : newCategories)
-								if (!categories.contains(category))
-									categories.add(category);
-							Utils.notifyListUpdate(categoriesAdapter);
+							Utils.filterOutMissingItems(newCategories,
+									categories);
+							Utils.notifyListUpdate(categoriesAdapter, handler);
 						}
 					});
 			if (tempCategories != null && !tempCategories.isEmpty())

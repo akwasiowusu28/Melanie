@@ -126,7 +126,6 @@ public class SalesControllerImpl implements SalesController {
 		OperationResult result = OperationResult.FAILED;
 		if (dataAccess != null) {
 			try {
-				dataAccess.refreshItem(payment, Payment.class);
 				for (Sale sale : sales) {
 					sale.setPayment(payment);
 					sale.setCustomer(customer);
@@ -183,20 +182,16 @@ public class SalesControllerImpl implements SalesController {
 		return result;
 	}
 
+	@Override
+	public void createNewPayment(Customer customer, List<Sale> sale,
+			double amountReceived, double discount, double balance) {
+		payment = new Payment(customer, sales, amountReceived, discount,
+				balance);
+	}
+
 	private void addBarcodeToNotFoundList(String barcode) {
 		if (notFoundProducts.size() >= 20)
 			notFoundProducts.remove();
 		notFoundProducts.add(barcode);
 	}
-	// @SuppressWarnings("serial")
-	// private List<Sale> stub(){
-	// return new ArrayList<Sale>(){{
-	// for(int i=0; i<6; i++){
-	// Sale sale = new Sale();
-	// sale.setProduct(new Product("Shoe" + i, i*2, i*3, new Category(), null));
-	// sale.setQuantitySold(i*4);
-	// add(sale);
-	// }
-	// }};
-	// }
 }

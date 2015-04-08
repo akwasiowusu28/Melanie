@@ -29,15 +29,16 @@ public final class Utils {
 		public static final String EMPTY_STRING = "";
 	}
 
-	private static final Handler handler = new Handler();
-
 	/**
 	 * Updates a listview to reflect changes when items are added or deleted
 	 * 
 	 * @param adapter
 	 *            the adapter whose list should be updated
+	 * @param handler
+	 *            the handler associated with the UI thread invoking this method
 	 */
-	public static void notifyListUpdate(final BaseAdapter adapter) {
+	public static void notifyListUpdate(final BaseAdapter adapter,
+			Handler handler) {
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
@@ -120,12 +121,12 @@ public final class Utils {
 		for (T item : sourceItems)
 			if (!targetItems.contains(item))
 				targetItems.add(item);
-		
+
 		Iterator<T> iterator = targetItems.iterator();
 		while (iterator.hasNext()) {
-		 T item = iterator.next();	
-		 if(!sourceItems.contains(item))
-			 iterator.remove();
+			T item = iterator.next();
+			if (!sourceItems.contains(item))
+				iterator.remove();
 		}
 	}
 }

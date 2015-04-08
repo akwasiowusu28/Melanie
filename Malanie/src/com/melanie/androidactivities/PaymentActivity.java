@@ -5,6 +5,7 @@ import java.util.List;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -35,6 +36,7 @@ public class PaymentActivity extends Activity {
 	private List<Customer> customers;
 	private Customer selectedCustomer;
 	private SalesListViewAdapter salesListAdapter;
+	private Handler handler;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +58,8 @@ public class PaymentActivity extends Activity {
 							this.getClass().getSimpleName()) {
 
 						@Override
-						public void onCollectionOperationSuccessful(List<Customer> results) {
+						public void onCollectionOperationSuccessful(
+								List<Customer> results) {
 
 							List<Customer> newCustomers = results;
 							for (Customer customer : newCustomers)
@@ -100,16 +103,16 @@ public class PaymentActivity extends Activity {
 							.getClass().getSimpleName()) {
 
 						@Override
-						public void onCollectionOperationSuccessful(List<Sale> results) {
+						public void onCollectionOperationSuccessful(
+								List<Sale> results) {
 							List<Sale> newSales = results;
 							for (Sale sale : newSales)
 								if (!sales.contains(sale))
 									sales.add(sale);
 						}
-
 					});
 			sales.addAll(tempSales);
-			Utils.notifyListUpdate(salesListAdapter);
+			Utils.notifyListUpdate(salesListAdapter, handler);
 		} catch (MelanieBusinessException e) {
 			e.printStackTrace(); // log it
 		}
@@ -134,6 +137,7 @@ public class PaymentActivity extends Activity {
 	}
 
 	private void initializeFields() {
+		handler = new Handler(getMainLooper());
 		salesController = MelanieBusinessFactory.makeSalesController();
 		sales = new ArrayList<Sale>();
 		salesListAdapter = new SalesListViewAdapter(this, sales);
@@ -189,7 +193,7 @@ public class PaymentActivity extends Activity {
 
 	private void resetAll() {
 		sales.clear();
-		Utils.notifyListUpdate(salesListAdapter);
+		Utils.notifyListUpdate(salesListAdapter, handler);
 		Utils.clearInputTextFields(findViewById(R.id.paidAmount));
 		Utils.resetTextFieldsToZeros(findViewById(R.id.totalToPay),
 				findViewById(R.id.paymentBalance));

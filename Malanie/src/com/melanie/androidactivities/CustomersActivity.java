@@ -7,6 +7,7 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -81,7 +82,8 @@ public class CustomersActivity extends Activity {
 							for (Customer customer : newCustomers)
 								if (!customers.contains(customer))
 									customers.add(customer);
-							Utils.notifyListUpdate(customersAdapter);
+							Utils.notifyListUpdate(customersAdapter,
+									new Handler(getMainLooper()));
 						}
 					});
 			if (tempCustomers != null && !tempCustomers.isEmpty())
@@ -141,14 +143,16 @@ public class CustomersActivity extends Activity {
 				customer.setName(customerName);
 				customer.setPhoneNumber(phoneNumber);
 			} else {
-				customer = customersController.cacheAndReturnNewCustomer(
+				customer = customersController.cacheTempNewCustomer(
 						customerName, phoneNumber);
 
 				if (!wasLaunchedFromSales)
 					if (isEdit)
 						result = customersController.updateCustomer(customer);
 					else
-						result = customersController.addOrUpdateCachedCustomer();
+						result = customersController.addCachedCustomer();
+				else
+					customersController.cacheCustomerInLocalDataStore(customer);
 			}
 		} catch (MelanieBusinessException e) {
 			e.printStackTrace(); // Log it
@@ -167,7 +171,12 @@ public class CustomersActivity extends Activity {
 	private void finishIfLaunchedFromSales() {
 		if (wasLaunchedFromSales) {
 			Intent intent = getIntent();
-			// intent.putExtra(Utils.Costants.CustomerId, customer.getId());
+			try {
+				intent.putExtra(Utils.Costants.CustomerId,
+						customersController.getLastInsertedCustomerId());
+			} catch (MelanieBusinessException e) {
+				e.printStackTrace(); // TODO: log it
+			}
 			setResult(RESULT_OK, intent);
 			finish();
 		}

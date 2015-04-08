@@ -27,7 +27,11 @@ public interface SalesController {
 			MelanieOperationCallBack<Sale> operationCallBack)
 			throws MelanieBusinessException;
 
+	void createNewPayment(Customer customer, List<Sale> sale, double amount,
+			double discount, double balance);
+
 	OperationResult recordPayment(Customer customer, List<Sale> sale,
 			double amount, double discount, double balance)
 			throws MelanieBusinessException;
+
 }

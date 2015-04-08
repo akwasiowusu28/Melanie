@@ -5,6 +5,7 @@ import java.util.List;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -23,6 +24,7 @@ public class CategoriesActivity extends Activity {
 	private ProductEntryController productController;
 	private List<Category> categories;
 	private ArrayAdapter<Category> listAdapter;
+	private Handler handler;
 
 	public CategoriesActivity() {
 		super();
@@ -35,7 +37,7 @@ public class CategoriesActivity extends Activity {
 		setContentView(R.layout.activity_categories);
 
 		categories = getAllCategories();
-
+		handler = new Handler(getMainLooper());
 		setupListView();
 	}
 
@@ -53,7 +55,7 @@ public class CategoriesActivity extends Activity {
 
 							Utils.filterOutMissingItems(newCategories,
 									categories);
-							Utils.notifyListUpdate(listAdapter);
+							Utils.notifyListUpdate(listAdapter, handler);
 						}
 					});
 			if (tempCategories != null && !tempCategories.isEmpty())
@@ -91,7 +93,7 @@ public class CategoriesActivity extends Activity {
 		try {
 			category = productController.addCategory(categoryName);
 			categories.add(category);
-			Utils.notifyListUpdate(listAdapter);
+			Utils.notifyListUpdate(listAdapter, handler);
 			Utils.clearInputTextFields(categoryNameView);
 		} catch (MelanieBusinessException e) {
 			e.printStackTrace(); // log it

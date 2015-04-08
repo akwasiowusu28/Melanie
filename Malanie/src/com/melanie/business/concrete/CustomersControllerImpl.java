@@ -22,26 +22,29 @@ import com.melanie.support.exceptions.MelanieDataLayerException;
 public class CustomersControllerImpl implements CustomersController {
 
 	private MelanieDataAccessLayer dataAccess;
-	private static Customer customer;
+	private Customer customer;
 
 	public CustomersControllerImpl() {
 		dataAccess = MelanieDataFactory.makeDataAccess();
 	}
 
 	@Override
-	public Customer cacheAndReturnNewCustomer(String name, String phoneNumber)
+	public Customer cacheTempNewCustomer(String name, String phoneNumber)
 			throws MelanieBusinessException {
 		customer = new Customer(name, phoneNumber);
 		return customer;
 	}
 
-	public void cacheCustomerForCreditSaleTranscation(Customer customerToCache) {
-		customer = customerToCache;
-	}
-
 	@Override
-	public Customer getCachedCustomer() {
-		return customer;
+	public void cacheCustomerInLocalDataStore(Customer customer)
+			throws MelanieBusinessException {
+		if (dataAccess != null)
+			try {
+				dataAccess.addDataItemToLocalDataStoreOnly(customer,
+						Customer.class);
+			} catch (MelanieDataLayerException e) {
+				throw new MelanieBusinessException(e.getMessage(), e);
+			}
 	}
 
 	/**
@@ -54,8 +57,7 @@ public class CustomersControllerImpl implements CustomersController {
 	 * @return {@link OperationResult}
 	 */
 	@Override
-	public OperationResult addOrUpdateCachedCustomer()
-			throws MelanieBusinessException {
+	public OperationResult addCachedCustomer() throws MelanieBusinessException {
 
 		OperationResult result = OperationResult.FAILED;
 
@@ -120,4 +122,17 @@ public class CustomersControllerImpl implements CustomersController {
 
 		return customer;
 	}
+
+	@Override
+	public int getLastInsertedCustomerId() throws MelanieBusinessException {
+		int customerId = -1;
+		if (dataAccess != null)
+			try {
+				customerId = dataAccess.getLastInsertedId(Customer.class);
+			} catch (MelanieDataLayerException e) {
+				throw new MelanieBusinessException(e.getMessage(), e);
+			}
+		return customerId;
+	}
+
 }
