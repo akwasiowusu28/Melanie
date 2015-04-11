@@ -171,6 +171,25 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 	}
 
 	/**
+	 * Returns a list of all products
+	 */
+	@Override
+	public List<Product> findAllProducts(
+			MelanieOperationCallBack<Product> operationCallBack)
+			throws MelanieBusinessException {
+
+		List<Product> allProducts = new ArrayList<Product>();
+		if (dataAccess != null)
+			try {
+				allProducts = dataAccess.findAllItems(Product.class,
+						operationCallBack);
+			} catch (MelanieDataLayerException e) {
+				throw new MelanieBusinessException(e.getMessage(), e);
+			}
+		return allProducts;
+	}
+
+	/**
 	 * Use this to remove a product by id
 	 * 
 	 * @param productId

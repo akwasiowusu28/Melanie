@@ -48,6 +48,10 @@ public final class Utils {
 		});
 	}
 
+	public static String getBarcodePrefix() {
+		return "2801989";
+	}
+
 	/**
 	 * Clears any number of text fields supplied
 	 * 
@@ -116,8 +120,7 @@ public final class Utils {
 		return tempItems;
 	}
 
-	public static <T> void filterOutMissingItems(List<T> sourceItems,
-			List<T> targetItems) {
+	public static <T> void mergeItems(List<T> sourceItems, List<T> targetItems) {
 		for (T item : sourceItems)
 			if (!targetItems.contains(item))
 				targetItems.add(item);

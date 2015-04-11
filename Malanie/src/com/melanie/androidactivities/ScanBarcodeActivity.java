@@ -53,7 +53,7 @@ public class ScanBarcodeActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_scan_barcode);
 
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -170,6 +170,7 @@ public class ScanBarcodeActivity extends Activity {
 	}
 
 	PreviewCallback previewCallBack = new PreviewCallback() {
+		@Override
 		public void onPreviewFrame(byte[] data, Camera camera) {
 
 			int result = scanAndReturnBarcodeResult(data, camera);
@@ -192,19 +193,19 @@ public class ScanBarcodeActivity extends Activity {
 		}
 
 		private void playBeep() {
-			if (mediaPlayer != null) {
+			if (mediaPlayer != null)
 				mediaPlayer.start();
-			}
 		}
 
 		private void addScannerResultsToScannedBarcodes() {
 			SymbolSet syms = scanner.getResults();
 			for (Symbol sym : syms) {
 				String barcode = sym.getData();
-				if (sym.getType() == Symbol.EAN13 && isValidEAN13Barcode(barcode)) {
+				if (sym.getType() == Symbol.EAN13
+						&& isValidMelanieBarcode(barcode)) {
 					scannedBarcodes.add(barcode);
 					updatePreviewText(barcode);
-					//playBeep();
+					// playBeep();
 				}
 				break;
 			}
@@ -214,31 +215,34 @@ public class ScanBarcodeActivity extends Activity {
 			TextView textView = (TextView) findViewById(R.id.barcodeDigitsTextView);
 			textView.setText(barcode);
 		}
-		
-		private boolean isValidEAN13Barcode(String barcode) {
 
-			char[] chars = barcode.toCharArray();
+		private boolean isValidMelanieBarcode(String barcode) {
 
-			int sum = 0;
-			for(int i = chars.length - 2; i >=0; i--){
-				if((i & 1) ==1)
-					sum+= num(chars[i]) * 3;
-				else
-					sum+=num(chars[i]);
-					
+			boolean isValid = false;
+			String barcodePrefix = Utils.getBarcodePrefix();
+			if (barcode.substring(0, barcodePrefix.length()).equals(
+					barcodePrefix)) {
+				char[] chars = barcode.toCharArray();
+
+				int sum = 0;
+				for (int i = chars.length - 2; i >= 0; i--)
+					if ((i & 1) == 1)
+						sum += num(chars[i]) * 3;
+					else
+						sum += num(chars[i]);
+				int mod10ofSum = sum % 10;
+				int checksum_digit = mod10ofSum > 0 ? 10 - (sum % 10) : 0;
+
+				int lastDigit = num(chars[barcode.length() - 1]);
+				isValid = lastDigit == checksum_digit;
 			}
-			int mod10ofSum = sum % 10;
-			int checksum_digit = mod10ofSum > 0 ? 10 - (sum % 10) : 0;
-			
-            int lastDigit = num(chars[barcode.length()-1]); 
-			return lastDigit == checksum_digit;
-
+			return isValid;
 		}
 
 		private int num(char charValue) {
 			return Character.getNumericValue(charValue);
 		}
-		
+
 	};
 
 	private void resetCameraPreviewCallBack() {
@@ -261,6 +265,7 @@ public class ScanBarcodeActivity extends Activity {
 	};
 
 	private Runnable doAutoFocus = new Runnable() {
+		@Override
 		public void run() {
 			if (camera != null)
 				camera.autoFocus(autoFocusCallBack);

@@ -24,7 +24,7 @@ import com.melanie.support.exceptions.MelanieDataLayerException;
 
 public class SalesControllerImpl implements SalesController {
 
-	private static final String CUSTOMERID = "CustomerId";
+	private static final String CUSTOMEROBJECTID = "Customer.ObjectId";
 	private static final String ADDNEWSALE = "addNewSale";
 
 	private ProductEntryController productController;
@@ -152,8 +152,9 @@ public class SalesControllerImpl implements SalesController {
 		List<Sale> customerSales = new ArrayList<Sale>();
 		if (dataAccess != null)
 			try {
-				customerSales = dataAccess.findItemsByFieldName(CUSTOMERID,
-						String.valueOf(customer.getId()), Sale.class,
+				customerSales = dataAccess.findItemsByFieldName(
+						CUSTOMEROBJECTID,
+						String.valueOf(customer.getObjectId()), Sale.class,
 						operationCallBack);
 				for (Sale sale : customerSales) {
 					dataAccess.refreshItem(sale.getProduct(), Product.class);

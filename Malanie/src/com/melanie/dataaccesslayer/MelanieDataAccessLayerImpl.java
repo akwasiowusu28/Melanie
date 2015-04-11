@@ -50,11 +50,25 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 	@Override
 	public <T> OperationResult addDataItem(T dataItem, Class<T> itemClass)
 			throws MelanieDataLayerException {
-		OperationResult result = OperationResult.SUCCESSFUL;
-		// Save the data in cloud as well
-		if (cloudAccess != null)
-			cloudAccess.addDataItem(dataItem, itemClass,
-					new DataUtil.DataCallBack<T>(null));
+		OperationResult result = OperationResult.FAILED;
+
+		try {
+			Dao<Object, Integer> dao = DataSourceManager
+					.getCachedDaoFor(itemClass);
+			if (dao != null) {
+				int addReturn = dao.create(dataItem);
+				if (addReturn == 1) {
+					int id = getLastInsertedId(itemClass);
+					((BaseEntity) dataItem).setId(id);
+					if (cloudAccess != null)
+						cloudAccess.addDataItem(dataItem, itemClass,
+								new DataUtil.DataCallBack<T>(null));
+					result = OperationResult.SUCCESSFUL;
+				}
+			}
+		} catch (SQLException e) {
+			throw new MelanieDataLayerException(e.getMessage(), e);
+		}
 
 		return result;
 	}
@@ -154,7 +168,9 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 			Dao<Object, Integer> dao = DataSourceManager
 					.getCachedDaoFor(itemClass);
 			if (dao != null) {
-				List<Object> results = dao.queryForEq(fieldName, searchValue);
+				List<Object> results = dao.queryForEq(
+						getFieldNameWithoutClassNamePrefix(fieldName),
+						searchValue);
 				if (results != null && results.size() > 0) {
 					item = itemClass.cast(results.get(0));
 					DataUtil.updateDataCache(item);
@@ -215,7 +231,7 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 				queryBuilder.selectRaw("max(id)");
 				String[] result = dao.queryRaw(
 						queryBuilder.prepareStatementString()).getFirstResult();
-				id = result[0] != null ? Integer.parseInt(result[0]) : 1;
+				id = result[0] != null ? Integer.parseInt(result[0]) : 0;
 			}
 
 		} catch (SQLException e) {
@@ -230,12 +246,14 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 			MelanieOperationCallBack<T> operationCallBack)
 			throws MelanieDataLayerException {
 		List<T> items = new ArrayList<T>();
-
 		try {
 			Dao<Object, Integer> dao = DataSourceManager
 					.getCachedDaoFor(itemClass);
 			if (dao != null) {
-				List<Object> results = dao.queryForEq(fieldName, searchValue);
+
+				List<Object> results = dao.queryForEq(
+						getFieldNameWithoutClassNamePrefix(fieldName),
+						searchValue);
 				if (results != null && results.size() > 0) {
 					items = (List<T>) results;
 					for (T item : items)
@@ -251,6 +269,19 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 			throw new MelanieDataLayerException(e.getMessage(), e);
 		}
 		return items;
+	}
+
+	/**
+	 * When finding items based of field names of composed objects, the
+	 * fieldname might be preceded by the classname of the related object for
+	 * use in the cloud retrieval. Because of that, use the field name without
+	 * the class name prefix for the ormlite retrieval
+	 * */
+	private String getFieldNameWithoutClassNamePrefix(String fieldName) {
+		String result = fieldName;
+		if (fieldName.contains("."))
+			result = fieldName.substring(fieldName.lastIndexOf(".") + 1);
+		return result;
 	}
 
 	@Override

@@ -17,7 +17,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.melanie.androidactivities.support.MelanieSingleTextListAdapter;
-import com.melanie.androidactivities.support.SalesListViewAdapter;
+import com.melanie.androidactivities.support.ProductsAndSalesListViewAdapter;
 import com.melanie.androidactivities.support.Utils;
 import com.melanie.business.CustomersController;
 import com.melanie.business.SalesController;
@@ -35,8 +35,9 @@ public class PaymentActivity extends Activity {
 	private CustomersController customersController;
 	private List<Customer> customers;
 	private Customer selectedCustomer;
-	private SalesListViewAdapter salesListAdapter;
+	private ProductsAndSalesListViewAdapter<Sale> salesListAdapter;
 	private Handler handler;
+	MelanieSingleTextListAdapter<Customer> customersAdapter;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -61,10 +62,8 @@ public class PaymentActivity extends Activity {
 						public void onCollectionOperationSuccessful(
 								List<Customer> results) {
 
-							List<Customer> newCustomers = results;
-							for (Customer customer : newCustomers)
-								if (!customers.contains(customer))
-									customers.add(customer);
+							Utils.mergeItems(results, customers);
+							Utils.notifyListUpdate(customersAdapter, handler);
 						}
 					});
 			if (tempCustomers != null && !tempCustomers.isEmpty())
@@ -77,8 +76,8 @@ public class PaymentActivity extends Activity {
 	}
 
 	private void setupAutoCompleteCustomers() {
-		MelanieSingleTextListAdapter<Customer> customersAdapter = new MelanieSingleTextListAdapter<Customer>(
-				this, customers);
+		customersAdapter = new MelanieSingleTextListAdapter<Customer>(this,
+				customers);
 
 		AutoCompleteTextView customerNameTextView = (AutoCompleteTextView) findViewById(R.id.customerFind);
 		customerNameTextView.setAdapter(customersAdapter);
@@ -105,10 +104,8 @@ public class PaymentActivity extends Activity {
 						@Override
 						public void onCollectionOperationSuccessful(
 								List<Sale> results) {
-							List<Sale> newSales = results;
-							for (Sale sale : newSales)
-								if (!sales.contains(sale))
-									sales.add(sale);
+							Utils.mergeItems(results, sales);
+							Utils.notifyListUpdate(salesListAdapter, handler);
 						}
 					});
 			sales.addAll(tempSales);
@@ -140,7 +137,8 @@ public class PaymentActivity extends Activity {
 		handler = new Handler(getMainLooper());
 		salesController = MelanieBusinessFactory.makeSalesController();
 		sales = new ArrayList<Sale>();
-		salesListAdapter = new SalesListViewAdapter(this, sales);
+		salesListAdapter = new ProductsAndSalesListViewAdapter<Sale>(this,
+				sales);
 		customersController = MelanieBusinessFactory.makeCustomersController();
 	}
 

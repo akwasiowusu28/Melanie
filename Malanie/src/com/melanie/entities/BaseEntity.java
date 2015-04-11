@@ -50,6 +50,7 @@ public abstract class BaseEntity implements Comparable<BaseEntity> {
 
 	@Override
 	public int compareTo(BaseEntity another) {
-		return recentUse.compareTo(another.recentUse);
+		return recentUse != null && another.recentUse != null ? recentUse
+				.compareTo(another.recentUse) : 0;
 	}
 }

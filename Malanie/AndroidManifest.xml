@@ -99,6 +99,18 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.melanie.androidactivities.MainActivity" />
         </activity>
+        <activity
+            android:name=".MelanieInventoryActivity"
+            android:label="@string/title_activity_melanie_inventory"
+            android:parentActivityName=".ProductsMainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.melanie.androidactivities.ProductsMainActivity" />
+        </activity>
+        <activity
+            android:name=".CustomerListActivity"
+            android:label="@string/title_activity_customer_list" >
+        </activity>
     </application>
 
 </manifest>

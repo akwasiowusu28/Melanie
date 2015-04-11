@@ -51,10 +51,7 @@ public class CategoriesActivity extends Activity {
 						@Override
 						public void onCollectionOperationSuccessful(
 								List<Category> results) {
-							List<Category> newCategories = results;
-
-							Utils.filterOutMissingItems(newCategories,
-									categories);
+							Utils.mergeItems(results, categories);
 							Utils.notifyListUpdate(listAdapter, handler);
 						}
 					});

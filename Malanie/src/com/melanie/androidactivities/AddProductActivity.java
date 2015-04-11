@@ -112,9 +112,7 @@ public class AddProductActivity extends Activity {
 						@Override
 						public void onCollectionOperationSuccessful(
 								List<Category> results) {
-							List<Category> newCategories = results;
-							Utils.filterOutMissingItems(newCategories,
-									categories);
+							Utils.mergeItems(results, categories);
 							Utils.notifyListUpdate(categoriesAdapter, handler);
 						}
 					});
@@ -173,7 +171,9 @@ public class AddProductActivity extends Activity {
 		String priceStr = ((EditText) findViewById(R.id.price)).getText()
 				.toString();
 		double price = Double.parseDouble(priceStr);
-
+		currentProductQuantity = Integer
+				.parseInt(((EditText) findViewById(R.id.quantity)).getText()
+						.toString());
 		OperationResult result = addProductAndReturnResult(category,
 				productName, price, currentProductQuantity);
 		if (result == OperationResult.SUCCESSFUL) {
@@ -191,8 +191,7 @@ public class AddProductActivity extends Activity {
 			try {
 				int lastProductId = productController
 						.getLastInsertedProductId();
-				currentBarcode = generateBarcodeString(lastProductId,
-						category.getId());
+				currentBarcode = generateBarcodeString(lastProductId);
 				result = productController
 						.addProduct(productName, currentProductQuantity, price,
 								category, currentBarcode);
@@ -202,11 +201,12 @@ public class AddProductActivity extends Activity {
 		return result;
 	}
 
-	private String generateBarcodeString(int lastItemId, int categoryId) {
+	private String generateBarcodeString(int lastItemId) {
 		lastItemId++;
-		int trailingZeroes = 12 - String.valueOf(categoryId).length();
+		int trailingZeroes = 6 - String.valueOf(lastItemId).length();
 		String format = "%0" + trailingZeroes + "d";
-		String barcodeNumber = categoryId + String.format(format, lastItemId);
+		String barcodeNumber = Utils.getBarcodePrefix()
+				+ String.format(format, lastItemId);
 		return barcodeNumber;
 	}
 
@@ -432,7 +432,7 @@ public class AddProductActivity extends Activity {
 		super.onDestroy();
 		if (executorService != null)
 			executorService.shutdown();
-		if (wasTurnedOnByMelanie)
-			disableBluetooth();
+		// if (wasTurnedOnByMelanie)
+		// disableBluetooth();
 	}
 }

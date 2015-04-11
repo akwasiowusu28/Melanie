@@ -55,12 +55,11 @@ public final class DataUtil {
 			throws MelanieDataLayerException {
 		OperationResult result = OperationResult.FAILED;
 		try {
-
 			if (dataItem != null) {
 				Class<?> itemClass = dataItem.getClass();
 				Dao<Object, Integer> dao = DataSourceManager
 						.getCachedDaoFor(itemClass);
-				if (dao.countOf() >= 3)
+				if (dao != null && dao.countOf() >= 3)
 					DataUtil.removeLeastRecentlyUsedItem(dao, itemClass);
 				updateItemRecentUse(dataItem);
 				CreateOrUpdateStatus status = dao.createOrUpdate(dataItem);

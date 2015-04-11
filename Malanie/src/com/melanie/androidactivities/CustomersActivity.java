@@ -32,17 +32,19 @@ public class CustomersActivity extends Activity {
 	private boolean isEdit;
 	private boolean wasLaunchedFromSales;
 	private MelanieSingleTextListAdapter<Customer> customersAdapter;
+	private Handler handler;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_customers);
 		initializeFields();
-		initializeCustomers();
+		getAllCustomers();
 		setupAutoCompleteCustomers();
 	}
 
 	private void initializeFields() {
+		handler = new Handler(getMainLooper());
 		customersController = MelanieBusinessFactory.makeCustomersController();
 		customer = null;
 		isEdit = false;
@@ -62,11 +64,7 @@ public class CustomersActivity extends Activity {
 		return value;
 	}
 
-	private void initializeCustomers() {
-		customers = getAllCustomers();
-	}
-
-	private List<Customer> getAllCustomers() {
+	private void getAllCustomers() {
 		customers = new ArrayList<Customer>();
 		try {
 			List<Customer> tempCustomers = null;
@@ -78,12 +76,8 @@ public class CustomersActivity extends Activity {
 						public void onCollectionOperationSuccessful(
 								List<Customer> results) {
 
-							List<Customer> newCustomers = results;
-							for (Customer customer : newCustomers)
-								if (!customers.contains(customer))
-									customers.add(customer);
-							Utils.notifyListUpdate(customersAdapter,
-									new Handler(getMainLooper()));
+							Utils.mergeItems(results, customers);
+							Utils.notifyListUpdate(customersAdapter, handler);
 						}
 					});
 			if (tempCustomers != null && !tempCustomers.isEmpty())
@@ -92,7 +86,6 @@ public class CustomersActivity extends Activity {
 		} catch (MelanieBusinessException e) {
 			e.printStackTrace(); // TODO: log it
 		}
-		return customers;
 	}
 
 	private void setupAutoCompleteCustomers() {
@@ -146,12 +139,17 @@ public class CustomersActivity extends Activity {
 				customer = customersController.cacheTempNewCustomer(
 						customerName, phoneNumber);
 
-				if (!wasLaunchedFromSales)
+				if (!wasLaunchedFromSales) {
 					if (isEdit)
 						result = customersController.updateCustomer(customer);
 					else
 						result = customersController.addCachedCustomer();
-				else
+
+					List<Customer> customersFromLocalDataStore = customersController
+							.getAllCustomers(null);
+					Utils.mergeItems(customersFromLocalDataStore, customers);
+					Utils.notifyListUpdate(customersAdapter, handler);
+				} else
 					customersController.cacheCustomerInLocalDataStore(customer);
 			}
 		} catch (MelanieBusinessException e) {

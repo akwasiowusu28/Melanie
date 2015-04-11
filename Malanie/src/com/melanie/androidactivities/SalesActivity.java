@@ -19,7 +19,7 @@ import android.widget.TextView;
 
 import com.melanie.androidactivities.support.MelanieAlertDialog;
 import com.melanie.androidactivities.support.MelanieAlertDialog.MelanieAlertDialogButtonModes;
-import com.melanie.androidactivities.support.SalesListViewAdapter;
+import com.melanie.androidactivities.support.ProductsAndSalesListViewAdapter;
 import com.melanie.androidactivities.support.Utils;
 import com.melanie.business.CustomersController;
 import com.melanie.business.SalesController;
@@ -40,7 +40,7 @@ public class SalesActivity extends Activity {
 	private SalesController salesController;
 	private CustomersController customersController;
 	private ScheduledExecutorService executorService;
-	private SalesListViewAdapter salesListAdapter;
+	private ProductsAndSalesListViewAdapter<Sale> salesListAdapter;
 	private TextListener discountListener, amountListener;
 	private MelanieAlertDialog alertDialog;
 	private double balance, amountReceived, discount;
@@ -75,7 +75,7 @@ public class SalesActivity extends Activity {
 		executorService = Executors.newScheduledThreadPool(2);
 		salesController = MelanieBusinessFactory.makeSalesController();
 		sales = new ArrayList<Sale>();
-		salesListAdapter = new SalesListViewAdapter(this, sales);
+		salesListAdapter = new ProductsAndSalesListViewAdapter<Sale>(this, sales);
 		discountListener = new TextListener(R.id.discountValue);
 		amountListener = new TextListener(R.id.amountReceived);
 		customersController = MelanieBusinessFactory.makeCustomersController();

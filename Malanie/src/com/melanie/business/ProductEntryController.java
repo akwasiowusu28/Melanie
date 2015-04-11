@@ -36,6 +36,10 @@ public interface ProductEntryController {
 	OperationResult removeProduct(int productId)
 			throws MelanieBusinessException;
 
+	List<Product> findAllProducts(
+			MelanieOperationCallBack<Product> operationCallBack)
+			throws MelanieBusinessException;
+
 	Product findProduct(int productId,
 			MelanieOperationCallBack<Product> operationCallBack)
 			throws MelanieBusinessException;
