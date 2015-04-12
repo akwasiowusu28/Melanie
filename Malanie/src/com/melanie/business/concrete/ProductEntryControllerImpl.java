@@ -183,6 +183,9 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 			try {
 				allProducts = dataAccess.findAllItems(Product.class,
 						operationCallBack);
+				for (Product product : allProducts)
+					dataAccess.refreshItem(product.getCategory(),
+							Category.class);
 			} catch (MelanieDataLayerException e) {
 				throw new MelanieBusinessException(e.getMessage(), e);
 			}

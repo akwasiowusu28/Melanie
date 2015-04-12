@@ -80,5 +80,6 @@
     <string name="amountDue">Due</string>
     <string name="phoneNumberHeader">Phone</string>
     <string name="title_activity_customer_list">CustomerListActivity</string>
+    <string name="showItemsIn">Show items in</string>
 
 </resources>
