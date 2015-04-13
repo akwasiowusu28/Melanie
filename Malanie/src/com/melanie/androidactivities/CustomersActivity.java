@@ -3,11 +3,11 @@ package com.melanie.androidactivities;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -24,7 +24,7 @@ import com.melanie.support.MelanieOperationCallBack;
 import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieBusinessException;
 
-public class CustomersActivity extends Activity {
+public class CustomersActivity extends ActionBarActivity {
 
 	private CustomersController customersController;
 	private List<Customer> customers;

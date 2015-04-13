@@ -6,52 +6,38 @@
     android:focusableInTouchMode="true"
     tools:context="com.melanie.androidactivities.CategoriesActivity" >
 
-    <include
-        android:id="@+id/header"
-        android:layout_width="fill_parent"
-        android:layout_height="50dp"
-        android:layout_alignParentTop="true"
-        layout="@layout/layout_header" />
-
-     <ListView
-        android:id="@+id/categoryList"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/inputViews"
-        android:layout_below="@id/header"
-        android:layout_marginBottom="20dp" />
-     
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/inputViews"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp" >
+        android:layout_alignParentTop="true"
+        android:layout_margin="10dp"
+        android:orientation="vertical" >
 
         <TextView
-            android:id="@+id/categoryNameLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/category_name" />
 
         <EditText
-            android:layout_below="@id/categoryNameLabel"
             android:id="@+id/categoryName"
-            android:layout_toLeftOf="@+id/addCategoryButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/enterCategoryName" />
 
         <Button
-            android:layout_alignBottom="@id/categoryName"
-            android:layout_alignParentRight="true"
-            android:id="@+id/addCategoryButton"
-            android:layout_width="70dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="right"
             android:onClick="addCategory"
             android:text="@string/add" />
-    </RelativeLayout>
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/categoryList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/inputViews"
+        android:layout_margin="10dp"
+        android:layout_marginBottom="20dp" />
 
 </RelativeLayout>

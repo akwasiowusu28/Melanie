@@ -31,7 +31,7 @@ public class NavigationHelper {
 	 * @return Ids for Icons used in the main page
 	 **/
 	public static Integer[] getMainPageIcons() {
-		return new Integer[] { R.drawable.product, R.drawable.sale,
+		return new Integer[] { R.drawable.product2, R.drawable.sale,
 				R.drawable.customer, R.drawable.report, R.drawable.settings,
 
 				/*****/

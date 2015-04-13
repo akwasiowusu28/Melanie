@@ -9,7 +9,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.DialogInterface;
@@ -18,6 +17,7 @@ import android.content.res.AssetManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.app.ActionBarActivity;
 import android.util.SparseIntArray;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -44,7 +44,7 @@ import com.melanie.support.exceptions.MelanieBusinessException;
 import com.planetarydoom.barcode.core.WriterException;
 
 @SuppressWarnings("unchecked")
-public class AddProductActivity extends Activity {
+public class AddProductActivity extends ActionBarActivity {
 
 	private ProductEntryController productController;
 

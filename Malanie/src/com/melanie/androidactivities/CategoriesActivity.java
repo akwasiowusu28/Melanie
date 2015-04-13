@@ -3,9 +3,9 @@ package com.melanie.androidactivities;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -19,7 +19,7 @@ import com.melanie.support.MelanieBusinessFactory;
 import com.melanie.support.MelanieOperationCallBack;
 import com.melanie.support.exceptions.MelanieBusinessException;
 
-public class CategoriesActivity extends Activity {
+public class CategoriesActivity extends ActionBarActivity {
 
 	private ProductEntryController productController;
 	private List<Category> categories;

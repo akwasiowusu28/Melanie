@@ -26,7 +26,7 @@
     <string name="SettingsDesc">Customize Melanie</string>
     <string name="addProducts">Add Products</string>
     <string name="viewProducts">View Products</string>
-    <string name="title_activity_add_product">Add product</string>
+    <string name="title_activity_add_product">Stock up</string>
     <string name="selectCategory">Select category:</string>
     <string name="productName">Product name:</string>
     <string name="Quantity">Quantity:</string>
@@ -35,7 +35,7 @@
     <string name="productQuantityHint">Enter quantity of product</string>
     <string name="amountZeroes">0.00</string>
     <string name="bluetoothNotSupported">Bluetooth is not supported on this device</string>
-    <string name="printerNotFound">Melanie can\'t find printer. Make sure the printer is turned on and in discovery mode</string>
+    <string name="printerNotFound">Printer cannot be found. Make sure the printer is turned on and in discovery mode</string>
     <string name="printPreparing">Preparing to print</string>
     <string name="printing">Printing barcodes</string>
     <string name="printingComplete">Printing complete</string>
@@ -67,7 +67,7 @@
     <string name="nameWithColon">Name:</string>
     <string name="addCustomerFailed">Sorry. Could not add the customer. Please try again</string>
     <string name="addCustomerSuccess">Customer added successfully!</string>
-    <string name="title_activity_payment">PaymentActivity</string>
+    <string name="title_activity_payment">Payment</string>
     <string name="customerName">Customer name:</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
@@ -76,10 +76,11 @@
     <string name="paymentSuccess">Payment successfully recorded!</string>
     <string name="paymentFailed">Could not record payment</string>
     <string name="clear">Clear</string>
-    <string name="title_activity_melanie_inventory">MelanieInventory</string>
+    <string name="title_activity_melanie_inventory">Inventory</string>
     <string name="amountDue">Due</string>
     <string name="phoneNumberHeader">Phone</string>
     <string name="title_activity_customer_list">CustomerListActivity</string>
     <string name="showItemsIn">Show items in</string>
+    <string name="title_activity_sales_report">Sales report</string>
 
 </resources>

@@ -1,13 +1,13 @@
 package com.melanie.androidactivities;
 
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
+import android.view.View;
+
 import com.melanie.androidactivities.support.NavigationHelper;
 
-import android.app.Activity;
-import android.os.Bundle;
-import android.view.View;
-import android.content.Intent;
-
-public class ProductsMainActivity extends Activity {
+public class ProductsMainActivity extends ActionBarActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -16,8 +16,8 @@ public class ProductsMainActivity extends Activity {
 	}
 
 	public void launchActivity(View view) {
-		Intent intent = new Intent(this, NavigationHelper.getProductActivities().get(
-				view.getId()));
+		Intent intent = new Intent(this, NavigationHelper
+				.getProductActivities().get(view.getId()));
 		intent.putExtra("viewId", view.getId());
 		startActivity(intent);
 	}

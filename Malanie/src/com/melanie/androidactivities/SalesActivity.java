@@ -6,10 +6,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -30,7 +30,7 @@ import com.melanie.support.MelanieOperationCallBack;
 import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieBusinessException;
 
-public class SalesActivity extends Activity {
+public class SalesActivity extends ActionBarActivity {
 
 	private static final int SCAN_REQUEST_CODE = 28;
 	private static final int CUSTOMER_REQUEST_CODE = 288;
@@ -75,7 +75,8 @@ public class SalesActivity extends Activity {
 		executorService = Executors.newScheduledThreadPool(2);
 		salesController = MelanieBusinessFactory.makeSalesController();
 		sales = new ArrayList<Sale>();
-		salesListAdapter = new ProductsAndSalesListViewAdapter<Sale>(this, sales);
+		salesListAdapter = new ProductsAndSalesListViewAdapter<Sale>(this,
+				sales);
 		discountListener = new TextListener(R.id.discountValue);
 		amountListener = new TextListener(R.id.amountReceived);
 		customersController = MelanieBusinessFactory.makeCustomersController();

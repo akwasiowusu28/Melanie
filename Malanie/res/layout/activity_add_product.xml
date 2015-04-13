@@ -5,13 +5,6 @@
     android:orientation="vertical"
     tools:context="com.melanie.androidactivities.AddProductActivity" >
 
-    <include
-        android:id="@+id/header"
-        android:layout_width="fill_parent"
-        android:layout_height="50dp"
-        android:layout_alignParentTop="true"
-        layout="@layout/layout_header" />
-
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

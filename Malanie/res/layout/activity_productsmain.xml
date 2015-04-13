@@ -5,45 +5,37 @@
     android:layout_gravity="center"
     tools:context="com.melanie.androidactivities.ProductsMainActivity" >
 
-    <include
-        android:id="@+id/header"
-        android:layout_width="fill_parent"
-        android:layout_height="50dp"
-        android:layout_alignParentTop="true"
-        layout="@layout/layout_header" />
-
     <Button
         android:id="@+id/addProducts"
         style="@style/buttonStyle"
         android:layout_alignParentLeft="true"
-        android:layout_below="@id/header"
         android:drawableTop="@drawable/addproduct"
-        android:text="@string/products"
-        android:onClick="launchActivity" />
-    
+        android:onClick="launchActivity"
+        android:text="@string/products" />
+
     <Button
         android:id="@+id/viewProducts"
         style="@style/buttonStyle"
         android:layout_toRightOf="@id/addProducts"
-        android:layout_below="@id/header"
         android:drawableTop="@drawable/viewproducts"
-        android:text="@string/products"
-        android:onClick="launchActivity" />
+        android:onClick="launchActivity"
+        android:text="@string/products" />
 
-     <Button
+    <Button
         android:id="@+id/addCategories"
         style="@style/buttonStyle"
         android:layout_below="@id/addProducts"
         android:drawableTop="@drawable/addcategory"
-        android:text="@string/categories"
-        android:onClick="launchActivity" />
-     
-     <Button
+        android:onClick="launchActivity"
+        android:text="@string/categories" />
+
+    <Button
         android:id="@+id/viewCategories"
-        android:layout_toRightOf="@id/addCategories"
         style="@style/buttonStyle"
         android:layout_below="@id/viewProducts"
+        android:layout_toRightOf="@id/addCategories"
         android:drawableTop="@drawable/viewcategory"
-        android:text="@string/categories"
-        android:onClick="launchActivity" />
+        android:onClick="launchActivity"
+        android:text="@string/categories" />
+
 </RelativeLayout>

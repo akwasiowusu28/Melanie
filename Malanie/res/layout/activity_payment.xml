@@ -7,18 +7,10 @@
     android:orientation="vertical"
     tools:context="com.melanie.androidactivities.CustomersActivity" >
 
-    <include
-        android:id="@+id/header"
-        android:layout_width="fill_parent"
-        android:layout_height="50dp"
-        android:layout_alignParentTop="true"
-        layout="@layout/layout_header" />
-
     <TextView
         android:id="@+id/customerFindLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/header"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="10dp"
         android:text="@string/customerName" />
