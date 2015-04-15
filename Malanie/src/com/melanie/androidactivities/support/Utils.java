@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Handler;
 import android.view.View;
 import android.widget.BaseAdapter;
@@ -13,6 +14,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.melanie.androidactivities.MainActivity;
 import com.melanie.androidactivities.R;
 import com.melanie.support.OperationResult;
 
@@ -131,5 +133,9 @@ public final class Utils {
 			if (!sourceItems.contains(item))
 				iterator.remove();
 		}
+	}
+
+	public static int getTextColor(Context context) {
+		return context instanceof MainActivity ? Color.WHITE : Color.BLACK;
 	}
 }

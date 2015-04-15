@@ -76,11 +76,15 @@
     <string name="paymentSuccess">Payment successfully recorded!</string>
     <string name="paymentFailed">Could not record payment</string>
     <string name="clear">Clear</string>
-    <string name="title_activity_melanie_inventory">Inventory</string>
+    <string name="melanie_inventory">Inventory</string>
     <string name="amountDue">Due</string>
     <string name="phoneNumberHeader">Phone</string>
     <string name="title_activity_customer_list">CustomerListActivity</string>
     <string name="showItemsIn">Show items in</string>
     <string name="title_activity_sales_report">Sales report</string>
+    <string name="addcategorydescription">Add, view or modify categories</string>
+    <string name="addproductdescription">Add a new product</string>
+    <string name="inventoryDescription">View inventory, retrieve barcodes</string>
+    <string name="doublearrow">&#187;</string>
 
 </resources>

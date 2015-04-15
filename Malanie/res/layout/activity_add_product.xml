@@ -70,11 +70,4 @@
         android:layout_marginLeft="12dp"
         android:onClick="addProduct"
         android:text="@string/add" />
-
-    <ImageView
-        android:id="@+id/barcodeImage"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
-        android:contentDescription="@string/products" />
-
-</LinearLayout>
+</LinearLayout>

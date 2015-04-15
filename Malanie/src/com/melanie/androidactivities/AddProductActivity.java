@@ -22,7 +22,6 @@ import android.util.SparseIntArray;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.Spinner;
 
 import com.epson.lwprint.sdk.LWPrint;
@@ -33,7 +32,6 @@ import com.epson.lwprint.sdk.LWPrintDiscoverPrinterCallback;
 import com.epson.lwprint.sdk.LWPrintParameterKey;
 import com.epson.lwprint.sdk.LWPrintPrintingPhase;
 import com.melanie.androidactivities.support.MelanieBarcodeDataProvider;
-import com.melanie.androidactivities.support.MelanieBarcodeEncoder;
 import com.melanie.androidactivities.support.Utils;
 import com.melanie.business.ProductEntryController;
 import com.melanie.entities.Category;
@@ -41,14 +39,13 @@ import com.melanie.support.MelanieBusinessFactory;
 import com.melanie.support.MelanieOperationCallBack;
 import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieBusinessException;
-import com.planetarydoom.barcode.core.WriterException;
 
 @SuppressWarnings("unchecked")
 public class AddProductActivity extends ActionBarActivity {
 
 	private ProductEntryController productController;
 
-	private final int BLUETOOTH_REQUEST_CODE = 28;
+	private final int BLUETOOTH_REQUEST_CODE = 208;
 	private final int CUT_EACH_TAPE = 0;
 	private final int DENSITY = -2;
 
@@ -82,15 +79,6 @@ public class AddProductActivity extends ActionBarActivity {
 		categorySpinner.setAdapter(categoriesAdapter);
 
 		initializePrinter();
-
-		ImageView b = (ImageView) findViewById(R.id.barcodeImage);
-		try {
-			b.setImageBitmap(new MelanieBarcodeEncoder()
-					.generateEAN13Barcode("1000000000023"));
-		} catch (WriterException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 
 	private void initializeFields() {
@@ -131,7 +119,6 @@ public class AddProductActivity extends ActionBarActivity {
 			progressDialog.setCancelable(false);
 			progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 			progressDialog.setMessage(getText(R.string.printPreparing));
-			progressDialog.setIcon(R.drawable.printer);
 			progressDialog.setMax(100);
 			setProgressBarHandlers();
 		}
@@ -226,6 +213,7 @@ public class AddProductActivity extends ActionBarActivity {
 			printer = new LWPrint(this);
 			printer.setCallback(new PrintCallBack());
 		}
+		enableBluetooth();
 	}
 
 	private void printBarcode() {
@@ -428,7 +416,7 @@ public class AddProductActivity extends ActionBarActivity {
 	}
 
 	@Override
-	public void onPause() {
+	public void onDestroy() {
 		super.onDestroy();
 		if (executorService != null)
 			executorService.shutdown();

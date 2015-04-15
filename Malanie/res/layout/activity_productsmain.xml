@@ -5,37 +5,11 @@
     android:layout_gravity="center"
     tools:context="com.melanie.androidactivities.ProductsMainActivity" >
 
-    <Button
-        android:id="@+id/addProducts"
-        style="@style/buttonStyle"
-        android:layout_alignParentLeft="true"
-        android:drawableTop="@drawable/addproduct"
-        android:onClick="launchActivity"
-        android:text="@string/products" />
-
-    <Button
-        android:id="@+id/viewProducts"
-        style="@style/buttonStyle"
-        android:layout_toRightOf="@id/addProducts"
-        android:drawableTop="@drawable/viewproducts"
-        android:onClick="launchActivity"
-        android:text="@string/products" />
-
-    <Button
-        android:id="@+id/addCategories"
-        style="@style/buttonStyle"
-        android:layout_below="@id/addProducts"
-        android:drawableTop="@drawable/addcategory"
-        android:onClick="launchActivity"
-        android:text="@string/categories" />
-
-    <Button
-        android:id="@+id/viewCategories"
-        style="@style/buttonStyle"
-        android:layout_below="@id/viewProducts"
-        android:layout_toRightOf="@id/addCategories"
-        android:drawableTop="@drawable/viewcategory"
-        android:onClick="launchActivity"
-        android:text="@string/categories" />
+    <ListView
+        android:id="@+id/productMainListview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:paddingTop="20dp" />
 
 </RelativeLayout>

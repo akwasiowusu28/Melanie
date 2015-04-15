@@ -5,7 +5,6 @@ import android.util.SparseArray;
 
 import com.melanie.androidactivities.AddProductActivity;
 import com.melanie.androidactivities.CategoriesActivity;
-import com.melanie.androidactivities.CustomerListActivity;
 import com.melanie.androidactivities.CustomersActivity;
 import com.melanie.androidactivities.MelanieInventoryActivity;
 import com.melanie.androidactivities.PaymentActivity;
@@ -31,7 +30,7 @@ public class NavigationHelper {
 	 * @return Ids for Icons used in the main page
 	 **/
 	public static Integer[] getMainPageIcons() {
-		return new Integer[] { R.drawable.product2, R.drawable.sale,
+		return new Integer[] { R.drawable.product, R.drawable.sale,
 				R.drawable.customer, R.drawable.report, R.drawable.settings,
 
 				/*****/
@@ -52,6 +51,38 @@ public class NavigationHelper {
 
 				/*******/
 				R.string.title_activity_payment, };
+	}
+
+	/**
+	 * Defines the main navigation items on the main page. Add to this if you
+	 * want to add another item on the navigation page
+	 * 
+	 * @return String ids of the navigation items
+	 */
+	public static Integer[] getProductMainNavigationItems() {
+		return new Integer[] { R.string.categories, R.string.addProducts,
+				R.string.melanie_inventory };
+	}
+
+	/**
+	 * Returns the navigation icons used in the main page
+	 * 
+	 * @return Ids for Icons used in the main page
+	 **/
+	public static Integer[] getProductMainIcons() {
+		return new Integer[] { R.drawable.category, R.drawable.product,
+				R.drawable.inventory };
+	}
+
+	/**
+	 * returns the small text descriptions under each navigation item on the
+	 * main page
+	 * 
+	 * @return Ids of the descriptions
+	 */
+	public static Integer[] getProductMainNavigationDescription() {
+		return new Integer[] { R.string.addcategorydescription,
+				R.string.addproductdescription, R.string.inventoryDescription };
 	}
 
 	/**
@@ -97,10 +128,9 @@ public class NavigationHelper {
 
 		return new SparseArray<Class<? extends Activity>>() {
 			{
-				append(R.id.addCategories, CategoriesActivity.class);
-				append(R.id.viewCategories, CustomerListActivity.class);
-				append(R.id.addProducts, AddProductActivity.class);
-				append(R.id.viewProducts, MelanieInventoryActivity.class);
+				append(0, CategoriesActivity.class);
+				append(1, AddProductActivity.class);
+				append(2, MelanieInventoryActivity.class);
 			}
 		};
 	}

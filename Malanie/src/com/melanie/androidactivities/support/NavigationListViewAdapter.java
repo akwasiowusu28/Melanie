@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.melanie.androidactivities.R;
 
-public class MainPageListViewAdapter extends ArrayAdapter<Integer> {
+public class NavigationListViewAdapter extends ArrayAdapter<Integer> {
 
 	private Context context;
 	private int resource;
@@ -24,11 +24,12 @@ public class MainPageListViewAdapter extends ArrayAdapter<Integer> {
 		public ImageView mainIconImageView;
 	}
 
-	public MainPageListViewAdapter(Context context, Integer[] navigationIcons,
-			Integer[] navigationItems, Integer[] navigationItemsDesc) {
-		super(context, R.layout.layout_listview_main_page, navigationItems);
+	public NavigationListViewAdapter(Context context,
+			Integer[] navigationIcons, Integer[] navigationItems,
+			Integer[] navigationItemsDesc) {
+		super(context, R.layout.layout_navigation_listview, navigationItems);
 		this.context = context;
-		this.resource = R.layout.layout_listview_main_page;
+		resource = R.layout.layout_navigation_listview;
 		this.navigationItems = navigationItems;
 		this.navigationIcons = navigationIcons;
 		this.navigationItemsDesc = navigationItemsDesc;
@@ -56,8 +57,10 @@ public class MainPageListViewAdapter extends ArrayAdapter<Integer> {
 
 			rowView.setTag(viewHolder);
 		}
-		
-		ViewHolder viewHolder = (ViewHolder)rowView.getTag();
+
+		ViewHolder viewHolder = (ViewHolder) rowView.getTag();
+
+		setTextColor(viewHolder);
 		viewHolder.mainIconImageView
 				.setImageResource(navigationIcons[position]);
 
@@ -67,5 +70,11 @@ public class MainPageListViewAdapter extends ArrayAdapter<Integer> {
 				.getString(navigationItemsDesc[position]));
 
 		return rowView;
+	}
+
+	private void setTextColor(ViewHolder viewHolder) {
+		int color = Utils.getTextColor(context);
+		viewHolder.firstLinetextView.setTextColor(color);
+		viewHolder.secondLinetextView.setTextColor(color);
 	}
 }
