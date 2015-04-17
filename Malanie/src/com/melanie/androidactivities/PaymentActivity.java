@@ -125,9 +125,6 @@ public class PaymentActivity extends ActionBarActivity {
 		ListView listView = (ListView) findViewById(R.id.salesListView);
 		View headerView = getLayoutInflater().inflate(
 				R.layout.layout_saleitems_header, listView, false);
-		View emptyView = findViewById(R.id.emptyView);
-
-		listView.setEmptyView(emptyView);
 
 		listView.addHeaderView(headerView);
 		listView.setAdapter(salesListAdapter);

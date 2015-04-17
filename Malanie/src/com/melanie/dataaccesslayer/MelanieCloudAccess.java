@@ -6,7 +6,6 @@ import com.backendless.Backendless;
 import com.backendless.BackendlessCollection;
 import com.backendless.async.callback.AsyncCallback;
 import com.backendless.async.callback.BackendlessCallback;
-import com.backendless.exceptions.BackendlessFault;
 import com.backendless.persistence.BackendlessDataQuery;
 import com.melanie.dataaccesslayer.datasource.DataSourceManager;
 import com.melanie.support.MelanieOperationCallBack;
@@ -30,22 +29,8 @@ public class MelanieCloudAccess {
 			MelanieOperationCallBack<T> operationCallBack)
 			throws MelanieDataLayerException {
 		try {
-			// Backendless.Persistence.of(itemClass).save(dataItem,
-			// new BackendAsynCallBack<T>(operationCallBack));
 			Backendless.Persistence.of(itemClass).save(dataItem,
-					new AsyncCallback<T>() {
-
-						@Override
-						public void handleFault(BackendlessFault arg0) {
-
-						}
-
-						@Override
-						public void handleResponse(T arg0) {
-							// TODO Auto-generated method stub
-
-						}
-					});
+					new BackendAsynCallBack<T>(operationCallBack));
 		} catch (Exception e) {
 			throw new MelanieDataLayerException(e.getMessage(), e);
 		}
@@ -139,6 +124,7 @@ public class MelanieCloudAccess {
 
 			String whereClause = fieldName + "='" + searchValue + "'";
 			BackendlessDataQuery query = new BackendlessDataQuery(whereClause);
+
 			Backendless.Persistence
 					.of(itemClass)
 					.find(query,

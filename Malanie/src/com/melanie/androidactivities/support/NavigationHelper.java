@@ -12,8 +12,8 @@ import com.melanie.androidactivities.MelanieInventoryActivity;
 import com.melanie.androidactivities.PaymentActivity;
 import com.melanie.androidactivities.ProductsMainActivity;
 import com.melanie.androidactivities.R;
-import com.melanie.androidactivities.ReportsActivity;
 import com.melanie.androidactivities.SalesActivity;
+import com.melanie.androidactivities.SalesReportActivity;
 import com.melanie.androidactivities.SettingsActivity;
 
 /**
@@ -138,7 +138,7 @@ public class NavigationHelper {
 				append(0, ProductsMainActivity.class);
 				append(1, SalesActivity.class);
 				append(2, CustomerMainActivity.class);
-				append(3, ReportsActivity.class);
+				append(3, SalesReportActivity.class);
 				append(4, SettingsActivity.class);
 			}
 		};
