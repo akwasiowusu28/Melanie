@@ -67,7 +67,7 @@
     <string name="nameWithColon">Name:</string>
     <string name="addCustomerFailed">Sorry. Could not add the customer. Please try again</string>
     <string name="addCustomerSuccess">Customer added successfully!</string>
-    <string name="title_activity_payment">Payment</string>
+    <string name="melanie_payment">Payment</string>
     <string name="customerName">Customer name:</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
@@ -86,5 +86,10 @@
     <string name="addproductdescription">Add a new product</string>
     <string name="inventoryDescription">View inventory, retrieve barcodes</string>
     <string name="doublearrow">&#187;</string>
+    <string name="title_activity_customer_main">CustomerMainActivity</string>
+    <string name="customerlist">Customer list</string>
+    <string name="customersdescription">Add new or modify existing customer</string>
+    <string name="customerlistdescription">View customers&#8217; details</string>
+    <string name="paymentdescription">Record payment for customer</string>
 
 </resources>

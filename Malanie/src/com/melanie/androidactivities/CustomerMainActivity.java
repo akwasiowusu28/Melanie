@@ -11,27 +11,26 @@ import android.widget.ListView;
 import com.melanie.androidactivities.support.NavigationHelper;
 import com.melanie.androidactivities.support.NavigationListViewAdapter;
 
-public class ProductsMainActivity extends ActionBarActivity {
+public class CustomerMainActivity extends ActionBarActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_productsmain);
+		setContentView(R.layout.activity_customer_main);
 
-		ListView mainListView = (ListView) findViewById(R.id.productMainListview);
+		ListView mainListView = (ListView) findViewById(R.id.customerMainListview);
 		mainListView.setAdapter(new NavigationListViewAdapter(this,
-				NavigationHelper.getProductMainIcons(), NavigationHelper
-						.getProductMainNavigationItems(), NavigationHelper
-						.getProductMainNavigationDescription()));
-		mainListView.setOnItemClickListener(new OnItemClickListener() {
+				NavigationHelper.getCustomerMainIcons(), NavigationHelper
+						.getCustomerMainNavigationItems(), NavigationHelper
+						.getCustomerMainNavigationDescription()));
 
+		mainListView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-				Intent intent = new Intent(ProductsMainActivity.this,
-						NavigationHelper.getProductActivities().get(position));
+				Intent intent = new Intent(CustomerMainActivity.this,
+						NavigationHelper.getCustomerActivities().get(position));
 				startActivity(intent);
-
 			}
 
 		});

@@ -5,6 +5,8 @@ import android.util.SparseArray;
 
 import com.melanie.androidactivities.AddProductActivity;
 import com.melanie.androidactivities.CategoriesActivity;
+import com.melanie.androidactivities.CustomerListActivity;
+import com.melanie.androidactivities.CustomerMainActivity;
 import com.melanie.androidactivities.CustomersActivity;
 import com.melanie.androidactivities.MelanieInventoryActivity;
 import com.melanie.androidactivities.PaymentActivity;
@@ -45,17 +47,12 @@ public class NavigationHelper {
 	 */
 	public static Integer[] getMainPageNavigationItems() {
 		return new Integer[] { R.string.products, R.string.sales,
-				R.string.customers, R.string.reports,
-
-				R.string.Settings,
-
-				/*******/
-				R.string.title_activity_payment, };
+				R.string.customers, R.string.reports, R.string.Settings };
 	}
 
 	/**
-	 * Defines the main navigation items on the main page. Add to this if you
-	 * want to add another item on the navigation page
+	 * Defines the main navigation items on the products main page. Add to this
+	 * if you want to add another item on the navigation page
 	 * 
 	 * @return String ids of the navigation items
 	 */
@@ -65,9 +62,9 @@ public class NavigationHelper {
 	}
 
 	/**
-	 * Returns the navigation icons used in the main page
+	 * Returns the navigation icons used in the products main page
 	 * 
-	 * @return Ids for Icons used in the main page
+	 * @return Ids for Icons used in the product main page
 	 **/
 	public static Integer[] getProductMainIcons() {
 		return new Integer[] { R.drawable.category, R.drawable.product,
@@ -76,13 +73,45 @@ public class NavigationHelper {
 
 	/**
 	 * returns the small text descriptions under each navigation item on the
-	 * main page
+	 * product main page
 	 * 
 	 * @return Ids of the descriptions
 	 */
 	public static Integer[] getProductMainNavigationDescription() {
 		return new Integer[] { R.string.addcategorydescription,
 				R.string.addproductdescription, R.string.inventoryDescription };
+	}
+
+	/**
+	 * Defines the main navigation items on the Customer main page. Add to this
+	 * if you want to add another item on the customer navigation page
+	 * 
+	 * @return String ids of the customers navigation items
+	 */
+	public static Integer[] getCustomerMainNavigationItems() {
+		return new Integer[] { R.string.customers, R.string.melanie_payment,
+				R.string.customerlist };
+	}
+
+	/**
+	 * Returns the navigation icons used in the Customer main page
+	 * 
+	 * @return Ids for Icons used in the Customers main page
+	 **/
+	public static Integer[] getCustomerMainIcons() {
+		return new Integer[] { R.drawable.customer, R.drawable.wallet,
+				R.drawable.customerlist };
+	}
+
+	/**
+	 * returns the small text descriptions under each navigation item on the
+	 * product main page
+	 * 
+	 * @return Ids of the descriptions
+	 */
+	public static Integer[] getCustomerMainNavigationDescription() {
+		return new Integer[] { R.string.customersdescription,
+				R.string.paymentdescription, R.string.customerlistdescription };
 	}
 
 	/**
@@ -94,10 +123,7 @@ public class NavigationHelper {
 	public static Integer[] getMainPageNavigationDescription() {
 		return new Integer[] { R.string.productsDesc, R.string.salesDesc,
 				R.string.customersDesc, R.string.reportsDesc,
-				R.string.SettingsDesc,
-
-				/*****/
-				R.string.title_activity_payment };
+				R.string.SettingsDesc };
 	}
 
 	/**
@@ -111,10 +137,9 @@ public class NavigationHelper {
 			{
 				append(0, ProductsMainActivity.class);
 				append(1, SalesActivity.class);
-				append(2, CustomersActivity.class);
+				append(2, CustomerMainActivity.class);
 				append(3, ReportsActivity.class);
 				append(4, SettingsActivity.class);
-				append(5, PaymentActivity.class);
 			}
 		};
 	}
@@ -131,6 +156,22 @@ public class NavigationHelper {
 				append(0, CategoriesActivity.class);
 				append(1, AddProductActivity.class);
 				append(2, MelanieInventoryActivity.class);
+			}
+		};
+	}
+
+	/**
+	 * A SparseArray containing the activities in the Customer navigation item
+	 * 
+	 * @return the activities of the Product navigation item
+	 */
+	public static SparseArray<Class<? extends Activity>> getCustomerActivities() {
+
+		return new SparseArray<Class<? extends Activity>>() {
+			{
+				append(0, CustomersActivity.class);
+				append(1, PaymentActivity.class);
+				append(2, CustomerListActivity.class);
 			}
 		};
 	}

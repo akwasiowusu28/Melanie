@@ -94,7 +94,7 @@
         </activity>
         <activity
             android:name=".PaymentActivity"
-            android:label="@string/title_activity_payment" >
+            android:label="@string/melanie_payment" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.melanie.androidactivities.MainActivity" />
@@ -114,6 +114,14 @@
         <activity
             android:name=".SalesReportActivity"
             android:label="@string/title_activity_sales_report"
+            android:parentActivityName=".MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.melanie.androidactivities.MainActivity" />
+        </activity>
+        <activity
+            android:name=".CustomerMainActivity"
+            android:label="@string/title_activity_customer_main"
             android:parentActivityName=".MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
