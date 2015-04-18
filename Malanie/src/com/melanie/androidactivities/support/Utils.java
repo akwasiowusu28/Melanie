@@ -1,9 +1,11 @@
 package com.melanie.androidactivities.support;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -137,5 +139,20 @@ public final class Utils {
 
 	public static int getTextColor(Context context) {
 		return context instanceof MainActivity ? Color.WHITE : Color.BLACK;
+	}
+
+	public static <T> Map<T, Integer> groupItems(List<T> items) {
+		Map<T, Integer> itemGroup = new HashMap<T, Integer>();
+
+		for (T item : items)
+			if (!itemGroup.containsKey(item))
+				itemGroup.put(item, 1);
+			else {
+				Integer itemCount = itemGroup.get(item);
+				itemCount++;
+				itemGroup.put(item, itemCount);
+			}
+
+		return itemGroup;
 	}
 }

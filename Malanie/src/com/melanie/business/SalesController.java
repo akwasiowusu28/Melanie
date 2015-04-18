@@ -1,5 +1,6 @@
 package com.melanie.business;
 
+import java.util.Date;
 import java.util.List;
 
 import com.melanie.entities.Customer;
@@ -34,4 +35,7 @@ public interface SalesController {
 			double amount, double discount, double balance)
 			throws MelanieBusinessException;
 
+	List<Sale> getSalesBetween(Date fromDate, Date toDate,
+			MelanieOperationCallBack<Sale> operationCallBack)
+			throws MelanieBusinessException;
 }

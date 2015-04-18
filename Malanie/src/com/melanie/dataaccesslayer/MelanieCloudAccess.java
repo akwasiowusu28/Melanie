@@ -124,7 +124,6 @@ public class MelanieCloudAccess {
 
 			String whereClause = fieldName + "='" + searchValue + "'";
 			BackendlessDataQuery query = new BackendlessDataQuery(whereClause);
-
 			Backendless.Persistence
 					.of(itemClass)
 					.find(query,
@@ -133,6 +132,27 @@ public class MelanieCloudAccess {
 		} catch (Exception e) {
 			throw new MelanieDataLayerException(e.getMessage(), e);
 		}
+	}
+
+	public <T> void findItemsBetween(String fieldName, String lowerBound,
+			String upperBound, Class<T> itemClass,
+			MelanieOperationCallBack<T> operationCallBack)
+			throws MelanieDataLayerException {
+		try {
+			isCollectionSearch = true;
+
+			String whereClause = fieldName + ">= '" + lowerBound + "' and "
+					+ fieldName + "<='" + upperBound + "'";
+			BackendlessDataQuery query = new BackendlessDataQuery(whereClause);
+			Backendless.Persistence
+					.of(itemClass)
+					.find(query,
+							(AsyncCallback<BackendlessCollection<T>>) new BackendAsynCallBack<T>(
+									operationCallBack));
+		} catch (Exception e) {
+			throw new MelanieDataLayerException(e.getMessage(), e);
+		}
+
 	}
 
 	private class BackendAsynCallBack<T> extends BackendlessCallback<T> {

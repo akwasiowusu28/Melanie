@@ -2,12 +2,12 @@ package com.melanie.business.concrete;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
+import com.melanie.androidactivities.support.Utils;
 import com.melanie.business.ProductEntryController;
 import com.melanie.business.SalesController;
 import com.melanie.dataaccesslayer.MelanieDataAccessLayer;
@@ -46,16 +46,7 @@ public class SalesControllerImpl implements SalesController {
 			MelanieOperationCallBack<Sale> uiCallBack)
 			throws MelanieBusinessException {
 		operationCount = 0;
-		Map<String, Integer> itemGroup = new HashMap<String, Integer>();
-		for (String barcode : barcodes)
-			if (!itemGroup.containsKey(barcode))
-				itemGroup.put(barcode, 1);
-			else {
-				Integer itemCount = itemGroup.get(barcode);
-				itemCount++;
-				itemGroup.put(barcode, itemCount);
-			}
-
+		Map<String, Integer> itemGroup = Utils.groupItems(barcodes);
 		for (String barcode : itemGroup.keySet())
 			try {
 				String parsedBarcode = parseBarcodeNoChecksum(barcode);
@@ -194,5 +185,21 @@ public class SalesControllerImpl implements SalesController {
 		if (notFoundProducts.size() >= 20)
 			notFoundProducts.remove();
 		notFoundProducts.add(barcode);
+	}
+
+	@Override
+	public List<Sale> getSalesBetween(Date fromDate, Date toDate,
+			MelanieOperationCallBack<Sale> operationCallBack)
+			throws MelanieBusinessException {
+		List<Sale> sales = new ArrayList<Sale>();
+		try {
+			if (dataAccess != null)
+				sales.addAll(dataAccess.findItemsBetween("SaleDate",
+						fromDate.toString(), toDate.toString(), Sale.class,
+						operationCallBack));
+		} catch (MelanieDataLayerException e) {
+			throw new MelanieBusinessException(e.getMessage(), e);
+		}
+		return sales;
 	}
 }

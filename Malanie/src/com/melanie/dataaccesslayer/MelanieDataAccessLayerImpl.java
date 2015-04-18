@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.Where;
 import com.melanie.dataaccesslayer.datasource.DataSource;
 import com.melanie.dataaccesslayer.datasource.DataSourceManager;
 import com.melanie.entities.BaseEntity;
@@ -15,6 +16,9 @@ import com.melanie.support.exceptions.MelanieDataLayerException;
 
 /**
  * A class that serves as a facade to Database access for all clients
+ * <b>Note:</b> Any call to the MelanieCloudAccess must have the
+ * operationCallBack argument wrapped in a DataUtil.DataCallBack instance. This
+ * is used to effectively maintain the cache
  * 
  * @author Akwasi Owusu
  */
@@ -309,6 +313,33 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 	public <T> OperationResult addDataItemToLocalDataStoreOnly(T dataItem,
 			Class<T> itemClass) throws MelanieDataLayerException {
 		return DataUtil.updateDataCache(dataItem);
+	}
+
+	@Override
+	public <T> List<T> findItemsBetween(String fieldName, String lowerBound,
+			String upperBound, Class<T> itemClass,
+			MelanieOperationCallBack<T> operationCallBack)
+			throws MelanieDataLayerException {
+
+		List<T> result = new ArrayList<T>();
+		try {
+			Dao<Object, Integer> dao = DataSourceManager
+					.getCachedDaoFor(itemClass);
+			if (dao != null && dao.queryBuilder() != null) {
+				QueryBuilder<Object, Integer> queryBuilder = dao.queryBuilder();
+				Where<Object, Integer> where = queryBuilder.where();
+				where.between(fieldName, lowerBound, upperBound);
+
+				result.addAll((List<T>) dao.query(queryBuilder.prepare()));
+				cloudAccess.findItemsBetween(fieldName, lowerBound, upperBound,
+						itemClass, new DataUtil.DataCallBack<T>(
+								operationCallBack));
+			}
+
+		} catch (SQLException e) {
+			throw new MelanieDataLayerException(e.getMessage(), e);
+		}
+		return result;
 	}
 
 }

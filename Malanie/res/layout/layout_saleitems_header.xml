@@ -3,40 +3,40 @@
     android:id="@+id/headerRow"
     android:layout_width="match_parent"
     android:layout_height="35dp"
-    android:background="#CCCCCC" >
+    android:background="#CCB" >
 
     <TextView
-        android:gravity="center_vertical"
-        android:layout_marginLeft="10dp"
         android:layout_width="0dp"
         android:layout_height="match_parent"
+        android:layout_marginLeft="10dp"
         android:layout_weight="0.4"
+        android:gravity="center_vertical"
         android:text="@string/name"
         android:textColor="@android:color/black"
         android:textStyle="bold" />
 
     <TextView
-        android:gravity="center"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="0.2"
+        android:gravity="center"
         android:text="@string/qty"
         android:textColor="@android:color/black"
         android:textStyle="bold" />
 
     <TextView
-        android:gravity="center"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="0.2"
+        android:gravity="center"
         android:text="@string/each"
         android:textColor="@android:color/black"
         android:textStyle="bold" />
 
     <TextView
-        android:gravity="center"
         android:layout_width="0dp"
         android:layout_weight="0.2"
+        android:gravity="center"
         android:text="@string/total"
         android:textColor="@android:color/black"
         android:textStyle="bold" />

@@ -43,4 +43,9 @@ public interface MelanieDataAccessLayer {
 
 	<T> OperationResult addDataItemToLocalDataStoreOnly(T dataItem,
 			Class<T> itemClass) throws MelanieDataLayerException;
+
+	<T> List<T> findItemsBetween(String fieldName, String lowerBound,
+			String upperBound, Class<T> itemClass,
+			MelanieOperationCallBack<T> operationCallBack)
+			throws MelanieDataLayerException;
 }

@@ -3,7 +3,7 @@
     android:id="@+id/headerRow"
     android:layout_width="match_parent"
     android:layout_height="35dp"
-    android:background="#CCCCCC" >
+    android:background="#CCB" >
 
     <TextView
         android:layout_width="0dp"

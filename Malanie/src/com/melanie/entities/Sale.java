@@ -73,4 +73,27 @@ public class Sale extends BaseEntity {
 		this.payment = payment;
 	}
 
+	@Override
+	public boolean equals(Object another) {
+		boolean equals = false;
+		if (this == another)
+			equals = true;
+		else if (another != null) {
+			Sale anotherSale = (Sale) another;
+			boolean checkFieldsNonNull = anotherSale.saleDate != null
+					&& saleDate != null && anotherSale.product != null
+					&& product != null;
+			equals = checkFieldsNonNull
+					&& anotherSale.saleDate.equals(saleDate)
+					&& anotherSale.product.getBarcode().equals(
+							product.getBarcode());
+		}
+		return equals;
+	}
+
+	@Override
+	public int hashCode() {
+		return saleDate.hashCode() * product.getBarcode().hashCode();
+	}
+
 }
