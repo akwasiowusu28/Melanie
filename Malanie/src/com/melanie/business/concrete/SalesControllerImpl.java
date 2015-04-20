@@ -112,16 +112,33 @@ public class SalesControllerImpl implements SalesController {
 	}
 
 	@Override
-	public OperationResult saveCurrentSales(Customer customer)
+	public OperationResult saveCurrentSales(final Customer customer)
 			throws MelanieBusinessException {
 		OperationResult result = OperationResult.FAILED;
 		if (dataAccess != null) {
 			try {
-				for (Sale sale : sales) {
-					sale.setPayment(payment);
-					sale.setCustomer(customer);
-					dataAccess.addDataItem(sale, Sale.class);
-				}
+				// This carries the and ACID flaw. //Find a way to resolve that
+				dataAccess.addDataItem(payment, Payment.class,
+						new MelanieOperationCallBack<Payment>(this.getClass()
+								.getSimpleName()) {
+
+							@Override
+							public void onOperationSuccessful(
+									Payment resultPayment) {
+								for (Sale sale : sales) {
+									sale.setPayment(resultPayment);
+									sale.setCustomer(customer);
+									try {
+										dataAccess.addDataItem(sale,
+												Sale.class, null);
+									} catch (MelanieDataLayerException e) {
+										e.printStackTrace(); // Log it
+									}
+								}
+							}
+
+						});
+
 			} catch (MelanieDataLayerException e) {
 				throw new MelanieBusinessException(e.getMessage(), e);
 			}
@@ -164,10 +181,10 @@ public class SalesControllerImpl implements SalesController {
 			throws MelanieBusinessException {
 		OperationResult result = OperationResult.FAILED;
 		try {
-			payment = new Payment(customer, sales, amountReceived, discount,
-					balance);
+			payment = new Payment(customer, amountReceived, discount, balance,
+					new Date());
 			if (dataAccess != null)
-				result = dataAccess.addDataItem(payment, Payment.class);
+				result = dataAccess.addDataItem(payment, Payment.class, null);
 		} catch (MelanieDataLayerException e) {
 			throw new MelanieBusinessException(e.getMessage(), e);
 		}
@@ -177,8 +194,8 @@ public class SalesControllerImpl implements SalesController {
 	@Override
 	public void createNewPayment(Customer customer, List<Sale> sale,
 			double amountReceived, double discount, double balance) {
-		payment = new Payment(customer, sales, amountReceived, discount,
-				balance);
+		payment = new Payment(customer, amountReceived, discount, balance,
+				new Date());
 	}
 
 	private void addBarcodeToNotFoundList(String barcode) {

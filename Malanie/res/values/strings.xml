@@ -91,5 +91,6 @@
     <string name="customersdescription">Add new or modify existing customer</string>
     <string name="customerlistdescription">View customers&#8217; details</string>
     <string name="paymentdescription">Record payment for customer</string>
-
-</resources>
+    <string name="startDate">Start date:</string>
+    <string name="endDate">End date:</string>
+</resources>

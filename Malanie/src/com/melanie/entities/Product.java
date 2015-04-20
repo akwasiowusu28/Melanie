@@ -81,4 +81,24 @@ public class Product extends BaseEntity {
 	public void setCategory(Category category) {
 		this.category = category;
 	}
+
+	@Override
+	public boolean equals(Object another) {
+		boolean equal = false;
+
+		if (this == another)
+			equal = true;
+		else if (another != null && another instanceof Product) {
+			Product anotherProduct = (Product) another;
+			equal = anotherProduct.barcode.equals(barcode);
+		}
+
+		return equal;
+	}
+
+	@Override
+	public int hashCode() {
+		return 31 * barcode.hashCode();
+	}
+
 }

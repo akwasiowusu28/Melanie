@@ -10,7 +10,8 @@ public interface MelanieDataAccessLayer {
 
 	<T> void initialize(T dataContext);
 
-	<T> OperationResult addDataItem(T dataItem, Class<T> itemClass)
+	<T> OperationResult addDataItem(T dataItem, Class<T> itemClass,
+			MelanieOperationCallBack<T> operationCallBack)
 			throws MelanieDataLayerException;
 
 	<T> OperationResult updateDataItem(T dataItem, Class<T> itemClass)

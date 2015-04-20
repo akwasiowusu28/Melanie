@@ -124,7 +124,6 @@ public class MelanieInventoryActivity extends ActionBarActivity {
 							public void onCollectionOperationSuccessful(
 									List<Product> results) {
 								Utils.mergeItems(results, allProducts);
-								Utils.mergeItems(allProducts, currentProducts);
 								Utils.notifyListUpdate(productsAdapter, handler);
 							}
 

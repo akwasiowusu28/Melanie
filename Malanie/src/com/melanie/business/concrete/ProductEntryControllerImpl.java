@@ -55,7 +55,7 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 			category = new Category(categoryName);
 			OperationResult result;
 			try {
-				result = dataAccess.addDataItem(category, Category.class);
+				result = dataAccess.addDataItem(category, Category.class, null);
 				if (result != OperationResult.SUCCESSFUL)
 					category = null;
 			} catch (MelanieDataLayerException e) {
@@ -162,7 +162,7 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 			Product product = new Product(productName, quantity, price,
 					category, barcode);
 			try {
-				result = dataAccess.addDataItem(product, Product.class);
+				result = dataAccess.addDataItem(product, Product.class, null);
 			} catch (MelanieDataLayerException e) {
 				throw new MelanieBusinessException(e.getMessage(), e);
 			}

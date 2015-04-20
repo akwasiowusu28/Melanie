@@ -78,7 +78,7 @@ public class Sale extends BaseEntity {
 		boolean equals = false;
 		if (this == another)
 			equals = true;
-		else if (another != null) {
+		else if (another != null && another instanceof Sale) {
 			Sale anotherSale = (Sale) another;
 			boolean checkFieldsNonNull = anotherSale.saleDate != null
 					&& saleDate != null && anotherSale.product != null
@@ -93,7 +93,7 @@ public class Sale extends BaseEntity {
 
 	@Override
 	public int hashCode() {
-		return saleDate.hashCode() * product.getBarcode().hashCode();
+		return 31 * saleDate.hashCode() * product.getBarcode().hashCode();
 	}
 
 }

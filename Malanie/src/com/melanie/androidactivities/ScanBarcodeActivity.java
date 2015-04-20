@@ -36,6 +36,7 @@ import android.widget.TextView;
 import com.melanie.androidactivities.support.CameraPreview;
 import com.melanie.androidactivities.support.Utils;
 
+@SuppressWarnings("deprecation")
 public class ScanBarcodeActivity extends Activity {
 
 	private Camera camera;
@@ -205,7 +206,7 @@ public class ScanBarcodeActivity extends Activity {
 						&& isValidMelanieBarcode(barcode)) {
 					scannedBarcodes.add(barcode);
 					updatePreviewText(barcode);
-					// playBeep();
+					playBeep();
 				}
 				break;
 			}
@@ -277,6 +278,7 @@ public class ScanBarcodeActivity extends Activity {
 			SurfaceHolder previewHolder = cameraPreview.getHolder();
 			if (previewHolder != null)
 				previewHolder.removeCallback(cameraPreview);
+			camera.autoFocus(null);
 			camera.setPreviewCallback(null);
 			camera.release();
 			camera = null;

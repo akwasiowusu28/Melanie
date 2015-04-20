@@ -59,4 +59,24 @@ public class Customer extends BaseEntity {
 		return name;
 	}
 
+	@Override
+	public boolean equals(Object another) {
+		boolean equal = false;
+
+		if (this == another)
+			equal = true;
+		else if (another != null && another instanceof Customer) {
+			Customer anotherCustomer = (Customer) another;
+			equal = anotherCustomer.name.equals(name)
+					&& anotherCustomer.phoneNumber.equals(phoneNumber);
+		}
+
+		return equal;
+	}
+
+	@Override
+	public int hashCode() {
+		return name.hashCode() * phoneNumber.hashCode();
+	}
+
 }

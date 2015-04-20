@@ -63,7 +63,7 @@ public class CustomersControllerImpl implements CustomersController {
 
 		if (dataAccess != null && customer != null)
 			try {
-				result = dataAccess.addDataItem(customer, Customer.class);
+				result = dataAccess.addDataItem(customer, Customer.class, null);
 			} catch (MelanieDataLayerException e) {
 				throw new MelanieBusinessException(e.getMessage(), e);
 			}

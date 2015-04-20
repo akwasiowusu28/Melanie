@@ -1,10 +1,8 @@
 package com.melanie.entities;
 
-import java.util.Collection;
 import java.util.Date;
 
 import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 
 /**
@@ -32,22 +30,18 @@ public class Payment extends BaseEntity {
 	@DatabaseField(columnName = "CustomerId", canBeNull = true, foreign = true)
 	private Customer customer;
 
-	@ForeignCollectionField
-	Collection<Sale> sales;
-
 	public Payment() {
 		super();
 	}
 
-	public Payment(Customer customer, Collection<Sale> sales,
-			double amountReceived, double discount, double balance) {
+	public Payment(Customer customer, double amountReceived, double discount,
+			double balance, Date paymentDate) {
 		super();
 		this.customer = customer;
-		this.sales = sales;
 		this.amountReceived = amountReceived;
 		this.discount = discount;
 		this.balance = balance;
-		paymentDate = new Date();
+		this.paymentDate = paymentDate;
 	}
 
 	public Date getPaymentDate() {
@@ -90,11 +84,25 @@ public class Payment extends BaseEntity {
 		this.customer = customer;
 	}
 
-	public Collection<Sale> getSales() {
-		return sales;
+	@Override
+	public boolean equals(Object another) {
+		boolean equal = false;
+
+		if (this == another)
+			equal = true;
+		else if (another != null && another instanceof Payment) {
+
+			Payment anotherPayment = (Payment) another;
+			equal = anotherPayment.paymentDate != null && paymentDate != null
+					&& anotherPayment.paymentDate.equals(paymentDate)
+					&& anotherPayment.amountReceived == amountReceived;
+		}
+		return equal;
 	}
 
-	public void setSales(Collection<Sale> sales) {
-		this.sales = sales;
+	@Override
+	public int hashCode() {
+		return 31 * paymentDate.hashCode();
 	}
+
 }

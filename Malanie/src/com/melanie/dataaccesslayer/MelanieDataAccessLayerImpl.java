@@ -52,21 +52,21 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 	 * @throws MelanieDataLayerException
 	 */
 	@Override
-	public <T> OperationResult addDataItem(T dataItem, Class<T> itemClass)
+	public <T> OperationResult addDataItem(T dataItem, Class<T> itemClass,
+			MelanieOperationCallBack<T> operationCallBack)
 			throws MelanieDataLayerException {
 		OperationResult result = OperationResult.FAILED;
-
 		try {
 			Dao<Object, Integer> dao = DataSourceManager
 					.getCachedDaoFor(itemClass);
 			if (dao != null) {
 				int addReturn = dao.create(dataItem);
 				if (addReturn == 1) {
-					int id = getLastInsertedId(itemClass);
-					((BaseEntity) dataItem).setId(id);
 					if (cloudAccess != null)
-						cloudAccess.addDataItem(dataItem, itemClass,
-								new DataUtil.DataCallBack<T>(null));
+						cloudAccess
+								.addDataItem(dataItem, itemClass,
+										new DataUtil.DataCallBack<T>(
+												operationCallBack));
 					result = OperationResult.SUCCESSFUL;
 				}
 			}
@@ -204,13 +204,12 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 			throws MelanieDataLayerException {
 
 		List<T> items = DataUtil.findAllItemsFromCache(itemClass);
-		if (items.isEmpty() || items.size() >= 3 && operationCallBack != null) {
-			for (T item : items)
-				DataUtil.updateDataCache(item);
-			if (cloudAccess != null)
-				cloudAccess.findAllItems(itemClass,
-						new DataUtil.DataCallBack<T>(operationCallBack));
-		}
+		for (T item : items)
+			DataUtil.updateDataCache(item);
+		if (cloudAccess != null)
+			cloudAccess.findAllItems(itemClass, new DataUtil.DataCallBack<T>(
+					operationCallBack));
+
 		return items;
 	}
 
