@@ -5,7 +5,7 @@ import java.util.List;
 import com.backendless.Backendless;
 import com.backendless.BackendlessCollection;
 import com.backendless.async.callback.AsyncCallback;
-import com.backendless.async.callback.BackendlessCallback;
+import com.backendless.exceptions.BackendlessFault;
 import com.backendless.persistence.BackendlessDataQuery;
 import com.melanie.dataaccesslayer.datasource.DataSourceManager;
 import com.melanie.support.MelanieOperationCallBack;
@@ -31,6 +31,15 @@ public class MelanieCloudAccess {
 		try {
 			Backendless.Persistence.of(itemClass).save(dataItem,
 					new BackendAsynCallBack<T>(operationCallBack));
+		} catch (Exception e) {
+			throw new MelanieDataLayerException(e.getMessage(), e);
+		}
+	}
+
+	public <T> void addDataItemSync(T dataItem, Class<T> itemClass)
+			throws MelanieDataLayerException {
+		try {
+			Backendless.Persistence.of(itemClass).save(dataItem);
 		} catch (Exception e) {
 			throw new MelanieDataLayerException(e.getMessage(), e);
 		}
@@ -155,7 +164,7 @@ public class MelanieCloudAccess {
 
 	}
 
-	private class BackendAsynCallBack<T> extends BackendlessCallback<T> {
+	private class BackendAsynCallBack<T> implements AsyncCallback<T> {
 
 		private MelanieOperationCallBack<T> operationCallBack;
 
@@ -164,7 +173,13 @@ public class MelanieCloudAccess {
 		}
 
 		@Override
-		public void handleResponse(Object responseObject) {
+		public void handleFault(BackendlessFault fault) {
+			operationCallBack.onOperationFailed(new MelanieDataLayerException(
+					fault.getMessage()));
+		}
+
+		@Override
+		public void handleResponse(T responseObject) {
 			if (operationCallBack != null)
 				if (responseObject instanceof BackendlessCollection) {
 					List<T> responseData = ((BackendlessCollection<T>) responseObject)
@@ -177,9 +192,8 @@ public class MelanieCloudAccess {
 						operationCallBack
 								.onCollectionOperationSuccessful(responseData);
 				} else
-					operationCallBack.onOperationSuccessful((T) responseObject);
+					operationCallBack.onOperationSuccessful(responseObject);
 			isCollectionSearch = false;
 		}
 	}
-
 }

@@ -15,6 +15,7 @@ import com.melanie.entities.Customer;
 import com.melanie.entities.Payment;
 import com.melanie.entities.Product;
 import com.melanie.entities.Sale;
+import com.melanie.entities.SalePayment;
 import com.melanie.support.MelanieBusinessFactory;
 import com.melanie.support.MelanieDataFactory;
 import com.melanie.support.MelanieOperationCallBack;
@@ -112,31 +113,33 @@ public class SalesControllerImpl implements SalesController {
 	}
 
 	@Override
-	public OperationResult saveCurrentSales(final Customer customer)
+	public OperationResult saveCurrentSales(Customer customer,
+			double amountReceived, double discount, double balance)
 			throws MelanieBusinessException {
 		OperationResult result = OperationResult.FAILED;
 		if (dataAccess != null) {
 			try {
-				// This carries the and ACID flaw. //Find a way to resolve that
+
+				Payment payment = new Payment(customer, amountReceived,
+						discount, balance);
+
 				dataAccess.addDataItem(payment, Payment.class,
 						new MelanieOperationCallBack<Payment>(this.getClass()
-								.getSimpleName()) {
-
+								.toString()) {
 							@Override
-							public void onOperationSuccessful(
-									Payment resultPayment) {
+							public void onOperationSuccessful(Payment payment) {
 								for (Sale sale : sales) {
-									sale.setPayment(resultPayment);
-									sale.setCustomer(customer);
+									SalePayment salePayment = new SalePayment(
+											sale, payment);
 									try {
-										dataAccess.addDataItem(sale,
-												Sale.class, null);
+										dataAccess.addDataItem(salePayment,
+												SalePayment.class, null);
 									} catch (MelanieDataLayerException e) {
-										e.printStackTrace(); // Log it
+										onOperationFailed(e);
 									}
 								}
+								;
 							}
-
 						});
 
 			} catch (MelanieDataLayerException e) {
@@ -167,7 +170,6 @@ public class SalesControllerImpl implements SalesController {
 				for (Sale sale : customerSales) {
 					dataAccess.refreshItem(sale.getProduct(), Product.class);
 					dataAccess.refreshItem(sale.getCustomer(), Customer.class);
-					dataAccess.refreshItem(sale.getPayment(), Payment.class);
 				}
 			} catch (MelanieDataLayerException e) {
 				throw new MelanieBusinessException(e.getMessage(), e);
@@ -181,21 +183,13 @@ public class SalesControllerImpl implements SalesController {
 			throws MelanieBusinessException {
 		OperationResult result = OperationResult.FAILED;
 		try {
-			payment = new Payment(customer, amountReceived, discount, balance,
-					new Date());
+			payment = new Payment(customer, amountReceived, discount, balance);
 			if (dataAccess != null)
 				result = dataAccess.addDataItem(payment, Payment.class, null);
 		} catch (MelanieDataLayerException e) {
 			throw new MelanieBusinessException(e.getMessage(), e);
 		}
 		return result;
-	}
-
-	@Override
-	public void createNewPayment(Customer customer, List<Sale> sale,
-			double amountReceived, double discount, double balance) {
-		payment = new Payment(customer, amountReceived, discount, balance,
-				new Date());
 	}
 
 	private void addBarcodeToNotFoundList(String barcode) {

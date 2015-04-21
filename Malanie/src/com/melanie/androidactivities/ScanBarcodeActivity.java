@@ -206,7 +206,7 @@ public class ScanBarcodeActivity extends Activity {
 						&& isValidMelanieBarcode(barcode)) {
 					scannedBarcodes.add(barcode);
 					updatePreviewText(barcode);
-					playBeep();
+					// playBeep();
 				}
 				break;
 			}

@@ -99,7 +99,7 @@ public class SalesActivity extends ActionBarActivity {
 
 					@Override
 					public void noButtonOperation() {
-						performSave(null);
+						saveCurrentSales(null);
 					}
 				});
 	}
@@ -142,7 +142,7 @@ public class SalesActivity extends ActionBarActivity {
 		if (balance < 0)
 			alertDialog.show();
 		else
-			performSave(null);
+			saveCurrentSales(null);
 	}
 
 	private void recordTotals() {
@@ -168,22 +168,17 @@ public class SalesActivity extends ActionBarActivity {
 		resetAll();
 	}
 
-	private void performSave(Customer customer) {
-		salesController.createNewPayment(customer, sales, amountReceived,
-				discount, balance);
-
-		OperationResult result = saveSales(customer);
-		updateUIAfterSave(result);
-	}
-
-	private OperationResult saveSales(Customer customer) {
+	private void saveCurrentSales(Customer customer) {
 		OperationResult result = OperationResult.FAILED;
 		try {
-			result = salesController.saveCurrentSales(customer);
+			result = salesController.saveCurrentSales(customer, amountReceived,
+					discount, balance);
 		} catch (MelanieBusinessException e) {
 			e.printStackTrace(); // TODO log it
 		}
-		return result;
+
+		updateUIAfterSave(result);
+
 	}
 
 	private void updateUIAfterSave(OperationResult result) {
@@ -239,7 +234,7 @@ public class SalesActivity extends ActionBarActivity {
 				customer = customersController.findCustomer(customerId, null);
 				if (customer != null)
 					customer.setAmountOwed(customer.getAmountOwed() + balance);
-				performSave(customer);
+				saveCurrentSales(customer);
 			} catch (MelanieBusinessException e) {
 				e.printStackTrace(); // TODO log it
 			}

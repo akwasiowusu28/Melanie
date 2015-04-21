@@ -26,9 +26,6 @@ public class Sale extends BaseEntity {
 	@DatabaseField(columnName = "CustomerId", canBeNull = true, foreign = true)
 	private Customer customer;
 
-	@DatabaseField(columnName = "PaymentId", canBeNull = true, foreign = true)
-	private Payment payment;
-
 	public Sale() {
 		super();
 	}
@@ -63,14 +60,6 @@ public class Sale extends BaseEntity {
 
 	public void setCustomer(Customer customer) {
 		this.customer = customer;
-	}
-
-	public Payment getPayment() {
-		return payment;
-	}
-
-	public void setPayment(Payment payment) {
-		this.payment = payment;
 	}
 
 	@Override

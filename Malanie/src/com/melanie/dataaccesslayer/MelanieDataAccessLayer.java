@@ -14,6 +14,9 @@ public interface MelanieDataAccessLayer {
 			MelanieOperationCallBack<T> operationCallBack)
 			throws MelanieDataLayerException;
 
+	public <T> OperationResult addDataItemSync(T dataItem, Class<T> itemClass)
+			throws MelanieDataLayerException;
+
 	<T> OperationResult updateDataItem(T dataItem, Class<T> itemClass)
 			throws MelanieDataLayerException;
 

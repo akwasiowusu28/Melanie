@@ -16,6 +16,11 @@ public class MelanieOperationCallBack<T> {
 	public void onOperationSuccessful(T result) {
 	}
 
+	public void onOperationFailed(Throwable e) {
+
+		e.printStackTrace(); // log it
+	}
+
 	public String getSender() {
 		return sender;
 	}

@@ -62,11 +62,42 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 			if (dao != null) {
 				int addReturn = dao.create(dataItem);
 				if (addReturn == 1) {
+					DataUtil.updateItemRecentUse(dataItem);
 					if (cloudAccess != null)
 						cloudAccess
 								.addDataItem(dataItem, itemClass,
 										new DataUtil.DataCallBack<T>(
 												operationCallBack));
+					result = OperationResult.SUCCESSFUL;
+				}
+			}
+		} catch (SQLException e) {
+			throw new MelanieDataLayerException(e.getMessage(), e);
+		}
+
+		return result;
+	}
+
+	/**
+	 * Use this to add items that has to be added synchronously
+	 * 
+	 * @param dataItem
+	 *            The item to persist
+	 * @throws MelanieDataLayerException
+	 */
+	@Override
+	public <T> OperationResult addDataItemSync(T dataItem, Class<T> itemClass)
+			throws MelanieDataLayerException {
+		OperationResult result = OperationResult.FAILED;
+		try {
+			if (cloudAccess != null)
+				cloudAccess.addDataItemSync(dataItem, itemClass);
+			Dao<Object, Integer> dao = DataSourceManager
+					.getCachedDaoFor(itemClass);
+			if (dao != null) {
+				int addReturn = dao.create(dataItem);
+				if (addReturn == 1) {
+					DataUtil.updateItemRecentUse(dataItem);
 					result = OperationResult.SUCCESSFUL;
 				}
 			}

@@ -27,7 +27,7 @@ public class Payment extends BaseEntity {
 	@DatabaseField
 	private double discount;
 
-	@DatabaseField(columnName = "CustomerId", canBeNull = true, foreign = true)
+	@DatabaseField(columnName = "CustomerId", foreignAutoRefresh = true, canBeNull = true, foreign = true)
 	private Customer customer;
 
 	public Payment() {
@@ -35,13 +35,13 @@ public class Payment extends BaseEntity {
 	}
 
 	public Payment(Customer customer, double amountReceived, double discount,
-			double balance, Date paymentDate) {
+			double balance) {
 		super();
 		this.customer = customer;
 		this.amountReceived = amountReceived;
 		this.discount = discount;
 		this.balance = balance;
-		this.paymentDate = paymentDate;
+		paymentDate = new Date();
 	}
 
 	public Date getPaymentDate() {

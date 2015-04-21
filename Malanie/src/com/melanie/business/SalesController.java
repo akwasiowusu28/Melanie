@@ -21,15 +21,9 @@ public interface SalesController {
 			MelanieOperationCallBack<Sale> salesCallBack)
 			throws MelanieBusinessException;
 
-	OperationResult saveCurrentSales(Customer customer)
-			throws MelanieBusinessException;
-
 	List<Sale> findSalesByCustomer(Customer customer,
 			MelanieOperationCallBack<Sale> operationCallBack)
 			throws MelanieBusinessException;
-
-	void createNewPayment(Customer customer, List<Sale> sale, double amount,
-			double discount, double balance);
 
 	OperationResult recordPayment(Customer customer, List<Sale> sale,
 			double amount, double discount, double balance)
@@ -38,4 +32,7 @@ public interface SalesController {
 	List<Sale> getSalesBetween(Date fromDate, Date toDate,
 			MelanieOperationCallBack<Sale> operationCallBack)
 			throws MelanieBusinessException;
+
+	OperationResult saveCurrentSales(Customer customer, double amountReceived,
+			double discount, double balance) throws MelanieBusinessException;
 }

@@ -17,7 +17,7 @@ import com.melanie.support.exceptions.MelanieDataLayerException;
 @SuppressWarnings("unchecked")
 public final class DataUtil {
 
-	private static <T> void updateItemRecentUse(T dataItem) {
+	public static <T> void updateItemRecentUse(T dataItem) {
 		((BaseEntity) dataItem).setRecentUse(new Date());
 	}
 
