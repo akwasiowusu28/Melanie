@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
 
 import com.melanie.androidactivities.support.Utils;
 import com.melanie.business.ProductEntryController;
@@ -31,7 +32,6 @@ public class SalesControllerImpl implements SalesController {
 	private ProductEntryController productController;
 	private MelanieDataAccessLayer dataAccess;
 	private List<Sale> sales;
-	private Payment payment;
 	private Queue<String> notFoundProducts;
 	private int operationCount = 0;
 
@@ -48,7 +48,10 @@ public class SalesControllerImpl implements SalesController {
 			throws MelanieBusinessException {
 		operationCount = 0;
 		Map<String, Integer> itemGroup = Utils.groupItems(barcodes);
-		for (String barcode : itemGroup.keySet())
+		Set<String> groupedBarcodeSet = itemGroup.keySet();
+		int totalItems = groupedBarcodeSet.size();
+
+		for (String barcode : groupedBarcodeSet)
 			try {
 				String parsedBarcode = parseBarcodeNoChecksum(barcode);
 				int quantity = itemGroup.get(barcode);
@@ -56,8 +59,7 @@ public class SalesControllerImpl implements SalesController {
 				if (sale != null)
 					sale.setQuantitySold(sale.getQuantitySold() + quantity);
 				else if (!notFoundProducts.contains(parsedBarcode))
-					addNewSale(parsedBarcode, quantity, itemGroup.keySet()
-							.size(), uiCallBack);
+					addNewSale(parsedBarcode, quantity, totalItems, uiCallBack);
 			} catch (MelanieBusinessException e) {
 				throw new MelanieBusinessException(e.getMessage(), e); // TODO:
 																		// log
@@ -120,6 +122,7 @@ public class SalesControllerImpl implements SalesController {
 		if (dataAccess != null) {
 			try {
 
+				// TODO: Figure out a way to do this transactionally
 				Payment payment = new Payment(customer, amountReceived,
 						discount, balance);
 
@@ -178,18 +181,11 @@ public class SalesControllerImpl implements SalesController {
 	}
 
 	@Override
-	public OperationResult recordPayment(Customer customer, List<Sale> sale,
+	public OperationResult recordPayment(Customer customer, List<Sale> sales,
 			double amountReceived, double discount, double balance)
 			throws MelanieBusinessException {
-		OperationResult result = OperationResult.FAILED;
-		try {
-			payment = new Payment(customer, amountReceived, discount, balance);
-			if (dataAccess != null)
-				result = dataAccess.addDataItem(payment, Payment.class, null);
-		} catch (MelanieDataLayerException e) {
-			throw new MelanieBusinessException(e.getMessage(), e);
-		}
-		return result;
+		this.sales = new ArrayList<Sale>(sales);
+		return saveCurrentSales(customer, amountReceived, discount, balance);
 	}
 
 	private void addBarcodeToNotFoundList(String barcode) {

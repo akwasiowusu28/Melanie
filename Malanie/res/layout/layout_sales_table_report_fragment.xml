@@ -1,47 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:layout_gravity="center"
     android:orientation="vertical" >
 
     <LinearLayout
-        android:id="@+id/dateRangeContainer"
+        android:id="@+id/startDateContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="10dp" >
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal" >
 
         <TextView
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
             android:layout_weight="0.25"
             android:text="@string/startDate" />
 
         <EditText
             android:id="@+id/startDate"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.25"
+            android:layout_height="40dp"
+            android:layout_weight="0.6"
             android:inputType="date" />
 
+        <ImageButton
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="0.15"
+            android:contentDescription="@string/pickDate"
+            android:src="@drawable/calendar" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/endDateContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:orientation="horizontal" >
+
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="0.25"
             android:text="@string/endDate" />
 
         <EditText
             android:id="@+id/endDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.25"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="0.6"
             android:inputType="date" />
+
+        <ImageButton
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="0.15"
+            android:contentDescription="@string/pickDate"
+            android:padding="0dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/calendar" />
     </LinearLayout>
 
     <ListView
         android:id="@+id/salesListView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/dateRangeContainer" />
+        android:layout_height="wrap_content" />
 
-</RelativeLayout>
+</LinearLayout>

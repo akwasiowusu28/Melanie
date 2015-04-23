@@ -93,4 +93,6 @@
     <string name="paymentdescription">Record payment for customer</string>
     <string name="startDate">Start date:</string>
     <string name="endDate">End date:</string>
-</resources>
+    <string name="pickDate">Pick a date</string>
+
+</resources>
