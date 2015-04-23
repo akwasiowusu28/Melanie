@@ -1,18 +1,26 @@
 package com.melanie.androidactivities;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
+import android.app.DatePickerDialog.OnDateSetListener;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.DatePicker;
 
+import com.melanie.androidactivities.support.MelanieDatePicker;
 import com.melanie.androidactivities.support.Utils;
 import com.melanie.business.SalesController;
 import com.melanie.entities.Sale;
@@ -42,6 +50,45 @@ public class SalesReportTableFragment extends Fragment {
 		sales = new HashMap<Sale, Integer>();
 		salesController = MelanieBusinessFactory.makeSalesController();
 
+	}
+
+	@Override
+	public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+		setupDateButtonsListeners();
+	}
+
+	private void setupDateButtonsListeners() {
+		Button startDateButton = (Button) getView()
+				.findViewById(R.id.startDate);
+		Button endDateButton = (Button) getView().findViewById(R.id.endDate);
+		startDateButton.setOnClickListener(dateButtonsClickListener);
+		endDateButton.setOnClickListener(dateButtonsClickListener);
+	}
+
+	private OnClickListener dateButtonsClickListener = new OnClickListener() {
+
+		@Override
+		public void onClick(View view) {
+			Button button = (Button) view;
+			getDatePicker(button).show(getFragmentManager(), "datepicker");
+		}
+	};
+
+	private MelanieDatePicker getDatePicker(final Button pickerButton) {
+
+		return new MelanieDatePicker(getActivity(), new OnDateSetListener() {
+
+			@Override
+			public void onDateSet(DatePicker view, int year, int month, int day) {
+				Calendar c = Calendar.getInstance();
+				c.set(year, month, day);
+
+				SimpleDateFormat dateformater = new SimpleDateFormat(
+						"dd-MM-yyyy", Locale.getDefault());
+				pickerButton.setText(dateformater.format(c.getTime()));
+			}
+
+		});
 	}
 
 	private Map<Sale, Integer> getSalesBetweenDates(Date fromDate, Date toDate) {

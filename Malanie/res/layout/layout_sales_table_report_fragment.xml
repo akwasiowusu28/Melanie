@@ -12,7 +12,8 @@
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:layout_marginTop="10dp"
-        android:orientation="horizontal" >
+        android:orientation="horizontal"
+        android:weightSum="1" >
 
         <TextView
             android:layout_width="0dp"
@@ -20,19 +21,29 @@
             android:layout_weight="0.25"
             android:text="@string/startDate" />
 
-        <EditText
-            android:id="@+id/startDate"
+        <FrameLayout
             android:layout_width="0dp"
-            android:layout_height="40dp"
-            android:layout_weight="0.6"
-            android:inputType="date" />
+            android:layout_height="wrap_content"
+            android:layout_weight="0.75"
+            android:background="@drawable/round"
+            android:orientation="horizontal" >
 
-        <ImageButton
-            android:layout_width="0dp"
-            android:layout_height="40dp"
-            android:layout_weight="0.15"
-            android:contentDescription="@string/pickDate"
-            android:src="@drawable/calendar" />
+            <Button
+                android:id="@+id/startDate"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:background="@drawable/datepickerbackroundselector"
+                android:paddingLeft="8dp"
+                android:paddingRight="5dp" />
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="right"
+                android:contentDescription="@string/pickDate"
+                android:scaleType="center"
+                android:src="@drawable/calendar" />
+        </FrameLayout>
     </LinearLayout>
 
     <LinearLayout
@@ -49,21 +60,29 @@
             android:layout_weight="0.25"
             android:text="@string/endDate" />
 
-        <EditText
-            android:id="@+id/endDate"
+        <FrameLayout
             android:layout_width="0dp"
-            android:layout_height="40dp"
-            android:layout_weight="0.6"
-            android:inputType="date" />
+            android:layout_height="wrap_content"
+            android:layout_weight="0.75"
+            android:background="@drawable/round"
+            android:orientation="horizontal" >
 
-        <ImageButton
-            android:layout_width="0dp"
-            android:layout_height="40dp"
-            android:layout_weight="0.15"
-            android:contentDescription="@string/pickDate"
-            android:padding="0dp"
-            android:scaleType="centerInside"
-            android:src="@drawable/calendar" />
+            <Button
+                android:id="@+id/endDate"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:background="@drawable/datepickerbackroundselector"
+                android:paddingLeft="8dp"
+                android:paddingRight="5dp" />
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="right"
+                android:contentDescription="@string/pickDate"
+                android:scaleType="center"
+                android:src="@drawable/calendar" />
+        </FrameLayout>
     </LinearLayout>
 
     <ListView

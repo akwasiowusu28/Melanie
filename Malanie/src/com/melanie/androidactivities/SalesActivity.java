@@ -13,7 +13,10 @@ import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -52,6 +55,7 @@ public class SalesActivity extends ActionBarActivity {
 
 		initializeFields();
 		setupSalesListView();
+		setupButtonsListeners();
 		startBarcodeScanning();
 		setupTextChangedListeners();
 		setupAlertDialog();
@@ -79,6 +83,33 @@ public class SalesActivity extends ActionBarActivity {
 		customersController = MelanieBusinessFactory.makeCustomersController();
 		balance = 0;
 	}
+
+	private void setupButtonsListeners() {
+		ImageButton scanButton = (ImageButton) findViewById(R.id.scanBarcodeImgButton);
+		Button cancelSaleButton = (Button) findViewById(R.id.cancelSale);
+		Button saveSaleButton = (Button) findViewById(R.id.saveSale);
+		scanButton.setOnClickListener(buttonsClickListener);
+		cancelSaleButton.setOnClickListener(buttonsClickListener);
+		saveSaleButton.setOnClickListener(buttonsClickListener);
+	}
+
+	private OnClickListener buttonsClickListener = new OnClickListener() {
+
+		@Override
+		public void onClick(View v) {
+			switch (v.getId()) {
+			case R.id.scanBarcodeImgButton:
+				launchBarcodeScanner();
+				break;
+			case R.id.saveSale:
+				saveSales();
+				break;
+			case R.id.cancelSale:
+				clearFields();
+				break;
+			}
+		}
+	};
 
 	private void setupAlertDialog() {
 		alertDialog = makeAlertDialog();
@@ -131,12 +162,12 @@ public class SalesActivity extends ActionBarActivity {
 				.addTextChangedListener(new TextListener(R.id.amountReceived));
 	}
 
-	public void launchBarcodeScanner(View view) {
+	public void launchBarcodeScanner() {
 		executorService = Executors.newScheduledThreadPool(2);
 		startBarcodeScanning();
 	}
 
-	public void saveSales(View view) {
+	public void saveSales() {
 
 		recordTotals();
 		if (balance < 0)
@@ -163,7 +194,7 @@ public class SalesActivity extends ActionBarActivity {
 			balance = Double.parseDouble(balanceString);
 	}
 
-	public void clearFields(View view) {
+	public void clearFields() {
 		// Maybe show a message for confirmation
 		resetAll();
 	}

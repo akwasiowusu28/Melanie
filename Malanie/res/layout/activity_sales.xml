@@ -132,7 +132,6 @@
                 android:layout_gravity="left"
                 android:layout_marginTop="7dp"
                 android:contentDescription="@string/scanBarcode"
-                android:onClick="launchBarcodeScanner"
                 android:src="@drawable/barcodeicon" />
 
             <Button
@@ -142,7 +141,6 @@
                 android:layout_gravity="right"
                 android:layout_marginTop="7dp"
                 android:layout_toLeftOf="@+id/cancelSale"
-                android:onClick="saveSales"
                 android:text="@string/save" />
 
             <Button
@@ -153,7 +151,6 @@
                 android:layout_gravity="right"
                 android:layout_marginLeft="6dp"
                 android:layout_marginTop="7dp"
-                android:onClick="clearFields"
                 android:text="@string/clear" />
         </RelativeLayout>
     </LinearLayout>

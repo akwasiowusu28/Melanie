@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AutoCompleteTextView;
@@ -41,6 +42,7 @@ public class CustomersActivity extends ActionBarActivity {
 		initializeFields();
 		getAllCustomers();
 		setupAutoCompleteCustomers();
+		setupAddCustomersListener();
 	}
 
 	private void initializeFields() {
@@ -49,6 +51,17 @@ public class CustomersActivity extends ActionBarActivity {
 		customer = null;
 		isEdit = false;
 		wasLaunchedFromSales = wasLaunchedFromSales();
+	}
+
+	private void setupAddCustomersListener() {
+		Button saveCustomerButton = (Button) findViewById(R.id.addCustomerButton);
+		saveCustomerButton.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				saveCustomer();
+			}
+		});
 	}
 
 	private boolean wasLaunchedFromSales() {
@@ -111,7 +124,7 @@ public class CustomersActivity extends ActionBarActivity {
 		}
 	};
 
-	public void saveCustomer(View view) {
+	public void saveCustomer() {
 		EditText customerNameView = (EditText) findViewById(R.id.customerName);
 		EditText phoneNumberView = (EditText) findViewById(R.id.phoneNumber);
 		String customerName = customerNameView.getText().toString();

@@ -7,7 +7,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -39,6 +41,7 @@ public class CategoriesActivity extends ActionBarActivity {
 		categories = getAllCategories();
 		handler = new Handler(getMainLooper());
 		setupListView();
+		setupAddCategoryButtonListener();
 	}
 
 	private List<Category> getAllCategories() {
@@ -64,6 +67,28 @@ public class CategoriesActivity extends ActionBarActivity {
 		return categories;
 	}
 
+	private void setupAddCategoryButtonListener() {
+		Button addButton = (Button) findViewById(R.id.addCategoryButton);
+		addButton.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				TextView categoryNameView = (TextView) findViewById(R.id.categoryName);
+				String categoryName = categoryNameView.getText().toString();
+
+				Category category;
+				try {
+					category = productController.addCategory(categoryName);
+					categories.add(category);
+					Utils.notifyListUpdate(listAdapter, handler);
+					Utils.clearInputTextFields(categoryNameView);
+				} catch (MelanieBusinessException e) {
+					e.printStackTrace(); // log it
+				}
+			}
+		});
+	}
+
 	private void setupListView() {
 
 		ListView categoriesListView = (ListView) findViewById(R.id.categoryList);
@@ -80,21 +105,5 @@ public class CategoriesActivity extends ActionBarActivity {
 				categories);
 
 		categoriesListView.setAdapter(listAdapter);
-	}
-
-	public void addCategory(View view) {
-		TextView categoryNameView = (TextView) findViewById(R.id.categoryName);
-		String categoryName = categoryNameView.getText().toString();
-
-		Category category;
-		try {
-			category = productController.addCategory(categoryName);
-			categories.add(category);
-			Utils.notifyListUpdate(listAdapter, handler);
-			Utils.clearInputTextFields(categoryNameView);
-		} catch (MelanieBusinessException e) {
-			e.printStackTrace(); // log it
-		}
-
 	}
 }

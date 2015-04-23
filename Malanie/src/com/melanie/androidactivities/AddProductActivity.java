@@ -20,7 +20,9 @@ import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.util.SparseIntArray;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
@@ -79,6 +81,7 @@ public class AddProductActivity extends ActionBarActivity {
 		categorySpinner.setAdapter(categoriesAdapter);
 
 		initializePrinter();
+		setupAddProductListener();
 	}
 
 	private void initializeFields() {
@@ -144,13 +147,24 @@ public class AddProductActivity extends ActionBarActivity {
 				});
 	}
 
+	private void setupAddProductListener() {
+		Button addProductButton = (Button) findViewById(R.id.addProductButton);
+		addProductButton.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				addProduct();
+			}
+		});
+	}
+
 	/**
 	 * Add a new product from the user input
 	 * 
 	 * @param view
 	 *            the add button
 	 */
-	public void addProduct(View view) {
+	public void addProduct() {
 
 		Category category = getSelectedCategory();
 		String productName = ((EditText) findViewById(R.id.productName))

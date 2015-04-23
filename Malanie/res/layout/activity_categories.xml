@@ -26,9 +26,9 @@
             android:hint="@string/enterCategoryName" />
 
         <Button
+            android:id="@+id/addCategoryButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:onClick="addCategory"
             android:text="@string/add" />
     </LinearLayout>
 

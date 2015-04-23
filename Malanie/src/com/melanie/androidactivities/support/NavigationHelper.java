@@ -33,10 +33,7 @@ public class NavigationHelper {
 	 **/
 	public static Integer[] getMainPageIcons() {
 		return new Integer[] { R.drawable.product, R.drawable.sale,
-				R.drawable.customer, R.drawable.report, R.drawable.settings,
-
-				/*****/
-				R.drawable.emptycart };
+				R.drawable.customer, R.drawable.report, R.drawable.settings };
 	}
 
 	/**

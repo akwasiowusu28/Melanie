@@ -9,9 +9,11 @@ import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -48,6 +50,7 @@ public class PaymentActivity extends ActionBarActivity {
 		setupAmountTextChangedListener();
 		customers = getAllCustomers();
 		setupAutoCompleteCustomers();
+		setupButtonsClickListener();
 	}
 
 	private List<Customer> getAllCustomers() {
@@ -83,6 +86,30 @@ public class PaymentActivity extends ActionBarActivity {
 		customerNameTextView.setAdapter(customersAdapter);
 		customerNameTextView.setOnItemClickListener(autoCompleteListener);
 	}
+
+	private void setupButtonsClickListener() {
+		Button savePaymentButton = (Button) findViewById(R.id.savePayment);
+		Button cancelPaymentButton = (Button) findViewById(R.id.cancelPayment);
+		savePaymentButton.setOnClickListener(buttonsClickListener);
+		cancelPaymentButton.setOnClickListener(buttonsClickListener);
+	}
+
+	private OnClickListener buttonsClickListener = new OnClickListener() {
+
+		@Override
+		public void onClick(View v) {
+			switch (v.getId()) {
+			case R.id.savePayment:
+				savePayment();
+				break;
+			case R.id.cancelPayment:
+				clearFields();
+				break;
+			default:
+				break;
+			}
+		}
+	};
 
 	private OnItemClickListener autoCompleteListener = new OnItemClickListener() {
 
@@ -149,7 +176,7 @@ public class PaymentActivity extends ActionBarActivity {
 		}
 	}
 
-	public void savePayment(View view) {
+	public void savePayment() {
 		String amountReceivedString = ((EditText) findViewById(R.id.amountReceived))
 				.getText().toString();
 		String balanceString = ((TextView) findViewById(R.id.balanceDue))
@@ -181,7 +208,7 @@ public class PaymentActivity extends ActionBarActivity {
 		return result;
 	}
 
-	public void clearFields(View view) {
+	public void clearFields() {
 
 		resetAll();
 	}
