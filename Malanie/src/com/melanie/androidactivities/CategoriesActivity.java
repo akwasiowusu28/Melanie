@@ -38,13 +38,13 @@ public class CategoriesActivity extends ActionBarActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_categories);
 
-		categories = getAllCategories();
+		getAllCategories();
 		handler = new Handler(getMainLooper());
 		setupListView();
 		setupAddCategoryButtonListener();
 	}
 
-	private List<Category> getAllCategories() {
+	private void getAllCategories() {
 		categories = new ArrayList<Category>();
 		try {
 			List<Category> tempCategories = null;
@@ -64,7 +64,6 @@ public class CategoriesActivity extends ActionBarActivity {
 		} catch (MelanieBusinessException e) {
 			e.printStackTrace(); // TODO: log it
 		}
-		return categories;
 	}
 
 	private void setupAddCategoryButtonListener() {

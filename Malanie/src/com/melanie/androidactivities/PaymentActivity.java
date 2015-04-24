@@ -48,12 +48,12 @@ public class PaymentActivity extends ActionBarActivity {
 		initializeFields();
 		setupSalesListView();
 		setupAmountTextChangedListener();
-		customers = getAllCustomers();
+		getAllCustomers();
 		setupAutoCompleteCustomers();
 		setupButtonsClickListener();
 	}
 
-	private List<Customer> getAllCustomers() {
+	private void getAllCustomers() {
 		customers = new ArrayList<Customer>();
 		try {
 			List<Customer> tempCustomers = null;
@@ -75,7 +75,6 @@ public class PaymentActivity extends ActionBarActivity {
 		} catch (MelanieBusinessException e) {
 			e.printStackTrace(); // TODO: log it
 		}
-		return customers;
 	}
 
 	private void setupAutoCompleteCustomers() {

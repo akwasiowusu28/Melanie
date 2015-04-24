@@ -94,5 +94,7 @@
     <string name="startDate">Start date:</string>
     <string name="endDate">End date:</string>
     <string name="pickDate">Pick a date</string>
+    <string name="startDateError">The start date must be a date equal to or before the end date</string>
+    <string name="endDateError">The end date must be a date equal to or after the start date</string>
 
 </resources>

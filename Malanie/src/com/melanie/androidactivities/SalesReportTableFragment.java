@@ -1,16 +1,18 @@
 package com.melanie.androidactivities;
 
 import java.text.SimpleDateFormat;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -19,8 +21,10 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.ListView;
 
 import com.melanie.androidactivities.support.MelanieDatePicker;
+import com.melanie.androidactivities.support.MelanieGroupAdapter;
 import com.melanie.androidactivities.support.Utils;
 import com.melanie.business.SalesController;
 import com.melanie.entities.Sale;
@@ -30,8 +34,18 @@ import com.melanie.support.exceptions.MelanieBusinessException;
 
 public class SalesReportTableFragment extends Fragment {
 
-	private Map<Sale, Integer> sales;
+	private static final String DATEFORMAT = "dd-MM-yyyy";
+
+	private MelanieGroupAdapter<String> displayItemsAdapter;
+	private List<Entry<String, Integer>> displayItems;
 	private SalesController salesController;
+	private SimpleDateFormat dateformater;
+	private LayoutInflater layoutInflater;
+	private List<Sale> sales;
+	private Button startDateButton;
+	private Button endDateButton;
+	private Date startDate;
+	private Date endDate;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -42,25 +56,84 @@ public class SalesReportTableFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater,
 			@Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+		layoutInflater = inflater;
 		return inflater.inflate(R.layout.layout_sales_table_report_fragment,
 				container, false);
 	}
 
 	private void initializeFields() {
-		sales = new HashMap<Sale, Integer>();
+		displayItems = new ArrayList<Map.Entry<String, Integer>>();
+		sales = new ArrayList<Sale>();
 		salesController = MelanieBusinessFactory.makeSalesController();
+		dateformater = new SimpleDateFormat(DATEFORMAT, Locale.getDefault());
+		initializeDates();
+		displayItemsAdapter = new MelanieGroupAdapter<String>(getActivity(),
+				displayItems);
+	}
 
+	private void getGroupedSales() {
+		try {
+			sales = salesController.getSalesBetween(startDate, endDate,
+					new MelanieOperationCallBack<Sale>(this.getClass()
+							.toString()) {
+
+						@Override
+						public void onCollectionOperationSuccessful(
+								List<Sale> results) {
+							Utils.mergeItems(results, sales);
+							updateDisplayItems(Utils.groupItems(sales));
+						}
+
+					});
+			updateDisplayItems(Utils.groupItems(sales));
+
+		} catch (MelanieBusinessException e) {
+			e.printStackTrace(); // TODO log it
+		}
+	}
+
+	private void updateDisplayItems(Map<Sale, Integer> newSales) {
+		for (Entry<Sale, Integer> entry : newSales.entrySet()) {
+			Date salesDate = entry.getKey().getSaleDate();
+			displayItems.add(new AbstractMap.SimpleEntry<String, Integer>(
+					dateformater.format(salesDate), entry.getValue()));
+		}
+		Utils.notifyListUpdate(displayItemsAdapter, new Handler(getActivity()
+				.getMainLooper()));
 	}
 
 	@Override
 	public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-		setupDateButtonsListeners();
+		setupDateButtons();
+		getGroupedSales();
+		setupListView();
 	}
 
-	private void setupDateButtonsListeners() {
-		Button startDateButton = (Button) getView()
-				.findViewById(R.id.startDate);
-		Button endDateButton = (Button) getView().findViewById(R.id.endDate);
+	private void setupListView() {
+		ListView listView = (ListView) getView().findViewById(
+				R.id.salesListView);
+		View headerView = layoutInflater.inflate(
+				R.layout.layout_two_item_view_header, listView, false);
+
+		listView.addHeaderView(headerView);
+		listView.setAdapter(displayItemsAdapter);
+	}
+
+	private void initializeDates() {
+		Calendar calendar = Calendar.getInstance();
+		startDate = Utils.getDateOnly(calendar);
+		endDate = Utils.getDateOnly(calendar);
+	}
+
+	private void setupDateButtons() {
+		startDateButton = (Button) getView().findViewById(R.id.startDate);
+		endDateButton = (Button) getView().findViewById(R.id.endDate);
+
+		if (startDate != null && endDate != null) {
+			startDateButton.setText(dateformater.format(startDate));
+			endDateButton.setText(dateformater.format(endDate));
+		}
+
 		startDateButton.setOnClickListener(dateButtonsClickListener);
 		endDateButton.setOnClickListener(dateButtonsClickListener);
 	}
@@ -80,37 +153,36 @@ public class SalesReportTableFragment extends Fragment {
 
 			@Override
 			public void onDateSet(DatePicker view, int year, int month, int day) {
-				Calendar c = Calendar.getInstance();
-				c.set(year, month, day);
+				Calendar calendar = Calendar.getInstance();
+				calendar.set(year, month, day);
 
-				SimpleDateFormat dateformater = new SimpleDateFormat(
-						"dd-MM-yyyy", Locale.getDefault());
-				pickerButton.setText(dateformater.format(c.getTime()));
+				Date newDate = Utils.getDateOnly(calendar);
+				int buttonId = pickerButton.getId();
+				boolean isStartDate = buttonId == R.id.startDate;
+				if (isValidDate(newDate, buttonId)) {
+					if (isStartDate)
+						startDate = newDate;
+					else
+						endDate = newDate;
+
+					pickerButton.setText(dateformater.format(newDate));
+				} else
+					Utils.makeToast(getActivity(),
+							isStartDate ? R.string.startDateError
+									: R.string.endDateError);
 			}
-
 		});
 	}
 
-	private Map<Sale, Integer> getSalesBetweenDates(Date fromDate, Date toDate) {
-		List<Sale> salesBetween = new ArrayList<Sale>();
-		try {
-			salesBetween = salesController.getSalesBetween(fromDate, toDate,
-					new MelanieOperationCallBack<Sale>(this.getClass()
-							.getSimpleName()) {
+	private boolean isValidDate(Date date, int buttonId) {
+		boolean isValid = false;
 
-						@Override
-						public void onCollectionOperationSuccessful(
-								List<Sale> results) {
-							Map<Sale, Integer> newSales = Utils
-									.groupItems(results);
-							sales.putAll(newSales);
-						}
+		if (buttonId == R.id.startDate)
+			isValid = endDate != null && endDate.compareTo(date) >= 0;
+		else
+			isValid = startDate != null && startDate.compareTo(date) <= 0;
 
-					});
-		} catch (MelanieBusinessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return Utils.groupItems(salesBetween);
+		return isValid;
 	}
+
 }

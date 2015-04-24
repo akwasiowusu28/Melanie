@@ -87,13 +87,13 @@ public class AddProductActivity extends ActionBarActivity {
 	private void initializeFields() {
 		productController = MelanieBusinessFactory.makeProductEntryController();
 		handler = new Handler(getMainLooper());
-		categories = getAllCategories();
+		getAllCategories();
 		categoriesAdapter = new ArrayAdapter<Category>(this,
 				android.R.layout.simple_spinner_dropdown_item, categories);
 		createPrintProgressDialog();
 	}
 
-	private List<Category> getAllCategories() {
+	private void getAllCategories() {
 		categories = new ArrayList<Category>();
 		try {
 			List<Category> tempCategories = null;
@@ -113,7 +113,6 @@ public class AddProductActivity extends ActionBarActivity {
 		} catch (MelanieBusinessException e) {
 			e.printStackTrace(); // TODO: log it
 		}
-		return categories;
 	}
 
 	private void createPrintProgressDialog() {

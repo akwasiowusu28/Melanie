@@ -1,6 +1,8 @@
 package com.melanie.androidactivities.support;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -114,8 +116,7 @@ public final class Utils {
 	 *            The string to display on toast
 	 */
 	public static void makeToast(Context context, int stringId) {
-		Toast.makeText(context, R.string.printerNotFound, Toast.LENGTH_LONG)
-				.show();
+		Toast.makeText(context, stringId, Toast.LENGTH_LONG).show();
 	}
 
 	public static <T> List<T> removeDuplicates(List<T> items) {
@@ -154,5 +155,13 @@ public final class Utils {
 			}
 
 		return itemGroup;
+	}
+
+	public static Date getDateOnly(Calendar calendar) {
+		calendar.set(Calendar.HOUR_OF_DAY, 0);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
+		return calendar.getTime();
 	}
 }
