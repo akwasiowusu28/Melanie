@@ -1,5 +1,7 @@
 package com.melanie.dataaccesslayer;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import com.backendless.Backendless;
@@ -15,6 +17,11 @@ import com.melanie.support.exceptions.MelanieDataLayerException;
 public class MelanieCloudAccess {
 
 	private static final String ID = "Id";
+	private static final String DATEFORMAT = "MM/dd/yyyy";
+	private static final String IS_GREATER_OR_EQUAL_TO = ">= '";
+	private static final String AND = "' and ";
+	private static final String IS_LESS_OR_EQUAL_TO = "<='";
+	private static final String SINGLE_QUOTE = "'";
 	private boolean isCollectionSearch;
 
 	public MelanieCloudAccess() {
@@ -143,15 +150,29 @@ public class MelanieCloudAccess {
 		}
 	}
 
-	public <T> void findItemsBetween(String fieldName, String lowerBound,
-			String upperBound, Class<T> itemClass,
+	public <T, E> void findItemsBetween(String fieldName, E lowerBound,
+			E upperBound, Class<T> itemClass,
 			MelanieOperationCallBack<T> operationCallBack)
 			throws MelanieDataLayerException {
 		try {
 			isCollectionSearch = true;
 
-			String whereClause = fieldName + ">= '" + lowerBound + "' and "
-					+ fieldName + "<='" + upperBound + "'";
+			// Find a way to remove the date formatting thingy to a different
+			// method. I'm programming under the influence of a 9.5% Alc double
+			// IPA beerI know I'm not thinking straight right now
+			// 4/24/2015 10:18 PM
+
+			String lowerBoundString = "";
+			String upperBoundString = "";
+
+			if (lowerBound instanceof Date && upperBound instanceof Date) {
+				SimpleDateFormat dateFormater = new SimpleDateFormat(DATEFORMAT);
+				lowerBoundString = dateFormater.format(((Date) lowerBound));
+				upperBoundString = dateFormater.format(((Date) upperBound));
+			}
+			String whereClause = fieldName + IS_GREATER_OR_EQUAL_TO
+					+ lowerBoundString + AND + fieldName + IS_LESS_OR_EQUAL_TO
+					+ upperBoundString + SINGLE_QUOTE;
 			BackendlessDataQuery query = new BackendlessDataQuery(whereClause);
 			Backendless.Persistence
 					.of(itemClass)

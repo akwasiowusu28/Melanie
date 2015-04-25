@@ -346,8 +346,8 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 	}
 
 	@Override
-	public <T> List<T> findItemsBetween(String fieldName, String lowerBound,
-			String upperBound, Class<T> itemClass,
+	public <T, E> List<T> findItemsBetween(String fieldName, E lowerBound,
+			E upperBound, Class<T> itemClass,
 			MelanieOperationCallBack<T> operationCallBack)
 			throws MelanieDataLayerException {
 

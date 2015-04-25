@@ -81,23 +81,29 @@ public class SalesReportTableFragment extends Fragment {
 						public void onCollectionOperationSuccessful(
 								List<Sale> results) {
 							Utils.mergeItems(results, sales);
-							updateDisplayItems(Utils.groupItems(sales));
+							updateDisplayItems(sales);
 						}
 
 					});
-			updateDisplayItems(Utils.groupItems(sales));
+			updateDisplayItems(sales);
 
 		} catch (MelanieBusinessException e) {
 			e.printStackTrace(); // TODO log it
 		}
 	}
 
-	private void updateDisplayItems(Map<Sale, Integer> newSales) {
-		for (Entry<Sale, Integer> entry : newSales.entrySet()) {
-			Date salesDate = entry.getKey().getSaleDate();
-			displayItems.add(new AbstractMap.SimpleEntry<String, Integer>(
-					dateformater.format(salesDate), entry.getValue()));
-		}
+	private void updateDisplayItems(List<Sale> newSales) {
+		List<String> displayDates = new ArrayList<String>();
+
+		for (Sale sale : newSales)
+			displayDates.add(dateformater.format(sale.getSaleDate()));
+
+		Map<String, Integer> displayDateGroup = Utils.groupItems(displayDates);
+
+		for (Entry<String, Integer> entry : displayDateGroup.entrySet())
+			displayItems.add(new AbstractMap.SimpleEntry<String, Integer>(entry
+					.getKey(), entry.getValue()));
+
 		Utils.notifyListUpdate(displayItemsAdapter, new Handler(getActivity()
 				.getMainLooper()));
 	}
@@ -164,8 +170,8 @@ public class SalesReportTableFragment extends Fragment {
 						startDate = newDate;
 					else
 						endDate = newDate;
-
 					pickerButton.setText(dateformater.format(newDate));
+					getGroupedSales();
 				} else
 					Utils.makeToast(getActivity(),
 							isStartDate ? R.string.startDateError

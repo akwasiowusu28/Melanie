@@ -196,17 +196,39 @@ public class SalesControllerImpl implements SalesController {
 
 	@Override
 	public List<Sale> getSalesBetween(Date fromDate, Date toDate,
-			MelanieOperationCallBack<Sale> operationCallBack)
+			final MelanieOperationCallBack<Sale> operationCallBack)
 			throws MelanieBusinessException {
 		List<Sale> sales = new ArrayList<Sale>();
 		try {
 			if (dataAccess != null)
-				sales.addAll(dataAccess.findItemsBetween("SaleDate",
-						fromDate.toString(), toDate.toString(), Sale.class,
-						operationCallBack));
+				sales.addAll(dataAccess.findItemsBetween("SaleDate", fromDate,
+						toDate, Sale.class, new MelanieOperationCallBack<Sale>(
+								this.getClass().getSimpleName()) {
+
+							@Override
+							public void onCollectionOperationSuccessful(
+									List<Sale> results) {
+								try {
+									refreshSales(results);
+									operationCallBack
+											.onCollectionOperationSuccessful(results);
+								} catch (MelanieDataLayerException e) {
+									onOperationFailed(e);
+								}
+							}
+						}));
+			refreshSales(sales);
 		} catch (MelanieDataLayerException e) {
 			throw new MelanieBusinessException(e.getMessage(), e);
 		}
+
 		return sales;
+	}
+
+	private void refreshSales(List<Sale> sales)
+			throws MelanieDataLayerException {
+		if (dataAccess != null)
+			for (Sale sale : sales)
+				dataAccess.refreshItem(sale.getProduct(), Product.class);
 	}
 }
