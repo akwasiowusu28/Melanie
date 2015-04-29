@@ -27,7 +27,7 @@ public class Payment extends BaseEntity {
 	@DatabaseField
 	private double discount;
 
-	@DatabaseField(columnName = "CustomerId", foreignAutoRefresh = true, canBeNull = true, foreign = true)
+	@DatabaseField(columnName = "CustomerId", foreignAutoCreate = true, foreignAutoRefresh = true, canBeNull = true, foreign = true)
 	private Customer customer;
 
 	public Payment() {

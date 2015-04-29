@@ -181,8 +181,8 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 		List<Product> allProducts = new ArrayList<Product>();
 		if (dataAccess != null)
 			try {
-				allProducts = dataAccess.findAllItems(Product.class,
-						operationCallBack);
+				allProducts.addAll(dataAccess.findAllItems(Product.class,
+						operationCallBack));
 				for (Product product : allProducts)
 					dataAccess.refreshItem(product.getCategory(),
 							Category.class);

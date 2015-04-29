@@ -17,13 +17,13 @@ public class Sale extends BaseEntity {
 	@DatabaseField
 	private Date saleDate;
 
-	@DatabaseField(canBeNull = true, foreign = true)
+	@DatabaseField(canBeNull = true, foreignAutoCreate = true, foreignAutoRefresh = true, foreign = true)
 	private Product product;
 
 	@DatabaseField
 	private int quantitySold;
 
-	@DatabaseField(columnName = "CustomerId", canBeNull = true, foreign = true)
+	@DatabaseField(columnName = "CustomerId", foreignAutoCreate = true, foreignAutoRefresh = true, canBeNull = true, foreign = true)
 	private Customer customer;
 
 	public Sale() {

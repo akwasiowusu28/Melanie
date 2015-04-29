@@ -1,12 +1,14 @@
 package com.melanie.business.concrete;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import java.util.TimeZone;
 
 import com.melanie.androidactivities.support.Utils;
 import com.melanie.business.ProductEntryController;
@@ -98,7 +100,8 @@ public class SalesControllerImpl implements SalesController {
 		if (product != null) {
 			Sale sale = new Sale();
 			sale.setProduct(product);
-			sale.setSaleDate(new Date());
+			sale.setSaleDate(Calendar.getInstance(TimeZone.getDefault())
+					.getTime());
 			sale.setQuantitySold(count);
 			sales.add(sale);
 		}
@@ -202,22 +205,8 @@ public class SalesControllerImpl implements SalesController {
 		try {
 			if (dataAccess != null)
 				sales.addAll(dataAccess.findItemsBetween("SaleDate", fromDate,
-						toDate, Sale.class, new MelanieOperationCallBack<Sale>(
-								this.getClass().getSimpleName()) {
-
-							@Override
-							public void onCollectionOperationSuccessful(
-									List<Sale> results) {
-								try {
-									refreshSales(results);
-									operationCallBack
-											.onCollectionOperationSuccessful(results);
-								} catch (MelanieDataLayerException e) {
-									onOperationFailed(e);
-								}
-							}
-						}));
-			refreshSales(sales);
+						toDate, Sale.class, operationCallBack));
+			// refreshSales(sales);
 		} catch (MelanieDataLayerException e) {
 			throw new MelanieBusinessException(e.getMessage(), e);
 		}
@@ -225,10 +214,10 @@ public class SalesControllerImpl implements SalesController {
 		return sales;
 	}
 
-	private void refreshSales(List<Sale> sales)
-			throws MelanieDataLayerException {
-		if (dataAccess != null)
-			for (Sale sale : sales)
-				dataAccess.refreshItem(sale.getProduct(), Product.class);
-	}
+	// private void refreshSales(List<Sale> sales)
+	// throws MelanieDataLayerException {
+	// if (dataAccess != null)
+	// for (Sale sale : sales)
+	// dataAccess.refreshItem(sale.getProduct(), Product.class);
+	// }
 }

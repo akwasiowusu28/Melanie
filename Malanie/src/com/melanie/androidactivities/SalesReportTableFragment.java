@@ -1,18 +1,20 @@
 package com.melanie.androidactivities;
 
 import java.text.SimpleDateFormat;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TimeZone;
 
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -46,6 +48,8 @@ public class SalesReportTableFragment extends Fragment {
 	private Button endDateButton;
 	private Date startDate;
 	private Date endDate;
+	private Looper looper;
+	private Handler handler;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -81,35 +85,38 @@ public class SalesReportTableFragment extends Fragment {
 						public void onCollectionOperationSuccessful(
 								List<Sale> results) {
 							Utils.mergeItems(results, sales);
-							updateDisplayItems(sales);
+							updateDisplayItems();
 						}
 
 					});
-			updateDisplayItems(sales);
+			updateDisplayItems();
 
 		} catch (MelanieBusinessException e) {
 			e.printStackTrace(); // TODO log it
 		}
 	}
 
-	private void updateDisplayItems(List<Sale> newSales) {
-		List<String> displayDates = new ArrayList<String>();
+	private void updateDisplayItems() {
 
-		for (Sale sale : newSales)
-			displayDates.add(dateformater.format(sale.getSaleDate()));
+		Map<String, Integer> displayDateGroup = new HashMap<String, Integer>();
+		displayItems.clear();
+		for (Sale sale : sales) {
+			String date = dateformater.format(sale.getSaleDate());
+			int quantity = displayDateGroup.containsKey(date) ? displayDateGroup
+					.get(date) : 0;
+			quantity += sale.getQuantitySold();
+			displayDateGroup.put(date, quantity);
+		}
 
-		Map<String, Integer> displayDateGroup = Utils.groupItems(displayDates);
+		displayItems.addAll(displayDateGroup.entrySet());
 
-		for (Entry<String, Integer> entry : displayDateGroup.entrySet())
-			displayItems.add(new AbstractMap.SimpleEntry<String, Integer>(entry
-					.getKey(), entry.getValue()));
-
-		Utils.notifyListUpdate(displayItemsAdapter, new Handler(getActivity()
-				.getMainLooper()));
+		Utils.notifyListUpdate(displayItemsAdapter, handler);
 	}
 
 	@Override
 	public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+		looper = getActivity().getMainLooper();
+		handler = new Handler(looper);
 		setupDateButtons();
 		getGroupedSales();
 		setupListView();
@@ -126,9 +133,10 @@ public class SalesReportTableFragment extends Fragment {
 	}
 
 	private void initializeDates() {
-		Calendar calendar = Calendar.getInstance();
-		startDate = Utils.getDateOnly(calendar);
-		endDate = Utils.getDateOnly(calendar);
+		Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
+
+		startDate = Utils.getStartOfDay(calendar);
+		endDate = Utils.getEndOfDay(calendar);
 	}
 
 	private void setupDateButtons() {
@@ -159,17 +167,21 @@ public class SalesReportTableFragment extends Fragment {
 
 			@Override
 			public void onDateSet(DatePicker view, int year, int month, int day) {
-				Calendar calendar = Calendar.getInstance();
-				calendar.set(year, month, day);
 
-				Date newDate = Utils.getDateOnly(calendar);
+				Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
 				int buttonId = pickerButton.getId();
 				boolean isStartDate = buttonId == R.id.startDate;
+
+				calendar.set(year, month, day);
+
+				Date newDate = calendar.getTime();
+
 				if (isValidDate(newDate, buttonId)) {
 					if (isStartDate)
-						startDate = newDate;
+						startDate = Utils.getStartOfDay(calendar);
 					else
-						endDate = newDate;
+						endDate = Utils.getEndOfDay(calendar);
+
 					pickerButton.setText(dateformater.format(newDate));
 					getGroupedSales();
 				} else

@@ -139,16 +139,18 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 		OperationResult result = OperationResult.FAILED;
 
 		try {
-			Dao<Object, Integer> dao = DataSourceManager
-					.getCachedDaoFor(itemClass);
-			if (dao != null && dao.idExists(((BaseEntity) dataItem).getId())) {
-				int deleteReturn = dao.delete(dataItem);
-				if (deleteReturn == 1)
-					result = OperationResult.SUCCESSFUL;
+			if (dataItem != null) {
+				Dao<Object, Integer> dao = DataSourceManager
+						.getCachedDaoFor(itemClass);
+				if (dao != null
+						&& dao.idExists(((BaseEntity) dataItem).getId())) {
+					int deleteReturn = dao.delete(dataItem);
+					if (deleteReturn == 1)
+						result = OperationResult.SUCCESSFUL;
+				}
+				if (cloudAccess != null)
+					cloudAccess.deleteDataItem(dataItem, itemClass, null);
 			}
-			if (cloudAccess != null)
-				cloudAccess.deleteDataItem(dataItem, itemClass, null);
-
 		} catch (SQLException e) {
 			throw new MelanieDataLayerException(e.getMessage(), e);
 		}
@@ -323,13 +325,16 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 			throws MelanieDataLayerException {
 		OperationResult result = OperationResult.FAILED;
 		try {
-			Dao<Object, Integer> dao = DataSourceManager
-					.getCachedDaoFor(itemClass);
-			if (dao != null && dao.idExists(((BaseEntity) dataItem).getId())) {
-				int updateReturn = dao.refresh(dataItem);
-				if (updateReturn == 1) {
-					DataUtil.updateDataCache(dataItem);
-					result = OperationResult.SUCCESSFUL;
+			if (dataItem != null) {
+				Dao<Object, Integer> dao = DataSourceManager
+						.getCachedDaoFor(itemClass);
+				if (dao != null
+						&& dao.idExists(((BaseEntity) dataItem).getId())) {
+					int updateReturn = dao.refresh(dataItem);
+					if (updateReturn == 1) {
+						DataUtil.updateDataCache(dataItem);
+						result = OperationResult.SUCCESSFUL;
+					}
 				}
 			}
 

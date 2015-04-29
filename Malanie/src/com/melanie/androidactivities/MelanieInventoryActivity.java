@@ -47,7 +47,7 @@ public class MelanieInventoryActivity extends ActionBarActivity {
 	private void initializeFields() {
 		handler = new Handler(getMainLooper());
 		productController = MelanieBusinessFactory.makeProductEntryController();
-		categories = getAllCategories();
+		getAllCategories();
 		categoriesAdapter = new ArrayAdapter<Category>(this,
 				android.R.layout.simple_spinner_dropdown_item, categories);
 		allProducts = getAllProducts();
@@ -88,9 +88,10 @@ public class MelanieInventoryActivity extends ActionBarActivity {
 
 		listView.addHeaderView(headerView);
 		listView.setAdapter(productsAdapter);
+		Utils.notifyListUpdate(productsAdapter, handler);
 	}
 
-	private List<Category> getAllCategories() {
+	private void getAllCategories() {
 		categories = new ArrayList<Category>();
 		try {
 			List<Category> tempCategories = null;
@@ -110,7 +111,6 @@ public class MelanieInventoryActivity extends ActionBarActivity {
 		} catch (MelanieBusinessException e) {
 			e.printStackTrace(); // TODO: log it
 		}
-		return categories;
 	}
 
 	private List<Product> getAllProducts() {
@@ -119,7 +119,7 @@ public class MelanieInventoryActivity extends ActionBarActivity {
 			try {
 				products = productController
 						.findAllProducts(new MelanieOperationCallBack<Product>(
-								MelanieInventoryActivity.class.getSimpleName()) {
+								"") {
 							@Override
 							public void onCollectionOperationSuccessful(
 									List<Product> results) {

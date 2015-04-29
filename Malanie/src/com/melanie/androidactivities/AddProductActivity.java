@@ -166,8 +166,10 @@ public class AddProductActivity extends ActionBarActivity {
 	public void addProduct() {
 
 		Category category = getSelectedCategory();
+		EditText t = ((EditText) findViewById(R.id.productName));
 		String productName = ((EditText) findViewById(R.id.productName))
 				.getText().toString();
+
 		String priceStr = ((EditText) findViewById(R.id.price)).getText()
 				.toString();
 		double price = Double.parseDouble(priceStr);

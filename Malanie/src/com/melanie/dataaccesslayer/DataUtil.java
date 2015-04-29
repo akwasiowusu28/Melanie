@@ -83,25 +83,28 @@ public final class DataUtil {
 
 		@Override
 		public void onCollectionOperationSuccessful(List<T> results) {
-			if (businessCallBack != null)
-				businessCallBack.onCollectionOperationSuccessful(results);
+
 			try {
 				for (T result : results)
 					updateDataCache(result);
 			} catch (MelanieDataLayerException e) {
 				e.printStackTrace(); // TODO: log it
 			}
+			if (businessCallBack != null)
+				businessCallBack.onCollectionOperationSuccessful(results);
 		}
 
 		@Override
 		public void onOperationSuccessful(T result) {
-			if (businessCallBack != null)
-				businessCallBack.onOperationSuccessful(result);
+
 			try {
 				updateDataCache(result);
 			} catch (MelanieDataLayerException e) {
 				e.printStackTrace(); // TODO: log it
 			}
+
+			if (businessCallBack != null)
+				businessCallBack.onOperationSuccessful(result);
 		}
 	}
 }

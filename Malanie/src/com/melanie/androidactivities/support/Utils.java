@@ -157,11 +157,23 @@ public final class Utils {
 		return itemGroup;
 	}
 
-	public static Date getDateOnly(Calendar calendar) {
-		calendar.set(Calendar.HOUR_OF_DAY, 0);
-		calendar.set(Calendar.MINUTE, 0);
-		calendar.set(Calendar.SECOND, 0);
-		calendar.set(Calendar.MILLISECOND, 0);
+	public static Date getStartOfDay(Calendar calendar) {
+		calendar.set(Calendar.HOUR_OF_DAY,
+				calendar.getMinimum(Calendar.HOUR_OF_DAY));
+		calendar.set(Calendar.MINUTE, calendar.getMinimum(Calendar.MINUTE));
+		calendar.set(Calendar.SECOND, calendar.getMinimum(Calendar.SECOND));
+		calendar.set(Calendar.MILLISECOND,
+				calendar.getMinimum(Calendar.MILLISECOND));
+		return calendar.getTime();
+	}
+
+	public static Date getEndOfDay(Calendar calendar) {
+		calendar.set(Calendar.HOUR_OF_DAY,
+				calendar.getMaximum(Calendar.HOUR_OF_DAY));
+		calendar.set(Calendar.MINUTE, calendar.getMaximum(Calendar.MINUTE));
+		calendar.set(Calendar.SECOND, calendar.getMaximum(Calendar.SECOND));
+		calendar.set(Calendar.MILLISECOND,
+				calendar.getMaximum(Calendar.MILLISECOND));
 		return calendar.getTime();
 	}
 }
