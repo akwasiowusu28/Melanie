@@ -1,10 +1,9 @@
-package com.melanie.androidactivities;
+package com.melanie.androidactivities.fragments;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -25,31 +24,29 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ListView;
 
+import com.melanie.androidactivities.R;
 import com.melanie.androidactivities.support.MelanieDatePicker;
 import com.melanie.androidactivities.support.MelanieGroupAdapter;
+import com.melanie.androidactivities.support.ObservablePropertyChangedListener;
+import com.melanie.androidactivities.support.ReportSession;
 import com.melanie.androidactivities.support.Utils;
-import com.melanie.business.SalesController;
-import com.melanie.entities.Sale;
-import com.melanie.support.MelanieBusinessFactory;
-import com.melanie.support.MelanieOperationCallBack;
-import com.melanie.support.exceptions.MelanieBusinessException;
 
-public class SalesReportTableFragment extends Fragment {
+public class SalesReportTableFragment extends Fragment implements
+		ObservablePropertyChangedListener {
 
 	private static final String DATEFORMAT = "dd-MM-yyyy";
 
 	private MelanieGroupAdapter<String> displayItemsAdapter;
 	private List<Entry<String, Integer>> displayItems;
-	private SalesController salesController;
 	private SimpleDateFormat dateformater;
 	private LayoutInflater layoutInflater;
-	private List<Sale> sales;
 	private Button startDateButton;
 	private Button endDateButton;
 	private Date startDate;
 	private Date endDate;
 	private Looper looper;
 	private Handler handler;
+	private ReportSession reportSession;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -66,49 +63,18 @@ public class SalesReportTableFragment extends Fragment {
 	}
 
 	private void initializeFields() {
+		reportSession = ReportSession.getInstance(this);
 		displayItems = new ArrayList<Map.Entry<String, Integer>>();
-		sales = new ArrayList<Sale>();
-		salesController = MelanieBusinessFactory.makeSalesController();
+		displayItems.addAll(reportSession.getDisplayItems());
 		dateformater = new SimpleDateFormat(DATEFORMAT, Locale.getDefault());
 		initializeDates();
 		displayItemsAdapter = new MelanieGroupAdapter<String>(getActivity(),
 				displayItems);
 	}
 
-	private void getGroupedSales() {
-		try {
-			sales = salesController.getSalesBetween(startDate, endDate,
-					new MelanieOperationCallBack<Sale>(this.getClass()
-							.toString()) {
-
-						@Override
-						public void onCollectionOperationSuccessful(
-								List<Sale> results) {
-							Utils.mergeItems(results, sales);
-							updateDisplayItems();
-						}
-
-					});
-			updateDisplayItems();
-
-		} catch (MelanieBusinessException e) {
-			e.printStackTrace(); // TODO log it
-		}
-	}
-
 	private void updateDisplayItems() {
-
-		Map<String, Integer> displayDateGroup = new HashMap<String, Integer>();
 		displayItems.clear();
-		for (Sale sale : sales) {
-			String date = dateformater.format(sale.getSaleDate());
-			int quantity = displayDateGroup.containsKey(date) ? displayDateGroup
-					.get(date) : 0;
-			quantity += sale.getQuantitySold();
-			displayDateGroup.put(date, quantity);
-		}
-
-		displayItems.addAll(displayDateGroup.entrySet());
+		displayItems.addAll(reportSession.getDisplayItems());
 
 		Utils.notifyListUpdate(displayItemsAdapter, handler);
 	}
@@ -118,7 +84,7 @@ public class SalesReportTableFragment extends Fragment {
 		looper = getActivity().getMainLooper();
 		handler = new Handler(looper);
 		setupDateButtons();
-		getGroupedSales();
+		reportSession.getGroupedSales();
 		setupListView();
 	}
 
@@ -133,20 +99,18 @@ public class SalesReportTableFragment extends Fragment {
 	}
 
 	private void initializeDates() {
-		Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
 
-		startDate = Utils.getStartOfDay(calendar);
-		endDate = Utils.getEndOfDay(calendar);
+		startDate = reportSession.getStartDate();
+		endDate = reportSession.getEndDate();
 	}
 
 	private void setupDateButtons() {
 		startDateButton = (Button) getView().findViewById(R.id.startDate);
 		endDateButton = (Button) getView().findViewById(R.id.endDate);
 
-		if (startDate != null && endDate != null) {
-			startDateButton.setText(dateformater.format(startDate));
-			endDateButton.setText(dateformater.format(endDate));
-		}
+		startDateButton.setText(dateformater.format(reportSession
+				.getStartDate()));
+		endDateButton.setText(dateformater.format(reportSession.getEndDate()));
 
 		startDateButton.setOnClickListener(dateButtonsClickListener);
 		endDateButton.setOnClickListener(dateButtonsClickListener);
@@ -178,12 +142,13 @@ public class SalesReportTableFragment extends Fragment {
 
 				if (isValidDate(newDate, buttonId)) {
 					if (isStartDate)
-						startDate = Utils.getStartOfDay(calendar);
+						reportSession.setStartDate(Utils
+								.getStartOfDay(calendar));
 					else
-						endDate = Utils.getEndOfDay(calendar);
+						reportSession.setEndDate(Utils.getEndOfDay(calendar));
 
 					pickerButton.setText(dateformater.format(newDate));
-					getGroupedSales();
+					reportSession.getGroupedSales();
 				} else
 					Utils.makeToast(getActivity(),
 							isStartDate ? R.string.startDateError
@@ -203,4 +168,19 @@ public class SalesReportTableFragment extends Fragment {
 		return isValid;
 	}
 
+	@Override
+	public void onObservablePropertyChanged(String propertyName) {
+		switch (propertyName) {
+		case ReportSession.PropertyNames.DISPLAYITEMS:
+			updateDisplayItems();
+			break;
+		case ReportSession.PropertyNames.STARTDATE:
+			startDate = reportSession.getStartDate();
+			startDateButton.setText(dateformater.format(startDate));
+			break;
+		case ReportSession.PropertyNames.ENDDATE:
+			endDate = reportSession.getEndDate();
+			endDateButton.setText(dateformater.format(endDate));
+		}
+	}
 }

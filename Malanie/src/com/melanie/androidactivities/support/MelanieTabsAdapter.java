@@ -4,17 +4,20 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.melanie.androidactivities.SalesReportTableFragment;
+import com.melanie.androidactivities.fragments.SalesReportLineChartFragment;
+import com.melanie.androidactivities.fragments.SalesReportTableFragment;
 
 public class MelanieTabsAdapter extends FragmentPagerAdapter {
 
-	public MelanieTabsAdapter(FragmentManager fm) {
+	public <T> MelanieTabsAdapter(FragmentManager fm) {
 		super(fm);
 	}
 
 	@Override
 	public Fragment getItem(int index) {
-		return new SalesReportTableFragment();
+
+		return index == 0 ? new SalesReportTableFragment()
+				: new SalesReportLineChartFragment();
 	}
 
 	@Override

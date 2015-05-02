@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -22,6 +23,7 @@ public class NavigationListViewAdapter extends ArrayAdapter<Integer> {
 		public TextView firstLinetextView;
 		public TextView secondLinetextView;
 		public ImageView mainIconImageView;
+		public Button okButton;
 	}
 
 	public NavigationListViewAdapter(Context context,
@@ -54,7 +56,7 @@ public class NavigationListViewAdapter extends ArrayAdapter<Integer> {
 
 			viewHolder.mainIconImageView = (ImageView) rowView
 					.findViewById(R.id.icon);
-
+			// viewHolder.okButton = (Button) rowView.findViewById(R.id.ok);
 			rowView.setTag(viewHolder);
 		}
 
@@ -76,5 +78,10 @@ public class NavigationListViewAdapter extends ArrayAdapter<Integer> {
 		int color = Utils.getTextColor(context);
 		viewHolder.firstLinetextView.setTextColor(color);
 		viewHolder.secondLinetextView.setTextColor(color);
+	}
+
+	private void setViewsEnabled(ViewHolder viewHolder) {
+		viewHolder.firstLinetextView.setEnabled(false);
+		viewHolder.secondLinetextView.setEnabled(false);
 	}
 }

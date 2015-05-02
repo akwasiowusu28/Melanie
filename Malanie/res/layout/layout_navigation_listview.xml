@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="?android:attr/listPreferredItemHeight"
+    android:background="@drawable/datepickerbackroundselector"
     android:padding="6dip" >
 
     <ImageView
@@ -46,5 +47,14 @@
         android:text="@string/doublearrow"
         android:textColor="#597FD8"
         android:textSize="25sp" />
+
+    <!--
+         <Button
+        android:id="@+id/ok"
+        android:layout_toRightOf="@id/arrowRight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ok" />
+    -->
 
 </RelativeLayout>
