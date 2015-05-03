@@ -11,9 +11,8 @@ import java.util.Map.Entry;
 import java.util.TimeZone;
 
 import android.app.DatePickerDialog.OnDateSetListener;
+import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -23,9 +22,15 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.XAxis.XAxisPosition;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
 import com.melanie.androidactivities.R;
+import com.melanie.androidactivities.support.ChartEntry;
 import com.melanie.androidactivities.support.MelanieDatePicker;
-import com.melanie.androidactivities.support.MelanieGroupAdapter;
 import com.melanie.androidactivities.support.ObservablePropertyChangedListener;
 import com.melanie.androidactivities.support.ReportSession;
 import com.melanie.androidactivities.support.Utils;
@@ -34,17 +39,19 @@ public class SalesReportLineChartFragment extends Fragment implements
 		ObservablePropertyChangedListener {
 
 	private static final String DATEFORMAT = "dd-MM-yyyy";
+	private static final String DAILY_SALES = "Daily Sales";
 
-	private MelanieGroupAdapter<String> displayItemsAdapter;
 	private List<Entry<String, Integer>> displayItems;
 	private SimpleDateFormat dateformater;
 	private Button startDateButton;
 	private Button endDateButton;
 	private Date startDate;
 	private Date endDate;
-	private Looper looper;
-	private Handler handler;
 	private ReportSession reportSession;
+	private ArrayList<com.github.mikephil.charting.data.Entry> chartEntries;
+	private ArrayList<String> chartLabels;
+	private LineChart salesChart;
+	private LineDataSet dataSet;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -65,8 +72,8 @@ public class SalesReportLineChartFragment extends Fragment implements
 		displayItems.addAll(reportSession.getDisplayItems());
 		dateformater = new SimpleDateFormat(DATEFORMAT, Locale.getDefault());
 		initializeDates();
-		displayItemsAdapter = new MelanieGroupAdapter<String>(getActivity(),
-				displayItems);
+		chartEntries = new ArrayList<>();
+		chartLabels = new ArrayList<>();
 	}
 
 	private void initializeDates() {
@@ -76,18 +83,45 @@ public class SalesReportLineChartFragment extends Fragment implements
 	}
 
 	private void updateDisplayItems() {
-		displayItems.clear();
-		displayItems.addAll(reportSession.getDisplayItems());
-
-		Utils.notifyListUpdate(displayItemsAdapter, handler);
+		if (!isInLayout()) {
+			displayItems.clear();
+			displayItems.addAll(reportSession.getDisplayItems());
+			refreshChart();
+		}
 	}
 
 	@Override
 	public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-		looper = getActivity().getMainLooper();
-		handler = new Handler(looper);
 		setupDateButtons();
+		setUpLineChart();
 		reportSession.getGroupedSales();
+	}
+
+	private void setUpLineChart() {
+		salesChart = (LineChart) getView().findViewById(R.id.salesChart);
+		configureAxis();
+		salesChart.setDescription(Utils.Costants.EMPTY_STRING);
+	}
+
+	private void configureAxis() {
+		salesChart.getAxisRight().setEnabled(false);
+		XAxis xAxis = salesChart.getXAxis();
+		xAxis.setPosition(XAxisPosition.BOTTOM);
+		xAxis.setDrawGridLines(false);
+		xAxis.setAvoidFirstLastClipping(true);
+		YAxis yAxis = salesChart.getAxisLeft();
+		yAxis.setDrawGridLines(false);
+	}
+
+	private void refreshDataSet() {
+		dataSet = new LineDataSet(chartEntries, DAILY_SALES);
+		dataSet.setColor(Color.MAGENTA);
+		dataSet.setCircleColor(Color.BLUE);
+		dataSet.setLineWidth(1f);
+		dataSet.setCircleSize(3f);
+		dataSet.setDrawCircleHole(false);
+		dataSet.setValueTextSize(9f);
+		dataSet.setFillColor(Color.BLUE);
 	}
 
 	private void setupDateButtons() {
@@ -135,6 +169,7 @@ public class SalesReportLineChartFragment extends Fragment implements
 
 					pickerButton.setText(dateformater.format(newDate));
 					reportSession.getGroupedSales();
+					refreshChart();
 				} else
 					Utils.makeToast(getActivity(),
 							isStartDate ? R.string.startDateError
@@ -167,6 +202,30 @@ public class SalesReportLineChartFragment extends Fragment implements
 		case ReportSession.PropertyNames.ENDDATE:
 			endDate = reportSession.getEndDate();
 			endDateButton.setText(dateformater.format(endDate));
+		}
+	}
+
+	private void refreshLineChartEntries() {
+		chartEntries.clear();
+		chartLabels.clear();
+		Entry<String, Integer> entry;
+		for (int i = 0; i < displayItems.size(); i++) {
+			entry = displayItems.get(i);
+			chartEntries.add(new ChartEntry(entry.getValue(), i));
+			chartLabels.add(entry.getKey());
+		}
+
+	}
+
+	private void refreshChart() {
+		if (salesChart != null) {
+			if (!salesChart.isEmpty())
+				salesChart.clearValues();
+			refreshLineChartEntries();
+			refreshDataSet();
+			LineData lineData = new LineData(chartLabels, dataSet);
+			salesChart.setData(lineData);
+			salesChart.invalidate();
 		}
 	}
 }

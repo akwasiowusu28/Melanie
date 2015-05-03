@@ -71,6 +71,8 @@ public class ReportSession {
 
 	public void getGroupedSales() {
 		try {
+			if (!sales.isEmpty())
+				sales.clear();
 			sales.addAll(salesController.getSalesBetween(startDate, endDate,
 					new MelanieOperationCallBack<Sale>(this.getClass()
 							.toString()) {
