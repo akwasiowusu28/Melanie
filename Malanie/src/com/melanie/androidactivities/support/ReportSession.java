@@ -23,16 +23,21 @@ public class ReportSession {
 
 	private static ReportSession instance;
 
-	private List<Entry<String, Integer>> displayItems;
+	private List<Entry<String, Integer>> dailySalesDisplayItems;
+	private List<Entry<String, Integer>> monthlySalesDisplayItems;
 	private SalesController salesController;
 	private List<Sale> sales;
 	private Date startDate;
 	private SimpleDateFormat dateformater;
 	private Date endDate;
 	private List<ObservablePropertyChangedListener> observablePropertyChangedListeners;
+	private String selectedDateString;
+
+	private boolean startDateUnchanged = false;
+	private boolean endDateUnchanged = false;
 
 	public static class PropertyNames {
-		public static final String DISPLAYITEMS = "displayItems";
+		public static final String DISPLAYITEMS = "dailySalesDisplayItems";
 		public static final String STARTDATE = "startDate";
 		public static final String ENDDATE = "endDate";
 	}
@@ -48,53 +53,57 @@ public class ReportSession {
 				if (instance == null)
 					instance = new ReportSession();
 			}
-		instance.observablePropertyChangedListeners.add(listener);
+		if (listener != null)
+			instance.observablePropertyChangedListeners.add(listener);
 		return instance;
 	}
 
 	private void initializeFields() {
 		observablePropertyChangedListeners = new ArrayList<ObservablePropertyChangedListener>();
-		displayItems = new ArrayList<Map.Entry<String, Integer>>();
+		dailySalesDisplayItems = new ArrayList<Map.Entry<String, Integer>>();
+		monthlySalesDisplayItems = new ArrayList<Map.Entry<String, Integer>>();
 		sales = new ArrayList<Sale>();
 		salesController = MelanieBusinessFactory.makeSalesController();
 		dateformater = new SimpleDateFormat(DATEFORMAT, Locale.getDefault());
 		initializeDates();
-		getGroupedSales();
+		getGroupedSales(false);
 	}
 
 	private void initializeDates() {
 		Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
 
-		startDate = Utils.getStartOfDay(calendar);
-		endDate = Utils.getEndOfDay(calendar);
+		startDate = Utils.getDateToStartOfDay(calendar);
+		endDate = Utils.getDateToEndOfDay(calendar);
 	}
 
-	public void getGroupedSales() {
-		try {
+	public void getGroupedSales(final boolean isDaily) {
+
+		if (!(startDateUnchanged && endDateUnchanged)) {
 			if (!sales.isEmpty())
 				sales.clear();
-			sales.addAll(salesController.getSalesBetween(startDate, endDate,
-					new MelanieOperationCallBack<Sale>(this.getClass()
-							.toString()) {
+			try {
+				sales.addAll(salesController.getSalesBetween(startDate,
+						endDate, new MelanieOperationCallBack<Sale>(this
+								.getClass().toString()) {
 
-						@Override
-						public void onCollectionOperationSuccessful(
-								List<Sale> results) {
-							Utils.mergeItems(results, sales);
-							updateDisplayItems();
-						}
-					}));
-			updateDisplayItems();
-
-		} catch (MelanieBusinessException e) {
-			e.printStackTrace(); // TODO log it
+							@Override
+							public void onCollectionOperationSuccessful(
+									List<Sale> results) {
+								Utils.mergeItems(results, sales);
+								updateDisplayItems(isDaily);
+							}
+						}));
+			} catch (MelanieBusinessException e) {
+				e.printStackTrace(); // TODO log it
+			}
+			updateDisplayItems(isDaily);
 		}
 	}
 
-	private void updateDisplayItems() {
+	private void updateDailySalesDisplayItems() {
 
 		Map<String, Integer> displayDateGroup = new HashMap<String, Integer>();
-		displayItems.clear();
+		dailySalesDisplayItems.clear();
 		for (Sale sale : sales) {
 			String date = dateformater.format(sale.getSaleDate());
 			int quantity = displayDateGroup.containsKey(date) ? displayDateGroup
@@ -103,17 +112,40 @@ public class ReportSession {
 			displayDateGroup.put(date, quantity);
 		}
 
-		displayItems.addAll(displayDateGroup.entrySet());
+		dailySalesDisplayItems.addAll(displayDateGroup.entrySet());
 		notifyPropertyChanged(PropertyNames.DISPLAYITEMS);
 
 	}
 
-	public List<Entry<String, Integer>> getDisplayItems() {
-		return displayItems;
+	private void updateMonthlySalesDisplayItems() {
+		Map<String, Integer> displayMonthGroup = new HashMap<String, Integer>();
+		SimpleDateFormat monthFormatter = new SimpleDateFormat("MMMM");
+		monthlySalesDisplayItems.clear();
+		for (Sale sale : sales) {
+			String date = monthFormatter.format(sale.getSaleDate());
+			int quantity = displayMonthGroup.containsKey(date) ? displayMonthGroup
+					.get(date) : 0;
+			quantity += sale.getQuantitySold();
+			displayMonthGroup.put(date, quantity);
+		}
+
+		monthlySalesDisplayItems.addAll(displayMonthGroup.entrySet());
+		notifyPropertyChanged(PropertyNames.DISPLAYITEMS);
+	}
+
+	private void updateDisplayItems(boolean isDaily) {
+		if (isDaily)
+			updateDailySalesDisplayItems();
+		else
+			updateMonthlySalesDisplayItems();
+	}
+
+	public List<Entry<String, Integer>> getDisplayItems(boolean isDaily) {
+		return isDaily ? dailySalesDisplayItems : monthlySalesDisplayItems;
 	}
 
 	public void setDisplayItems(List<Entry<String, Integer>> displayItems) {
-		this.displayItems = displayItems;
+		dailySalesDisplayItems = displayItems;
 		notifyPropertyChanged(PropertyNames.DISPLAYITEMS);
 	}
 
@@ -122,8 +154,13 @@ public class ReportSession {
 	}
 
 	public void setStartDate(Date startDate) {
-		this.startDate = startDate;
-		notifyPropertyChanged(PropertyNames.STARTDATE);
+		if (!startDate.equals(this.startDate)) {
+			this.startDate = startDate;
+			startDateUnchanged = false;
+			notifyPropertyChanged(PropertyNames.STARTDATE);
+
+		} else
+			startDateUnchanged = true;
 
 	}
 
@@ -132,8 +169,28 @@ public class ReportSession {
 	}
 
 	public void setEndDate(Date endDate) {
-		this.endDate = endDate;
-		notifyPropertyChanged(PropertyNames.ENDDATE);
+		if (!endDate.equals(this.endDate)) {
+			this.endDate = endDate;
+			endDateUnchanged = false;
+			notifyPropertyChanged(PropertyNames.ENDDATE);
+		} else
+			endDateUnchanged = true;
+	}
+
+	public String getSelectedDateString() {
+		return selectedDateString;
+	}
+
+	public void setSelectedDate(String selectedDateString) {
+		this.selectedDateString = selectedDateString;
+	}
+
+	public List<Sale> getSales() {
+		return sales;
+	}
+
+	public void setSales(List<Sale> sales) {
+		this.sales = sales;
 	}
 
 	private void notifyPropertyChanged(String propertyName) {

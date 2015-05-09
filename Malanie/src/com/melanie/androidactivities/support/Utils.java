@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -33,6 +34,7 @@ public final class Utils {
 		public static final String CustomerId = "CustomerId";
 		public static final String BARCODES = "barcodes";
 		public static final String EMPTY_STRING = "";
+		public static final String DATEFORMAT = "MMM dd, yyyy";
 	}
 
 	/**
@@ -157,7 +159,7 @@ public final class Utils {
 		return itemGroup;
 	}
 
-	public static Date getStartOfDay(Calendar calendar) {
+	public static Date getDateToStartOfDay(Calendar calendar) {
 		calendar.set(Calendar.HOUR_OF_DAY,
 				calendar.getMinimum(Calendar.HOUR_OF_DAY));
 		calendar.set(Calendar.MINUTE, calendar.getMinimum(Calendar.MINUTE));
@@ -167,13 +169,29 @@ public final class Utils {
 		return calendar.getTime();
 	}
 
-	public static Date getEndOfDay(Calendar calendar) {
+	public static Date getDateToEndOfDay(Calendar calendar) {
 		calendar.set(Calendar.HOUR_OF_DAY,
 				calendar.getMaximum(Calendar.HOUR_OF_DAY));
 		calendar.set(Calendar.MINUTE, calendar.getMaximum(Calendar.MINUTE));
 		calendar.set(Calendar.SECOND, calendar.getMaximum(Calendar.SECOND));
 		calendar.set(Calendar.MILLISECOND,
 				calendar.getMaximum(Calendar.MILLISECOND));
+		return calendar.getTime();
+	}
+
+	public static Date getDateForFirstMonthDay(Date date) {
+		Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
+		calendar.setTime(date);
+		calendar.set(Calendar.DAY_OF_MONTH,
+				calendar.getMinimum(Calendar.DAY_OF_MONTH));
+		return calendar.getTime();
+	}
+
+	public static Date getDateForLastMonthDay(Date date) {
+		Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
+		calendar.setTime(date);
+		calendar.set(Calendar.DAY_OF_MONTH,
+				calendar.getMaximum(Calendar.DAY_OF_MONTH));
 		return calendar.getTime();
 	}
 }

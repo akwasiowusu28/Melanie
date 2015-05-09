@@ -161,7 +161,7 @@ public class PaymentActivity extends ActionBarActivity {
 		salesController = MelanieBusinessFactory.makeSalesController();
 		sales = new ArrayList<Sale>();
 		salesListAdapter = new ProductsAndSalesListViewAdapter<Sale>(this,
-				sales);
+				sales, false);
 		customersController = MelanieBusinessFactory.makeCustomersController();
 	}
 

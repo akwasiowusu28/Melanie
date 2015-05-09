@@ -4,6 +4,7 @@
     <issue id="EasterEgg" severity="warning" />
     <issue id="FieldGetter" severity="warning" />
     <issue id="IconExpectedSize" severity="warning" />
+    <issue id="InflateParams" severity="ignore" />
     <issue id="NewerVersionAvailable" severity="warning" />
     <issue id="RtlHardcoded">
         <ignore path="res/layout/activity_payment.xml" />

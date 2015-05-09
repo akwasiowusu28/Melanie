@@ -77,7 +77,7 @@ public class SalesActivity extends ActionBarActivity {
 		salesController = MelanieBusinessFactory.makeSalesController();
 		sales = new ArrayList<Sale>();
 		salesListAdapter = new ProductsAndSalesListViewAdapter<Sale>(this,
-				sales);
+				sales, false);
 		discountListener = new TextListener(R.id.discountValue);
 		amountListener = new TextListener(R.id.amountReceived);
 		customersController = MelanieBusinessFactory.makeCustomersController();

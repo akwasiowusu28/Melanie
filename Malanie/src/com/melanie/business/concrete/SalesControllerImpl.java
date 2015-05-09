@@ -144,7 +144,8 @@ public class SalesControllerImpl implements SalesController {
 										onOperationFailed(e);
 									}
 								}
-								;
+								sales.clear();
+
 							}
 						});
 

@@ -112,7 +112,7 @@
             android:label="@string/title_activity_customer_list" >
         </activity>
         <activity
-            android:name=".SalesReportActivity"
+            android:name=".DailySalesReportActivity"
             android:label="@string/title_activity_sales_report"
             android:parentActivityName=".MainActivity" >
             <meta-data
@@ -123,6 +123,24 @@
             android:name=".CustomerMainActivity"
             android:label="@string/title_activity_customer_main"
             android:parentActivityName=".MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.melanie.androidactivities.MainActivity" />
+        </activity>
+        <activity
+            android:name=".ViewSalesActivity"
+            android:label="@string/title_activity_view_sales"
+            android:theme="@android:style/Theme.Dialog" >
+        </activity>
+        <activity
+            android:name=".MonthlySalesReportActivity"
+            android:label="@string/title_activity_monthly_sales_report" >
+        </activity>
+        <activity
+            android:name=".SelectPrinterActivity"
+            android:label="@string/title_activity_select_printer"
+            android:parentActivityName=".MainActivity"
+            android:theme="@android:style/Theme.Dialog" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.melanie.androidactivities.MainActivity" />

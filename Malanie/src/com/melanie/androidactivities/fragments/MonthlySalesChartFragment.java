@@ -11,9 +11,8 @@ import java.util.Map.Entry;
 import java.util.TimeZone;
 
 import android.app.DatePickerDialog.OnDateSetListener;
+import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -22,31 +21,37 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
-import android.widget.ListView;
 
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.XAxis.XAxisPosition;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
 import com.melanie.androidactivities.R;
+import com.melanie.androidactivities.support.ChartEntry;
 import com.melanie.androidactivities.support.MelanieDatePicker;
-import com.melanie.androidactivities.support.MelanieGroupAdapter;
 import com.melanie.androidactivities.support.ObservablePropertyChangedListener;
 import com.melanie.androidactivities.support.ReportSession;
 import com.melanie.androidactivities.support.Utils;
 
-public class SalesReportTableFragment extends Fragment implements
+public class MonthlySalesChartFragment extends Fragment implements
 		ObservablePropertyChangedListener {
 
-	private static final String DATEFORMAT = "dd-MM-yyyy";
+	private static final String DAILY_SALES = "Daily Sales";
 
-	private MelanieGroupAdapter<String> displayItemsAdapter;
 	private List<Entry<String, Integer>> displayItems;
 	private SimpleDateFormat dateformater;
-	private LayoutInflater layoutInflater;
 	private Button startDateButton;
 	private Button endDateButton;
 	private Date startDate;
 	private Date endDate;
-	private Looper looper;
-	private Handler handler;
 	private ReportSession reportSession;
+	private ArrayList<com.github.mikephil.charting.data.Entry> chartEntries;
+	private ArrayList<String> chartLabels;
+	private LineChart salesChart;
+	private LineDataSet dataSet;
+	private boolean isDaily = false;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -57,60 +62,74 @@ public class SalesReportTableFragment extends Fragment implements
 	@Override
 	public View onCreateView(LayoutInflater inflater,
 			@Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-		layoutInflater = inflater;
-		return inflater.inflate(R.layout.layout_sales_table_report_fragment,
+		return inflater.inflate(R.layout.layout_sales_chart_fragment,
 				container, false);
 	}
 
 	private void initializeFields() {
 		reportSession = ReportSession.getInstance(this);
 		displayItems = new ArrayList<Map.Entry<String, Integer>>();
-		displayItems.addAll(reportSession.getDisplayItems());
-		dateformater = new SimpleDateFormat(DATEFORMAT, Locale.getDefault());
+		displayItems.addAll(reportSession.getDisplayItems(isDaily));
+		dateformater = new SimpleDateFormat(Utils.Costants.DATEFORMAT,
+				Locale.getDefault());
 		initializeDates();
-		displayItemsAdapter = new MelanieGroupAdapter<String>(getActivity(),
-				displayItems);
+		chartEntries = new ArrayList<>();
+		chartLabels = new ArrayList<>();
+	}
+
+	private void initializeDates() {
+		startDate = Utils.getDateForFirstMonthDay(reportSession.getStartDate());
+		endDate = Utils.getDateForLastMonthDay(reportSession.getEndDate());
 	}
 
 	private void updateDisplayItems() {
-		displayItems.clear();
-		displayItems.addAll(reportSession.getDisplayItems());
-
-		Utils.notifyListUpdate(displayItemsAdapter, handler);
+		if (!isInLayout()) {
+			displayItems.clear();
+			displayItems.addAll(reportSession.getDisplayItems(isDaily));
+			refreshChart();
+		}
 	}
 
 	@Override
 	public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-		looper = getActivity().getMainLooper();
-		handler = new Handler(looper);
 		setupDateButtons();
-		reportSession.getGroupedSales();
-		setupListView();
+		setUpLineChart();
+		reportSession.getGroupedSales(isDaily);
 	}
 
-	private void setupListView() {
-		ListView listView = (ListView) getView().findViewById(
-				R.id.salesListView);
-		View headerView = layoutInflater.inflate(
-				R.layout.layout_two_item_view_header, listView, false);
-
-		listView.addHeaderView(headerView);
-		listView.setAdapter(displayItemsAdapter);
+	private void setUpLineChart() {
+		salesChart = (LineChart) getView().findViewById(R.id.salesChart);
+		configureAxis();
+		salesChart.setDescription(Utils.Costants.EMPTY_STRING);
 	}
 
-	private void initializeDates() {
+	private void configureAxis() {
+		salesChart.getAxisRight().setEnabled(false);
+		XAxis xAxis = salesChart.getXAxis();
+		xAxis.setPosition(XAxisPosition.BOTTOM);
+		xAxis.setDrawGridLines(false);
+		xAxis.setAvoidFirstLastClipping(true);
+		YAxis yAxis = salesChart.getAxisLeft();
+		yAxis.setDrawGridLines(false);
+	}
 
-		startDate = reportSession.getStartDate();
-		endDate = reportSession.getEndDate();
+	private void refreshDataSet() {
+		dataSet = new LineDataSet(chartEntries, DAILY_SALES);
+		dataSet.setColor(Color.MAGENTA);
+		dataSet.setCircleColor(Color.BLUE);
+		dataSet.setLineWidth(1f);
+		dataSet.setCircleSize(3f);
+		dataSet.setDrawCircleHole(false);
+		dataSet.setValueTextSize(9f);
+		dataSet.setFillColor(Color.BLUE);
 	}
 
 	private void setupDateButtons() {
 		startDateButton = (Button) getView().findViewById(R.id.startDate);
 		endDateButton = (Button) getView().findViewById(R.id.endDate);
 
-		startDateButton.setText(dateformater.format(reportSession
-				.getStartDate()));
-		endDateButton.setText(dateformater.format(reportSession.getEndDate()));
+		startDateButton.setText(dateformater.format(startDate));
+		endDateButton.setText(dateformater.format(endDate));
 
 		startDateButton.setOnClickListener(dateButtonsClickListener);
 		endDateButton.setOnClickListener(dateButtonsClickListener);
@@ -141,14 +160,19 @@ public class SalesReportTableFragment extends Fragment implements
 				Date newDate = calendar.getTime();
 
 				if (isValidDate(newDate, buttonId)) {
-					if (isStartDate)
-						reportSession.setStartDate(Utils
-								.getStartOfDay(calendar));
-					else
-						reportSession.setEndDate(Utils.getEndOfDay(calendar));
+					if (isStartDate) {
+						newDate = Utils.getDateForFirstMonthDay(Utils
+								.getDateToStartOfDay(calendar));
+						reportSession.setStartDate(newDate);
+					} else {
+						newDate = Utils.getDateForLastMonthDay(Utils
+								.getDateToEndOfDay(calendar));
+						reportSession.setEndDate(newDate);
+					}
 
 					pickerButton.setText(dateformater.format(newDate));
-					reportSession.getGroupedSales();
+					reportSession.getGroupedSales(isDaily);
+					refreshChart();
 				} else
 					Utils.makeToast(getActivity(),
 							isStartDate ? R.string.startDateError
@@ -183,4 +207,29 @@ public class SalesReportTableFragment extends Fragment implements
 			endDateButton.setText(dateformater.format(endDate));
 		}
 	}
+
+	private void refreshLineChartEntries() {
+		chartEntries.clear();
+		chartLabels.clear();
+		Entry<String, Integer> entry;
+		for (int i = 0; i < displayItems.size(); i++) {
+			entry = displayItems.get(i);
+			chartEntries.add(new ChartEntry(entry.getValue(), i));
+			chartLabels.add(entry.getKey());
+		}
+
+	}
+
+	private void refreshChart() {
+		if (salesChart != null) {
+			if (!salesChart.isEmpty())
+				salesChart.clearValues();
+			refreshLineChartEntries();
+			refreshDataSet();
+			LineData lineData = new LineData(chartLabels, dataSet);
+			salesChart.setData(lineData);
+			salesChart.invalidate();
+		}
+	}
+
 }

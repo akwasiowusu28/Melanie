@@ -53,7 +53,7 @@ public class MelanieInventoryActivity extends ActionBarActivity {
 		allProducts = getAllProducts();
 		currentProducts = new ArrayList<Product>(allProducts);
 		productsAdapter = new ProductsAndSalesListViewAdapter<Product>(this,
-				currentProducts);
+				currentProducts, false);
 	}
 
 	private void setupCategoriesSpinner() {

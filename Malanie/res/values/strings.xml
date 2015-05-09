@@ -96,5 +96,11 @@
     <string name="pickDate">Pick a date</string>
     <string name="startDateError">The start date must be a date equal to or before the end date</string>
     <string name="endDateError">The end date must be a date equal to or after the start date</string>
-
-</resources>
+    <string name="title_activity_view_sales">ViewSalesActivity</string>
+    <string name="title_activity_monthly_sales_report">MonthlySalesReportActivity</string>
+    <string name="title_activity_select_printer">SelectPrinterActivity</string>
+    <string name="ok">Ok</string>
+    <string name="month">Month</string>
+    <string name="totalSold">Total sold</string>
+    <string name="Date">Date</string>
+</resources>

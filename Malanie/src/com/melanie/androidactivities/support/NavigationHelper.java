@@ -1,6 +1,7 @@
 package com.melanie.androidactivities.support;
 
 import android.app.Activity;
+import android.support.v4.app.Fragment;
 import android.util.SparseArray;
 
 import com.melanie.androidactivities.AddProductActivity;
@@ -9,12 +10,16 @@ import com.melanie.androidactivities.CustomerListActivity;
 import com.melanie.androidactivities.CustomerMainActivity;
 import com.melanie.androidactivities.CustomersActivity;
 import com.melanie.androidactivities.MelanieInventoryActivity;
+import com.melanie.androidactivities.MonthlySalesReportActivity;
 import com.melanie.androidactivities.PaymentActivity;
 import com.melanie.androidactivities.ProductsMainActivity;
 import com.melanie.androidactivities.R;
 import com.melanie.androidactivities.SalesActivity;
-import com.melanie.androidactivities.SalesReportActivity;
 import com.melanie.androidactivities.SettingsActivity;
+import com.melanie.androidactivities.fragments.DailySalesLineChartFragment;
+import com.melanie.androidactivities.fragments.DailySalesTableFragment;
+import com.melanie.androidactivities.fragments.MonthlySalesChartFragment;
+import com.melanie.androidactivities.fragments.MonthlySalesTableFragment;
 
 /**
  * @author Akwasi Owusu
@@ -135,7 +140,7 @@ public class NavigationHelper {
 				append(0, ProductsMainActivity.class);
 				append(1, SalesActivity.class);
 				append(2, CustomerMainActivity.class);
-				append(3, SalesReportActivity.class);
+				append(3, MonthlySalesReportActivity.class);
 				append(4, SettingsActivity.class);
 			}
 		};
@@ -157,6 +162,15 @@ public class NavigationHelper {
 		};
 	}
 
+	void m() {
+		Class<?> klass = CustomerListActivity.class;
+		try {
+			klass.newInstance();
+		} catch (InstantiationException | IllegalAccessException e) {
+			// log it
+		}
+	}
+
 	/**
 	 * A SparseArray containing the activities in the Customer navigation item
 	 * 
@@ -169,6 +183,34 @@ public class NavigationHelper {
 				append(0, CustomersActivity.class);
 				append(1, PaymentActivity.class);
 				append(2, CustomerListActivity.class);
+			}
+		};
+	}
+
+	/**
+	 * A SparseArray containing the fragments used in the daily sales report
+	 * 
+	 * @return the fragments
+	 */
+	public static SparseArray<Class<? extends Fragment>> getDailySalesReportFragments() {
+		return new SparseArray<Class<? extends Fragment>>() {
+			{
+				append(0, DailySalesTableFragment.class);
+				append(1, DailySalesLineChartFragment.class);
+			}
+		};
+	}
+
+	/**
+	 * A SparseArray containing the fragments used in the monthly sales report
+	 * 
+	 * @return the fragments
+	 */
+	public static SparseArray<Class<? extends Fragment>> getMonthlySalesReportFragments() {
+		return new SparseArray<Class<? extends Fragment>>() {
+			{
+				append(0, MonthlySalesTableFragment.class);
+				append(1, MonthlySalesChartFragment.class);
 			}
 		};
 	}

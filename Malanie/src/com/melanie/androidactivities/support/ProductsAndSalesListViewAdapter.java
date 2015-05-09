@@ -24,15 +24,22 @@ import com.melanie.entities.Sale;
  */
 public class ProductsAndSalesListViewAdapter<T> extends ArrayAdapter<T> {
 
+	private static final int SECTION = 0;
+	private static final int ITEM = 1;
 	private Context context;
-	private int resource;
+	private int mainResource;
 	private List<T> items;
+	private boolean hasSections;
+	private int sectionResource;
 
-	public ProductsAndSalesListViewAdapter(Context context, List<T> items) {
+	public ProductsAndSalesListViewAdapter(Context context, List<T> items,
+			boolean hasSections) {
 		super(context, R.layout.layout_sales_list, items);
 		this.context = context;
 		this.items = items;
-		this.resource = R.layout.layout_sales_list;
+		this.hasSections = hasSections;
+		this.mainResource = R.layout.layout_sales_list;
+		this.sectionResource = R.layout.layout_section_header;
 	}
 
 	@Override
@@ -40,29 +47,14 @@ public class ProductsAndSalesListViewAdapter<T> extends ArrayAdapter<T> {
 		LayoutInflater inflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-		View rowView = convertView;
-
-		if (rowView == null) {
-			ViewHolder viewHolder = null;
-			viewHolder = new ViewHolder();
-			rowView = inflater.inflate(resource, parent, false);
-
-			viewHolder.productNameTextView = (TextView) rowView
-					.findViewById(R.id.productNameTextView);
-
-			viewHolder.quantityTextView = (TextView) rowView
-					.findViewById(R.id.qtyTextView);
-
-			viewHolder.priceTextView = (TextView) rowView
-					.findViewById(R.id.unitPriceTextView);
-
-			viewHolder.totalPriceTextView = (TextView) rowView
-					.findViewById(R.id.totalTextView);
-
-			rowView.setTag(viewHolder);
-		}
+		int viewType = getItemViewType(position);
 
 		T item = items.get(position);
+
+		if (convertView == null)
+			convertView = inflater.inflate(
+					viewType == SECTION ? sectionResource : mainResource,
+					parent, false);
 
 		int quantity = 0;
 		double price = 0;
@@ -75,30 +67,48 @@ public class ProductsAndSalesListViewAdapter<T> extends ArrayAdapter<T> {
 				quantity = sale.getQuantitySold();
 				price = sale.getProduct().getPrice();
 				name = sale.getProduct().getProductName();
-
+				setValues(convertView, name, quantity, price);
 			} else if (item instanceof Product) {
 
 				Product product = (Product) item;
 				quantity = product.getQuantity();
 				price = product.getPrice();
 				name = product.getProductName();
+				setValues(convertView, name, quantity, price);
+			} else if (item instanceof SectionHeader)
+				setSectionValue(convertView,
+						((SectionHeader) item).getSectiontext());
 
-			}
-
-		ViewHolder viewHolder = (ViewHolder) rowView.getTag();
-
-		viewHolder.productNameTextView.setText(name);
-		viewHolder.quantityTextView.setText(String.valueOf(quantity));
-		viewHolder.priceTextView.setText(String.valueOf(price));
-		viewHolder.totalPriceTextView.setText(String.valueOf(quantity * price));
-
-		return rowView;
+		return convertView;
 	}
 
-	private static class ViewHolder {
-		public TextView productNameTextView;
-		public TextView priceTextView;
-		public TextView quantityTextView;
-		public TextView totalPriceTextView;
+	@Override
+	public int getItemViewType(int position) {
+
+		return hasSections && items.get(position) instanceof SectionHeader ? SECTION
+				: ITEM;
+	}
+
+	@Override
+	public int getViewTypeCount() {
+		return hasSections ? 2 : 1;
+	}
+
+	private void setValues(View rowView, String name, int quantity, double price) {
+
+		((TextView) rowView.findViewById(R.id.productNameTextView))
+				.setText(name);
+		((TextView) rowView.findViewById(R.id.qtyTextView)).setText(String
+				.valueOf(quantity));
+		((TextView) rowView.findViewById(R.id.unitPriceTextView))
+				.setText(String.valueOf(price));
+		((TextView) rowView.findViewById(R.id.totalTextView)).setText(String
+				.valueOf(quantity * price));
+	}
+
+	private void setSectionValue(View rowView, String sectionValue) {
+
+		((TextView) rowView.findViewById(R.id.sectionTextView))
+				.setText(sectionValue);
 	}
 }

@@ -6,9 +6,10 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 
 import com.melanie.androidactivities.support.MelanieTabsAdapter;
+import com.melanie.androidactivities.support.NavigationHelper;
 import com.melanie.androidactivities.support.SlidingTabLayout;
 
-public class SalesReportActivity extends ActionBarActivity {
+public class DailySalesReportActivity extends ActionBarActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -16,8 +17,9 @@ public class SalesReportActivity extends ActionBarActivity {
 		setContentView(R.layout.activity_sales_report);
 
 		ViewPager viewPager = (ViewPager) findViewById(R.id.reportsViewPager);
-		viewPager
-				.setAdapter(new MelanieTabsAdapter(getSupportFragmentManager()));
+		viewPager.setAdapter(new MelanieTabsAdapter(
+				getSupportFragmentManager(), NavigationHelper
+						.getDailySalesReportFragments()));
 
 		SlidingTabLayout tabLayout = (SlidingTabLayout) findViewById(R.id.melanieSlidingTabs);
 		tabLayout.setSelectedIndicatorColors(Color.rgb(255, 117, 25));
