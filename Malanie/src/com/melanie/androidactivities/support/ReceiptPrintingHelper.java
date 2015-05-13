@@ -1,61 +1,74 @@
 package com.melanie.androidactivities.support;
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.ListView;
-import android.widget.TextView;
+import java.util.List;
 
-import com.melanie.androidactivities.R;
+import android.content.Context;
+import android.os.Handler;
+
 import com.melanie.entities.Sale;
+import com.zj.btsdk.BluetoothService;
 
 public class ReceiptPrintingHelper {
 
 	private Context context;
+	private BluetoothService receiptPrinterService;
+	private String macAddress;
 
 	public ReceiptPrintingHelper(Context context) {
 		super();
 		this.context = context;
+		receiptPrinterService = new BluetoothService(context, new Handler());
 	}
 
-	public void printReceipt(double totalValue, double discount,
-			double amountReceived, double balance,
-			ProductsAndSalesListViewAdapter<Sale> salesAdapter) {
+	public void initializePrinterWithPrinterInfo(String macAddress) {
+		this.macAddress = macAddress;
+		receiptPrinterService.connect(receiptPrinterService
+				.getDevByMac(macAddress));
 
-		View receiptView = buildReceiptView(totalValue, discount,
-				amountReceived, balance, salesAdapter);
-		Bitmap bitmap = buildReceiptBitmap(receiptView);
+		// Hold up! Let it finish connecting, ya punk!
+		while (receiptPrinterService.getState() == BluetoothService.STATE_CONNECTING)
+			try {
+				Thread.sleep(1);
+			} catch (InterruptedException e) {
+				e.printStackTrace(); // TODO: log it
+			}
 	}
 
-	private View buildReceiptView(double totalValue, double discount,
-			double amountReceived, double balance,
-			ProductsAndSalesListViewAdapter<Sale> salesAdapter) {
+	public void printReceipt(List<Sale> sales) {
 
-		LayoutInflater inflater = (LayoutInflater) context
-				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		byte[] headerCommand = new byte[1];
+		headerCommand[0] = 0x21 | 0x10;
+		byte[] command = new byte[3];
 
-		View receiptView = inflater.inflate(R.layout.layout_receipt, null);
+		receiptPrinterService.write(headerCommand);
+		receiptPrinterService.sendMessage(
+				"Melanie Coutoure\nPig farm, Accra\nTel: +1 847 904 0065\n\n",
+				"utf-8");
+		command[0] = 0x1b; // initialize the printer
+		command[0] &= 0x1b2; // print whatever is in the buffer, if any, and do
+								// a line feed
 
-		ListView listView = (ListView) receiptView
-				.findViewById(R.id.receiptsalesListView);
-		listView.setAdapter(salesAdapter);
+		receiptPrinterService.write(command);
 
-		((TextView) receiptView.findViewById(R.id.receipttotalValue))
-				.setText(String.valueOf(totalValue));
-		((TextView) receiptView.findViewById(R.id.receiptdiscountValue))
-				.setText(String.valueOf(discount));
-		((TextView) receiptView.findViewById(R.id.receiptamountReceived))
-				.setText(String.valueOf(amountReceived));
-		((TextView) receiptView.findViewById(R.id.receiptbalanceDue))
-				.setText(String.valueOf(balance));
+		for (Sale sale : sales) {
+			String productName = sale.getProduct().getProductName();
+			String productTotalPrice = String.valueOf(sale.getQuantitySold()
+					* sale.getProduct().getPrice());
 
-		return receiptView;
+			String message = String.format("%-40s%16s%7s", productName, " ",
+					productTotalPrice);
+			receiptPrinterService.sendMessage(message, "utf-8");
+			command[2] = 0x0A; // do a line feed
+			receiptPrinterService.write(command);
+		}
+
 	}
 
-	private Bitmap buildReceiptBitmap(View receiptView) {
-		receiptView.setDrawingCacheEnabled(true);
-		receiptView.buildDrawingCache();
-		return receiptView.getDrawingCache();
+	public void clearResources() {
+		if (receiptPrinterService.isDiscovering())
+			receiptPrinterService.cancelDiscovery();
+
+		receiptPrinterService.stop();
+		receiptPrinterService = null;
 	}
 }

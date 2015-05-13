@@ -96,8 +96,7 @@ public class MelanieInventoryActivity extends ActionBarActivity {
 		try {
 			List<Category> tempCategories = null;
 			tempCategories = productController
-					.getAllCategories(new MelanieOperationCallBack<Category>(
-							this.getClass().getSimpleName()) {
+					.getAllCategories(new MelanieOperationCallBack<Category>() {
 						@Override
 						public void onCollectionOperationSuccessful(
 								List<Category> results) {
@@ -118,8 +117,7 @@ public class MelanieInventoryActivity extends ActionBarActivity {
 		if (productController != null)
 			try {
 				products = productController
-						.findAllProducts(new MelanieOperationCallBack<Product>(
-								"") {
+						.findAllProducts(new MelanieOperationCallBack<Product>() {
 							@Override
 							public void onCollectionOperationSuccessful(
 									List<Product> results) {

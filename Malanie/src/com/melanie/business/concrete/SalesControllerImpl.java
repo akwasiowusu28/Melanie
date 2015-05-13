@@ -77,8 +77,7 @@ public class SalesControllerImpl implements SalesController {
 		Product product;
 
 		product = productController.findProductByBarcode(barcode,
-				new MelanieOperationCallBack<Product>(this.getClass()
-						.getSimpleName() + ADDNEWSALE) {
+				new MelanieOperationCallBack<Product>() {
 
 					@Override
 					public void onOperationSuccessful(Product result) {
@@ -130,8 +129,7 @@ public class SalesControllerImpl implements SalesController {
 						discount, balance);
 
 				dataAccess.addDataItem(payment, Payment.class,
-						new MelanieOperationCallBack<Payment>(this.getClass()
-								.toString()) {
+						new MelanieOperationCallBack<Payment>() {
 							@Override
 							public void onOperationSuccessful(Payment payment) {
 								for (Sale sale : sales) {

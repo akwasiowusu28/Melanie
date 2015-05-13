@@ -77,7 +77,7 @@ public final class DataUtil {
 		private MelanieOperationCallBack<T> businessCallBack;
 
 		public DataCallBack(MelanieOperationCallBack<T> businessCallback) {
-			super(DataUtil.class.getSimpleName());
+			super();
 			businessCallBack = businessCallback;
 		}
 

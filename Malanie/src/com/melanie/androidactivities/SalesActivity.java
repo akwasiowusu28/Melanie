@@ -22,7 +22,9 @@ import android.widget.TextView;
 
 import com.melanie.androidactivities.support.MelanieAlertDialog;
 import com.melanie.androidactivities.support.MelanieAlertDialog.MelanieAlertDialogButtonModes;
+import com.melanie.androidactivities.support.PrinterType;
 import com.melanie.androidactivities.support.ProductsAndSalesListViewAdapter;
+import com.melanie.androidactivities.support.ReceiptPrintingHelper;
 import com.melanie.androidactivities.support.Utils;
 import com.melanie.business.CustomersController;
 import com.melanie.business.SalesController;
@@ -37,6 +39,7 @@ public class SalesActivity extends ActionBarActivity {
 
 	private static final int SCAN_REQUEST_CODE = 28;
 	private static final int CUSTOMER_REQUEST_CODE = 288;
+	private static final int PRINTER_SELECT_REQUEST_CODE = 2888;
 
 	private Handler handler;
 	private List<Sale> sales;
@@ -46,7 +49,11 @@ public class SalesActivity extends ActionBarActivity {
 	private ProductsAndSalesListViewAdapter<Sale> salesListAdapter;
 	private TextListener discountListener, amountListener;
 	private MelanieAlertDialog alertDialog;
-	private double balance, amountReceived, discount;
+	private double balance, amountReceived, discount, total;
+	private boolean isPrinterFound = false;
+	private ReceiptPrintingHelper receiptPrintingHelper;
+	private ListView listView;
+	private String printerInfo;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +70,7 @@ public class SalesActivity extends ActionBarActivity {
 
 	private void setupSalesListView() {
 
-		ListView listView = (ListView) findViewById(R.id.salesListView);
+		listView = (ListView) findViewById(R.id.salesListView);
 		View headerView = getLayoutInflater().inflate(
 				R.layout.layout_saleitems_header, listView, false);
 
@@ -81,7 +88,8 @@ public class SalesActivity extends ActionBarActivity {
 		discountListener = new TextListener(R.id.discountValue);
 		amountListener = new TextListener(R.id.amountReceived);
 		customersController = MelanieBusinessFactory.makeCustomersController();
-		balance = 0;
+		amountReceived = discount = balance = total = 0;
+		receiptPrintingHelper = new ReceiptPrintingHelper(this);
 	}
 
 	private void setupButtonsListeners() {
@@ -177,6 +185,8 @@ public class SalesActivity extends ActionBarActivity {
 	}
 
 	private void recordTotals() {
+		String totalString = ((TextView) findViewById(R.id.balanceDue))
+				.getText().toString();
 		String discountString = ((EditText) findViewById(R.id.discountValue))
 				.getText().toString();
 		String amountReceivedString = ((EditText) findViewById(R.id.amountReceived))
@@ -201,14 +211,32 @@ public class SalesActivity extends ActionBarActivity {
 
 	private void saveCurrentSales(Customer customer) {
 		OperationResult result = OperationResult.FAILED;
-		try {
-			result = salesController.saveCurrentSales(customer, amountReceived,
-					discount, balance);
-		} catch (MelanieBusinessException e) {
-			e.printStackTrace(); // TODO log it
+		// try {
+		// result = salesController.saveCurrentSales(customer, amountReceived,
+		// discount, balance);
+		// } catch (MelanieBusinessException e) {
+		// e.printStackTrace(); // TODO log it
+		// }
+		printReceipt();
+		// updateUIAfterSave(result);
+
+	}
+
+	private void printReceipt() {
+		if (isPrinterFound)
+			performPrint();
+		else {
+			Intent intent = new Intent(this, SelectPrinterActivity.class);
+			intent.putExtra(Utils.Costants.PRINTER_TYPE,
+					PrinterType.Receipt.toString());
+			startActivityForResult(intent, PRINTER_SELECT_REQUEST_CODE);
 		}
 
-		updateUIAfterSave(result);
+	}
+
+	private void performPrint() {
+		receiptPrintingHelper.initializePrinterWithPrinterInfo(printerInfo);
+		receiptPrintingHelper.printReceipt(sales);
 
 	}
 
@@ -244,17 +272,26 @@ public class SalesActivity extends ActionBarActivity {
 	}
 
 	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+	protected void onActivityResult(int requestCode, int resultCode,
+			Intent intentData) {
 		int customerId = -1;
-		if (resultCode == RESULT_OK && data != null)
-			if (requestCode == SCAN_REQUEST_CODE) {
-				List<String> barcodes = data
+		if (resultCode == RESULT_OK && intentData != null)
+			switch (requestCode) {
+			case SCAN_REQUEST_CODE:
+				List<String> barcodes = intentData
 						.getStringArrayListExtra(Utils.Costants.BARCODES);
 				recordSalesFromBarcodes(barcodes);
-			} else if (requestCode == CUSTOMER_REQUEST_CODE) {
-				customerId = data.getIntExtra(Utils.Costants.CustomerId,
+				break;
+			case CUSTOMER_REQUEST_CODE:
+				customerId = intentData.getIntExtra(Utils.Costants.CustomerId,
 						customerId);
 				saveCreditSaleWithCustomer(customerId);
+				break;
+			case PRINTER_SELECT_REQUEST_CODE:
+				printerInfo = intentData
+						.getStringExtra(Utils.Costants.PRINTER_INFO);
+				performPrint();
+				break;
 			}
 	}
 
@@ -275,10 +312,8 @@ public class SalesActivity extends ActionBarActivity {
 
 		try {
 			sales.clear();
-			sales.addAll(salesController.generateSaleItems(
-					barcodes,
-					new MelanieOperationCallBack<Sale>(SalesActivity.class
-							.getSimpleName()) {
+			sales.addAll(salesController.generateSaleItems(barcodes,
+					new MelanieOperationCallBack<Sale>() {
 
 						@Override
 						public void onCollectionOperationSuccessful(
@@ -391,6 +426,10 @@ public class SalesActivity extends ActionBarActivity {
 			else
 				Utils.resetTextFieldsToZeros(balanceTextView);
 		}
-	};
+	}
 
+	@Override
+	protected void onDestroy() {
+		receiptPrintingHelper.clearResources();
+	}
 }

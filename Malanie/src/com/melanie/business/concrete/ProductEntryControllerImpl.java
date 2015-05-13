@@ -203,8 +203,7 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 	public OperationResult removeProduct(int productId)
 			throws MelanieBusinessException {
 		try {
-			findProduct(productId, new MelanieOperationCallBack<Product>(this
-					.getClass().getSimpleName()) {
+			findProduct(productId, new MelanieOperationCallBack<Product>() {
 
 				@Override
 				public void onOperationSuccessful(Product result) {

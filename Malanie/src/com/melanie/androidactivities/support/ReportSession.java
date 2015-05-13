@@ -83,8 +83,7 @@ public class ReportSession {
 				sales.clear();
 			try {
 				sales.addAll(salesController.getSalesBetween(startDate,
-						endDate, new MelanieOperationCallBack<Sale>(this
-								.getClass().toString()) {
+						endDate, new MelanieOperationCallBack<Sale>() {
 
 							@Override
 							public void onCollectionOperationSuccessful(

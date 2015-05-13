@@ -70,4 +70,10 @@
         android:layout_margin="10dp"
         android:text="@string/add" />
 
+    <Switch
+        android:id="@+id/toggleButton1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ToggleButton" />
+
 </LinearLayout>

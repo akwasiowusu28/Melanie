@@ -58,8 +58,7 @@ public class PaymentActivity extends ActionBarActivity {
 		try {
 			List<Customer> tempCustomers = null;
 			tempCustomers = customersController
-					.getAllCustomers(new MelanieOperationCallBack<Customer>(
-							this.getClass().getSimpleName()) {
+					.getAllCustomers(new MelanieOperationCallBack<Customer>() {
 
 						@Override
 						public void onCollectionOperationSuccessful(
@@ -124,8 +123,7 @@ public class PaymentActivity extends ActionBarActivity {
 		try {
 			sales.clear();
 			List<Sale> tempSales = salesController.findSalesByCustomer(
-					selectedCustomer, new MelanieOperationCallBack<Sale>(this
-							.getClass().getSimpleName()) {
+					selectedCustomer, new MelanieOperationCallBack<Sale>() {
 
 						@Override
 						public void onCollectionOperationSuccessful(

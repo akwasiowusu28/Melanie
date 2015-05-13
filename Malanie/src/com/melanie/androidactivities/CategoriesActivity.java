@@ -49,8 +49,7 @@ public class CategoriesActivity extends ActionBarActivity {
 		try {
 			List<Category> tempCategories = null;
 			tempCategories = productController
-					.getAllCategories(new MelanieOperationCallBack<Category>(
-							this.getClass().getSimpleName()) {
+					.getAllCategories(new MelanieOperationCallBack<Category>() {
 						@Override
 						public void onCollectionOperationSuccessful(
 								List<Category> results) {

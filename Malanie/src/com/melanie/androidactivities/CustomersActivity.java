@@ -82,8 +82,7 @@ public class CustomersActivity extends ActionBarActivity {
 		try {
 			List<Customer> tempCustomers = null;
 			tempCustomers = customersController
-					.getAllCustomers(new MelanieOperationCallBack<Customer>(
-							this.getClass().getSimpleName()) {
+					.getAllCustomers(new MelanieOperationCallBack<Customer>() {
 
 						@Override
 						public void onCollectionOperationSuccessful(

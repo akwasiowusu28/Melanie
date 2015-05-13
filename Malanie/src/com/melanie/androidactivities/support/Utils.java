@@ -35,6 +35,8 @@ public final class Utils {
 		public static final String BARCODES = "barcodes";
 		public static final String EMPTY_STRING = "";
 		public static final String DATEFORMAT = "MMM dd, yyyy";
+		public static final String PRINTER_TYPE = "printerType";
+		public static final String PRINTER_INFO = "printerInfo";
 	}
 
 	/**
