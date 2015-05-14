@@ -70,7 +70,7 @@ public class DailySalesLineChartFragment extends Fragment implements
 		reportSession = ReportSession.getInstance(this);
 		displayItems = new ArrayList<Map.Entry<String, Integer>>();
 		displayItems.addAll(reportSession.getDisplayItems(isDaily));
-		dateformater = new SimpleDateFormat(Utils.Costants.DATEFORMAT,
+		dateformater = new SimpleDateFormat(Utils.Constants.DATEFORMAT,
 				Locale.getDefault());
 		initializeDates();
 		chartEntries = new ArrayList<>();
@@ -101,7 +101,7 @@ public class DailySalesLineChartFragment extends Fragment implements
 	private void setUpLineChart() {
 		salesChart = (LineChart) getView().findViewById(R.id.salesChart);
 		configureAxis();
-		salesChart.setDescription(Utils.Costants.EMPTY_STRING);
+		salesChart.setDescription(Utils.Constants.EMPTY_STRING);
 	}
 
 	private void configureAxis() {

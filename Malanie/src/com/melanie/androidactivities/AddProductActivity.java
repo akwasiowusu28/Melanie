@@ -243,7 +243,7 @@ public class AddProductActivity extends ActionBarActivity {
 			performPrint();
 		else {
 			Intent intent = new Intent(this, SelectPrinterActivity.class);
-			intent.putExtra(Utils.Costants.PRINTER_TYPE,
+			intent.putExtra(Utils.Constants.PRINTER_TYPE,
 					PrinterType.Barcode.toString());
 			startActivityForResult(intent, PRINTER_SELECT_REQUEST_CODE);
 		}
@@ -390,7 +390,7 @@ public class AddProductActivity extends ActionBarActivity {
 				&& requestCode == PRINTER_SELECT_REQUEST_CODE) {
 			Bundle bundle = intentData.getExtras();
 			printerInfo = (Map<String, String>) bundle
-					.get(Utils.Costants.PRINTER_INFO);
+					.get(Utils.Constants.PRINTER_INFO);
 			if (printerInfo != null)
 				performPrint();
 		}

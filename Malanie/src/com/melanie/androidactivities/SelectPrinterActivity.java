@@ -39,7 +39,7 @@ public class SelectPrinterActivity extends Activity {
 
 		callerActivityIntent = getIntent();
 		printerType = PrinterType.valueOf(callerActivityIntent
-				.getStringExtra(Utils.Costants.PRINTER_TYPE));
+				.getStringExtra(Utils.Constants.PRINTER_TYPE));
 		setupListView();
 		setupPrinterDiscoverer();
 		discoverPrinter();
@@ -88,10 +88,10 @@ public class SelectPrinterActivity extends Activity {
 
 			if (printerType.equals(PrinterType.Barcode)) {
 				Bundle bundle = new Bundle();
-				bundle.putSerializable(Utils.Costants.PRINTER_INFO, printerInfo);
+				bundle.putSerializable(Utils.Constants.PRINTER_INFO, printerInfo);
 				callerActivityIntent.putExtras(bundle);
 			} else
-				callerActivityIntent.putExtra(Utils.Costants.PRINTER_INFO,
+				callerActivityIntent.putExtra(Utils.Constants.PRINTER_INFO,
 						printerInfo.get(printers.get(position)));
 
 			setResult(RESULT_OK, callerActivityIntent);

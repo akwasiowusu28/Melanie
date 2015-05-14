@@ -181,10 +181,10 @@ public class PaymentActivity extends ActionBarActivity {
 
 		double balance = 0, amountReceived = 0;
 
-		if (!amountReceivedString.equals(Utils.Costants.EMPTY_STRING))
+		if (!amountReceivedString.equals(Utils.Constants.EMPTY_STRING))
 			amountReceived = Double.parseDouble(amountReceivedString);
 
-		if (!balanceString.equals(Utils.Costants.EMPTY_STRING))
+		if (!balanceString.equals(Utils.Constants.EMPTY_STRING))
 			balance = Double.parseDouble(balanceString);
 
 		OperationResult result = savePayment(amountReceived, balance);

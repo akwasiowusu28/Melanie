@@ -99,8 +99,16 @@
     <string name="title_activity_view_sales">ViewSalesActivity</string>
     <string name="title_activity_monthly_sales_report">MonthlySalesReportActivity</string>
     <string name="title_activity_select_printer">SelectPrinterActivity</string>
-    <string name="ok">Ok</string>
     <string name="month">Month</string>
     <string name="totalSold">Total sold</string>
     <string name="Date">Date</string>
-</resources>
+    <string name="title_activity_signup">Sign up</string>
+    <string name="password">Password:</string>
+    <string name="confirmPassword">Confirm password:</string>
+    <string name="phone">Phone:</string>
+    <string name="passwordsNotMatch">Passwords do not match</string>
+    <string name="createAccount">Create account</string>
+    <string name="createAccountFailed">Error creating account. Please ensure that you have a stable internet connection and try again</string>
+    <string name="createAccountSuccess">Account successfully created!</string>
+
+</resources>

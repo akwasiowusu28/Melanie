@@ -162,7 +162,7 @@ public class ScanBarcodeActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				Intent intent = getIntent();
-				intent.putStringArrayListExtra(Utils.Costants.BARCODES,
+				intent.putStringArrayListExtra(Utils.Constants.BARCODES,
 						new ArrayList<String>(scannedBarcodes));
 				setResult(RESULT_OK, intent);
 				finish();

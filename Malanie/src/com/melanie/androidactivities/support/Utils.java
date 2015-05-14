@@ -30,7 +30,7 @@ import com.melanie.support.OperationResult;
  */
 public final class Utils {
 
-	public static class Costants {
+	public static class Constants {
 		public static final String CustomerId = "CustomerId";
 		public static final String BARCODES = "barcodes";
 		public static final String EMPTY_STRING = "";

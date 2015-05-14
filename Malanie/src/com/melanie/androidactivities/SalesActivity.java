@@ -194,13 +194,13 @@ public class SalesActivity extends ActionBarActivity {
 		String balanceString = ((TextView) findViewById(R.id.balanceDue))
 				.getText().toString();
 
-		if (!discountString.equals(Utils.Costants.EMPTY_STRING))
+		if (!discountString.equals(Utils.Constants.EMPTY_STRING))
 			discount = Double.parseDouble(discountString);
 
-		if (!amountReceivedString.equals(Utils.Costants.EMPTY_STRING))
+		if (!amountReceivedString.equals(Utils.Constants.EMPTY_STRING))
 			amountReceived = Double.parseDouble(amountReceivedString);
 
-		if (!balanceString.equals(Utils.Costants.EMPTY_STRING))
+		if (!balanceString.equals(Utils.Constants.EMPTY_STRING))
 			balance = Double.parseDouble(balanceString);
 	}
 
@@ -227,7 +227,7 @@ public class SalesActivity extends ActionBarActivity {
 			performPrint();
 		else {
 			Intent intent = new Intent(this, SelectPrinterActivity.class);
-			intent.putExtra(Utils.Costants.PRINTER_TYPE,
+			intent.putExtra(Utils.Constants.PRINTER_TYPE,
 					PrinterType.Receipt.toString());
 			startActivityForResult(intent, PRINTER_SELECT_REQUEST_CODE);
 		}
@@ -279,17 +279,17 @@ public class SalesActivity extends ActionBarActivity {
 			switch (requestCode) {
 			case SCAN_REQUEST_CODE:
 				List<String> barcodes = intentData
-						.getStringArrayListExtra(Utils.Costants.BARCODES);
+						.getStringArrayListExtra(Utils.Constants.BARCODES);
 				recordSalesFromBarcodes(barcodes);
 				break;
 			case CUSTOMER_REQUEST_CODE:
-				customerId = intentData.getIntExtra(Utils.Costants.CustomerId,
+				customerId = intentData.getIntExtra(Utils.Constants.CustomerId,
 						customerId);
 				saveCreditSaleWithCustomer(customerId);
 				break;
 			case PRINTER_SELECT_REQUEST_CODE:
 				printerInfo = intentData
-						.getStringExtra(Utils.Costants.PRINTER_INFO);
+						.getStringExtra(Utils.Constants.PRINTER_INFO);
 				performPrint();
 				break;
 			}

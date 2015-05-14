@@ -182,7 +182,7 @@ public class CustomersActivity extends ActionBarActivity {
 		if (wasLaunchedFromSales) {
 			Intent intent = getIntent();
 			try {
-				intent.putExtra(Utils.Costants.CustomerId,
+				intent.putExtra(Utils.Constants.CustomerId,
 						customersController.getLastInsertedCustomerId());
 			} catch (MelanieBusinessException e) {
 				e.printStackTrace(); // TODO: log it

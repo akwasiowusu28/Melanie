@@ -6,10 +6,13 @@ import java.util.List;
 
 import com.backendless.Backendless;
 import com.backendless.BackendlessCollection;
+import com.backendless.BackendlessUser;
 import com.backendless.async.callback.AsyncCallback;
 import com.backendless.exceptions.BackendlessFault;
 import com.backendless.persistence.BackendlessDataQuery;
+import com.melanie.dataaccesslayer.DataUtil.DataCallBack;
 import com.melanie.dataaccesslayer.datasource.DataSourceManager;
+import com.melanie.entities.User;
 import com.melanie.support.MelanieOperationCallBack;
 import com.melanie.support.exceptions.MelanieDataLayerException;
 
@@ -183,6 +186,16 @@ public class MelanieCloudAccess {
 		} catch (Exception e) {
 			throw new MelanieDataLayerException(e.getMessage(), e);
 		}
+
+	}
+
+	public void addUser(User user,
+			MelanieOperationCallBack<BackendlessUser> operationCallBack) {
+
+		DataCallBack<BackendlessUser> userDataCallBack = new DataCallBack<BackendlessUser>(
+				operationCallBack);
+		Backendless.UserService.register(user,
+				new BackendAsynCallBack<BackendlessUser>(userDataCallBack));
 
 	}
 

@@ -72,7 +72,7 @@ public class MonthlySalesTableFragment extends Fragment implements
 		reportSession = ReportSession.getInstance(this);
 		displayItems = new ArrayList<Map.Entry<String, Integer>>();
 		displayItems.addAll(reportSession.getDisplayItems(isDaily));
-		dateformater = new SimpleDateFormat(Utils.Costants.DATEFORMAT,
+		dateformater = new SimpleDateFormat(Utils.Constants.DATEFORMAT,
 				Locale.getDefault());
 		initializeDates();
 		displayItemsAdapter = new MelanieGroupAdapter<String>(getActivity(),
