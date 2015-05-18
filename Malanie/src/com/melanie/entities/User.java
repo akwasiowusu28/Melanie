@@ -13,15 +13,19 @@ public class User extends BackendlessUser {
 	@DatabaseField
 	private String objectId;
 
+	@DatabaseField
+	private boolean isConfirmed;
+	
 	public User() {
 		super();
 	}
 
-	public User(String name, String password, String phone) {
+	public User(String name, String password, String phone, boolean isConfirmed) {
 		super();
 		setPassword(password);
 		setProperty("name", name);
 		setProperty("phone", phone);
+		setProperty("isconfirmed", isConfirmed);
 	}
 
 	@Override
@@ -39,5 +43,13 @@ public class User extends BackendlessUser {
 
 	public void setId(int id) {
 		this.id = id;
+	}
+
+	public boolean isConfirmed() {
+		return isConfirmed;
+	}
+
+	public void setConfirmed(boolean isConfirmed) {
+		this.isConfirmed = isConfirmed;
 	}
 }

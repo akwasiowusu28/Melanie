@@ -10,6 +10,7 @@ import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.Dao.CreateOrUpdateStatus;
 import com.melanie.dataaccesslayer.datasource.DataSourceManager;
 import com.melanie.entities.BaseEntity;
+import com.melanie.entities.User;
 import com.melanie.support.MelanieOperationCallBack;
 import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieDataLayerException;
@@ -61,10 +62,9 @@ public final class DataUtil {
 						.getCachedDaoFor(itemClass);
 				if (dao != null && dao.countOf() >= 3)
 					DataUtil.removeLeastRecentlyUsedItem(dao, itemClass);
-				updateItemRecentUse(dataItem);
-				CreateOrUpdateStatus status = dao.createOrUpdate(dataItem);
-				if (status.isCreated() || status.isUpdated())
-					result = OperationResult.SUCCESSFUL;
+				  updateItemRecentUse(dataItem);
+	
+					result = addOrUpdateItem(dao,dataItem);
 			}
 		} catch (SQLException e) {
 			throw new MelanieDataLayerException(e.getMessage(), e);
@@ -72,6 +72,11 @@ public final class DataUtil {
 		return result;
 	}
 
+	public static <T> OperationResult addOrUpdateItem(Dao<Object, Integer> dao, T dataItem) throws SQLException{
+		 dao.createOrUpdate(dataItem);
+		return OperationResult.SUCCESSFUL;
+	}
+	
 	public static class DataCallBack<T> extends MelanieOperationCallBack<T> {
 
 		private MelanieOperationCallBack<T> businessCallBack;

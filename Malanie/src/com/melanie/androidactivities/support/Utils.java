@@ -37,6 +37,9 @@ public final class Utils {
 		public static final String DATEFORMAT = "MMM dd, yyyy";
 		public static final String PRINTER_TYPE = "printerType";
 		public static final String PRINTER_INFO = "printerInfo";
+		public static final String CONFIRM_SMS_MESSAGE= "Your Melanie confirmation code is: ";
+		public static final String PHONE_NUMBER ="phoneNumber";
+		public static final String CONFIRM_CODE ="confirmCode";
 	}
 
 	/**

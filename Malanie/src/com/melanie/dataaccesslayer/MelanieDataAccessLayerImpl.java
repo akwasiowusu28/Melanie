@@ -4,12 +4,15 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.backendless.Backendless;
+import com.backendless.BackendlessUser;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 import com.melanie.dataaccesslayer.datasource.DataSource;
 import com.melanie.dataaccesslayer.datasource.DataSourceManager;
 import com.melanie.entities.BaseEntity;
+import com.melanie.entities.User;
 import com.melanie.support.MelanieOperationCallBack;
 import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieDataLayerException;
@@ -55,6 +58,10 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 	public <T> OperationResult addDataItem(T dataItem, Class<T> itemClass,
 			MelanieOperationCallBack<T> operationCallBack)
 			throws MelanieDataLayerException {
+		if(dataItem instanceof User){
+			addUser(dataItem, operationCallBack);
+			return OperationResult.SUCCESSFUL;
+		}
 		OperationResult result = OperationResult.FAILED;
 		try {
 			Dao<Object, Integer> dao = DataSourceManager
@@ -377,4 +384,31 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 		return result;
 	}
 
+	private <T> void addUser(T user, MelanieOperationCallBack<T> operationCallBack) 
+			throws MelanieDataLayerException{
+		try {
+			Dao<Object,Integer> dao = DataSourceManager.getCachedDaoFor(User.class);
+			DataUtil.addOrUpdateItem(dao, user);
+			addUserToCloud(user,dao, operationCallBack);
+		} catch (MelanieDataLayerException | SQLException e) {
+			throw new MelanieDataLayerException(e.getMessage(),e);
+		}
+	}
+	
+	private <T> void addUserToCloud(T user, final Dao<Object, Integer> dao, final MelanieOperationCallBack<T> operationCallBack){
+		final User userInstance = (User)user;
+		cloudAccess.addUser(userInstance, new MelanieOperationCallBack<BackendlessUser>(){
+			@Override
+			public void onOperationSuccessful(BackendlessUser result) {
+				operationCallBack.onOperationSuccessful((T) result);
+				try {
+					 userInstance.setObjectId(result.getProperty("objectId").toString());
+					DataUtil.addOrUpdateItem(dao, userInstance);
+				} catch (SQLException e) {
+					operationCallBack.onOperationFailed(e);
+				}
+			}
+		});
+	}
+	
 }

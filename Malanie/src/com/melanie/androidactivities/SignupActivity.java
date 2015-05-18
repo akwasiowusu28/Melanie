@@ -1,8 +1,14 @@
 package com.melanie.androidactivities;
 
+import java.util.Calendar;
+import java.util.Date;
+
+import android.app.PendingIntent;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.telephony.SmsManager;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -13,15 +19,18 @@ import com.melanie.business.UserController;
 import com.melanie.entities.User;
 import com.melanie.support.MelanieBusinessFactory;
 import com.melanie.support.MelanieOperationCallBack;
+import com.melanie.support.exceptions.MelanieBusinessException;
 
 public class SignupActivity extends ActionBarActivity {
 
 	private UserController userController;
-	EditText passwordField;
-	EditText confirmPasswordField;
-	EditText nameField;
-	EditText phoneField;
-
+	private EditText passwordField;
+	private EditText confirmPasswordField;
+	private EditText nameField;
+	private EditText phoneField;
+    private String phoneNumber;
+    private String confirmCode;
+    
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -55,10 +64,10 @@ public class SignupActivity extends ActionBarActivity {
 		String password = passwordField.getText().toString();
 		String confirmPassword = confirmPasswordField.getText().toString();
 		String name = nameField.getText().toString();
-		String phone = phoneField.getText().toString();
+	    phoneNumber = phoneField.getText().toString();
 
 		if (passwordsMatch(password, confirmPassword))
-			createUser(name, phone, password);
+			createUser(name, phoneNumber, password);
 		else {
 			switchPasswordFieldsBackColor(false);
 			Utils.makeToast(this, R.string.passwordsNotMatch);
@@ -67,23 +76,29 @@ public class SignupActivity extends ActionBarActivity {
 	}
 
 	private void createUser(String name, String phone, String password) {
-		userController.createUser(name, phone, password,
-				new MelanieOperationCallBack<User>() {
+		try {
+			userController.createUser(name, phone, password,
+					new MelanieOperationCallBack<User>() {
 
-					@Override
-					public void onOperationSuccessful(User result) {
-						switchPasswordFieldsBackColor(true);
-						Utils.makeToast(SignupActivity.this,
-								R.string.createAccountSuccess);
-						clearFields();
-					}
+						@Override
+						public void onOperationSuccessful(User result) {
+							switchPasswordFieldsBackColor(true);
+							Utils.makeToast(SignupActivity.this,
+									R.string.createAccountSuccess);
+							clearFields();
+						}
 
-					@Override
-					public void onOperationFailed(Throwable e) {
-						Utils.makeToast(SignupActivity.this,
-								R.string.createAccountFailed);
-					}
-				});
+						@Override
+						public void onOperationFailed(Throwable e) {
+							Utils.makeToast(SignupActivity.this,
+									R.string.createAccountFailed);
+						}
+					});
+		} catch (MelanieBusinessException e) {
+			// TODO log it
+			e.printStackTrace();
+		}
+		sendConfirmSMS();
 	}
 
 	private boolean passwordsMatch(String password, String confirmPassword) {
@@ -105,5 +120,27 @@ public class SignupActivity extends ActionBarActivity {
 			passwordField.setBackgroundColor(Color.rgb(250, 213, 182));
 			confirmPasswordField.setBackgroundColor(Color.rgb(250, 213, 182));
 		}
+	}
+	
+	private void sendConfirmSMS(){
+		generateConfirmCode();
+		
+		Intent intent = new Intent(this,ConfirmActivity.class);
+		intent.putExtra(Utils.Constants.PHONE_NUMBER, phoneNumber);
+		intent.putExtra(Utils.Constants.CONFIRM_CODE, confirmCode);
+		
+		PendingIntent pendingIntent = PendingIntent.getActivity(this, 28, 
+				      intent, 0);
+		SmsManager manager = SmsManager.getDefault();
+		manager.sendTextMessage(phoneNumber, null, getConfirmMessage(), pendingIntent, null);
+	}
+	
+	private String getConfirmMessage(){
+		return Utils.Constants.CONFIRM_SMS_MESSAGE + confirmCode;
+	}
+	
+	private void generateConfirmCode(){
+		String currentTimeString = String.valueOf(Calendar.getInstance().getTimeInMillis());
+		confirmCode = currentTimeString.substring(currentTimeString.length() - 4);
 	}
 }

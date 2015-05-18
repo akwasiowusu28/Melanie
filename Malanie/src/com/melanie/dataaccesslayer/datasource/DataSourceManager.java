@@ -12,6 +12,7 @@ import com.melanie.entities.Payment;
 import com.melanie.entities.Product;
 import com.melanie.entities.Sale;
 import com.melanie.entities.SalePayment;
+import com.melanie.entities.User;
 import com.melanie.support.exceptions.MelanieDataLayerException;
 
 /**
@@ -37,6 +38,7 @@ public class DataSourceManager {
 			add(Sale.class);
 			add(Category.class);
 			add(SalePayment.class);
+			add(User.class);
 		}
 	};
 

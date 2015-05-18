@@ -44,7 +44,7 @@
     <string name="waitingForPrint">Printing&#8230;</string>
     <string name="title_activity_scan_barcode">Scan Barcode</string>
     <string name="title_activity_sales">Sales</string>
-    <string name="title_activity_customers">Customers</string>
+    <string name="title_activity_customers">Customer information</string>
     <string name="title_activity_reports">Reports</string>
     <string name="doneText">Done</string>
     <string name="lastScan">last scan:</string>
@@ -79,14 +79,14 @@
     <string name="melanie_inventory">Inventory</string>
     <string name="amountDue">Due</string>
     <string name="phoneNumberHeader">Phone</string>
-    <string name="title_activity_customer_list">CustomerListActivity</string>
+    <string name="title_activity_customer_list">List of Customers</string>
     <string name="showItemsIn">Show items in</string>
     <string name="title_activity_sales_report">Sales report</string>
     <string name="addcategorydescription">Add, view or modify categories</string>
     <string name="addproductdescription">Add a new product</string>
     <string name="inventoryDescription">View inventory, retrieve barcodes</string>
     <string name="doublearrow">&#187;</string>
-    <string name="title_activity_customer_main">CustomerMainActivity</string>
+    <string name="title_activity_customer_main">Customers</string>
     <string name="customerlist">Customer list</string>
     <string name="customersdescription">Add new or modify existing customer</string>
     <string name="customerlistdescription">View customers&#8217; details</string>
@@ -96,9 +96,9 @@
     <string name="pickDate">Pick a date</string>
     <string name="startDateError">The start date must be a date equal to or before the end date</string>
     <string name="endDateError">The end date must be a date equal to or after the start date</string>
-    <string name="title_activity_view_sales">ViewSalesActivity</string>
-    <string name="title_activity_monthly_sales_report">MonthlySalesReportActivity</string>
-    <string name="title_activity_select_printer">SelectPrinterActivity</string>
+    <string name="title_activity_view_sales">View sales</string>
+    <string name="title_activity_monthly_sales_report">Monthly sales report</string>
+    <string name="title_activity_select_printer">Select printer</string>
     <string name="month">Month</string>
     <string name="totalSold">Total sold</string>
     <string name="Date">Date</string>
@@ -110,5 +110,8 @@
     <string name="createAccount">Create account</string>
     <string name="createAccountFailed">Error creating account. Please ensure that you have a stable internet connection and try again</string>
     <string name="createAccountSuccess">Account successfully created!</string>
-
+    <string name="title_activity_confirm">Confirm phone number</string>
+    <string name="enterConfirmDigits">Enter the digits received via sms</string>
+    <string name="confirm">Confirm</string>
+    <string name="phoneNumberHint">Please begin with +country code</string>
 </resources>
