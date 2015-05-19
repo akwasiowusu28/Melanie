@@ -58,4 +58,10 @@ public class ConfirmActivity extends ActionBarActivity {
 			}
         }
 	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		MelanieBusinessFactory.makeMelanieBusiness().clearResources();
+	}
 }

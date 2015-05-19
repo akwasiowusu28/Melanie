@@ -52,4 +52,6 @@ public interface MelanieDataAccessLayer {
 			E upperBound, Class<T> itemClass,
 			MelanieOperationCallBack<T> operationCallBack)
 			throws MelanieDataLayerException;
+	
+	void clearResources();
 }

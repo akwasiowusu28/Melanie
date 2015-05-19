@@ -127,9 +127,13 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 	@Override
 	public <T> OperationResult updateDataItem(T dataItem, Class<T> itemClass)
 			throws MelanieDataLayerException {
-		if (cloudAccess != null)
+		if (cloudAccess != null){
+			if(dataItem instanceof User)
+				cloudAccess.updateUser((User)dataItem);
+			else
 			cloudAccess.updateDataItem(dataItem, itemClass,
 					new DataUtil.DataCallBack<T>(null));
+		}
 
 		return OperationResult.SUCCESSFUL; // very optimistic :-D
 	}
@@ -409,6 +413,11 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 				}
 			}
 		});
+	}
+
+	@Override
+	public void clearResources() {
+		DataSourceManager.clearDataSource();
 	}
 	
 }

@@ -189,16 +189,33 @@ public class MelanieCloudAccess {
 
 	}
 
-	public void addUser(User user,
-			MelanieOperationCallBack<BackendlessUser> operationCallBack) {
+	public void addUser(User user, MelanieOperationCallBack<BackendlessUser> operationCallBack) {
 
-		DataCallBack<BackendlessUser> userDataCallBack = new DataCallBack<BackendlessUser>(
-				operationCallBack);
 		Backendless.UserService.register(user,
-				new BackendAsynCallBack<BackendlessUser>(userDataCallBack));
-
+				new BackendAsynCallBack<BackendlessUser>(operationCallBack));
 	}
 
+	public void updateUser(User user){
+		Backendless.UserService.update(user, new BackendAsynCallBack<BackendlessUser>(null));
+	}
+	
+	public void login(final User user, final MelanieOperationCallBack<User> operationCallBack){
+		BackendAsynCallBack<BackendlessUser> wrapperCallback = new BackendAsynCallBack<BackendlessUser>(null){
+
+			@Override
+			public void handleFault(BackendlessFault fault) {
+				operationCallBack.onOperationFailed(new MelanieDataLayerException(fault.getMessage()));
+			}
+
+			@Override
+			public void handleResponse(BackendlessUser responseObject) {
+				operationCallBack.onOperationSuccessful(user);
+			}
+			
+		};
+		Backendless.UserService.login(user.getName(), user.getPassword(), wrapperCallback);
+	}
+	
 	private class BackendAsynCallBack<T> implements AsyncCallback<T> {
 
 		private MelanieOperationCallBack<T> operationCallBack;

@@ -43,7 +43,7 @@ public class DataSource extends OrmLiteSqliteOpenHelper {
 			try {
 				DataSource.this.cancelQueriesEnabled = false;
 				TableUtils
-						.createTableIfNotExists(connectionSource, entityClass);
+						.createTable(connectionSource, entityClass);
 			} catch (SQLException e) {
 				throw new MelanieDataLayerException(e.getMessage(), e);
 			}
@@ -75,7 +75,6 @@ public class DataSource extends OrmLiteSqliteOpenHelper {
 	@Override
 	public void close() {
 		super.close();
-		DataSourceManager.clearDataSource();
 	}
 
 }

@@ -36,7 +36,6 @@ public class DataSourceManager {
 			add(Payment.class);
 			add(Product.class);
 			add(Sale.class);
-			add(Category.class);
 			add(SalePayment.class);
 			add(User.class);
 		}
@@ -89,7 +88,10 @@ public class DataSourceManager {
 	 * Clears the DataSource object and disconnect from the database
 	 */
 	public static void clearDataSource() {
-		dataSource = null;
+		if(dataSource != null){
+			dataSource.close();
+			dataSource = null;	
+		}
 	}
 
 	public static <T> void initializeBackendless(T dataContext) {

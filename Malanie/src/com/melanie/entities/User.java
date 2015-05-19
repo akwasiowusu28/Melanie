@@ -16,12 +16,20 @@ public class User extends BackendlessUser {
 	@DatabaseField
 	private boolean isConfirmed;
 	
+	@DatabaseField
+	private String password;
+	
+	@DatabaseField
+	private String name;
+	
 	public User() {
 		super();
 	}
 
 	public User(String name, String password, String phone, boolean isConfirmed) {
 		super();
+		this.password = password;
+		this.name = name;
 		setPassword(password);
 		setProperty("name", name);
 		setProperty("phone", phone);
@@ -51,5 +59,21 @@ public class User extends BackendlessUser {
 
 	public void setConfirmed(boolean isConfirmed) {
 		this.isConfirmed = isConfirmed;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 }

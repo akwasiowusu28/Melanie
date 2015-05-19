@@ -14,8 +14,11 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.melanie.androidactivities.support.Utils;
+import com.melanie.business.MelanieBusiness;
 import com.melanie.business.UserController;
+import com.melanie.dataaccesslayer.datasource.DataSource;
 import com.melanie.entities.User;
 import com.melanie.support.MelanieBusinessFactory;
 import com.melanie.support.MelanieOperationCallBack;
@@ -31,12 +34,23 @@ public class SignupActivity extends ActionBarActivity {
     private String phoneNumber;
     private String confirmCode;
     
+    private MelanieBusiness business;
+    
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_signup);
 		initializeFields();
 		setupCreateAccountButton();
+		business = MelanieBusinessFactory.makeMelanieBusiness();
+		
+		DataSource dataSource = OpenHelperManager.getHelper(getBaseContext(), DataSource.class);
+		
+		// ORMLite
+		business.initialize(dataSource);
+		
+		// Backendless
+		business.initializeAlternate(this);
 	}
 
 	private void initializeFields() {
@@ -143,4 +157,5 @@ public class SignupActivity extends ActionBarActivity {
 		String currentTimeString = String.valueOf(Calendar.getInstance().getTimeInMillis());
 		confirmCode = currentTimeString.substring(currentTimeString.length() - 4);
 	}
+	
 }
