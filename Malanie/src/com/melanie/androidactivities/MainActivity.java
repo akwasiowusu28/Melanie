@@ -15,12 +15,15 @@ import com.melanie.androidactivities.support.NavigationHelper;
 import com.melanie.business.MelanieBusiness;
 import com.melanie.business.UserController;
 import com.melanie.dataaccesslayer.datasource.DataSource;
+import com.melanie.entities.User;
 import com.melanie.support.MelanieBusinessFactory;
+import com.melanie.support.MelanieOperationCallBack;
+import com.melanie.support.exceptions.MelanieBusinessException;
 
 public class MainActivity extends Activity {
 
 	private MelanieBusiness business;
-   
+    private boolean isLoggedIn = false;
 	public MainActivity() {
 		super();
 		business = MelanieBusinessFactory.makeMelanieBusiness();
@@ -40,6 +43,13 @@ public class MainActivity extends Activity {
 		business.initializeAlternate(this);
 
 		setContentView(R.layout.activity_main);
+		
+		setupMainListView();
+		if(!isLoggedIn)
+		   loginUser();
+	}
+	
+	private void setupMainListView(){
 		ListView mainListView = (ListView) findViewById(R.id.mainpagelistview);
 		mainListView.setAdapter(new NavigationListViewAdapter(this,
 				NavigationHelper.getMainPageIcons(), NavigationHelper
@@ -61,7 +71,19 @@ public class MainActivity extends Activity {
 	
 	private void loginUser(){
 		UserController userController = MelanieBusinessFactory.makeUserController();
-		userController.login(name, password, operationCallBack)
+		try {
+			userController.login(new MelanieOperationCallBack<User>(){
+
+				@Override
+				public void onOperationSuccessful(User result) {
+					isLoggedIn = true;
+					// TODO //proceed to let user user the systems
+					super.onOperationSuccessful(result);
+				}
+			});
+		} catch (MelanieBusinessException e) {
+			e.printStackTrace(); //TODO log it
+		}
 	}
 
 	@Override
