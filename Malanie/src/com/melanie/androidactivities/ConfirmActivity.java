@@ -9,8 +9,11 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.melanie.androidactivities.support.Utils;
+import com.melanie.business.MelanieBusiness;
 import com.melanie.business.UserController;
+import com.melanie.business.concrete.MelanieBusinessImpl;
 import com.melanie.support.MelanieBusinessFactory;
+import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieBusinessException;
 
 public class ConfirmActivity extends ActionBarActivity {
@@ -42,26 +45,37 @@ public class ConfirmActivity extends ActionBarActivity {
 
 			@Override
 			public void onClick(View v) {
-				updateUser();
+				if(updateUser().equals(OperationResult.SUCCESSFUL)){
+					launchMainActivity();
+				}
 			}
 		});
 	}
 
-	private void updateUser() {
+	private OperationResult updateUser() {
+		OperationResult result = OperationResult.FAILED;
         String enteredConfirmCode = ((EditText)findViewById(R.id.confirmTextField)).getText().toString();
         if(enteredConfirmCode.equals(confirmCode)){
         	try {
 				userController.updateUser(phoneNumber, true);
+				result = OperationResult.SUCCESSFUL;
 			} catch (MelanieBusinessException e) {
 				// TODO log it
 				e.printStackTrace();
 			}
         }
+        return result;
+	}
+	
+	private void launchMainActivity(){
+		Intent intent = new Intent(this, MainActivity.class);
+		startActivity(intent);
+		finish();
 	}
 	
 	@Override
-	protected void onPause() {
-		super.onPause();
-		MelanieBusinessFactory.makeMelanieBusiness().clearResources();
+	protected void onDestroy() {
+		super.onDestroy();
+		MelanieBusinessImpl.clearResources();
 	}
 }

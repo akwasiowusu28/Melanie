@@ -4,11 +4,14 @@ import java.util.Calendar;
 import java.util.Date;
 
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.telecom.TelecomManager;
 import android.telephony.SmsManager;
+import android.telephony.TelephonyManager;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -91,7 +94,7 @@ public class SignupActivity extends ActionBarActivity {
 
 	private void createUser(String name, String phone, String password) {
 		try {
-			userController.createUser(name, phone, password,
+			userController.createUser(name, phone, password, getDeviceId(),
 					new MelanieOperationCallBack<User>() {
 
 						@Override
@@ -115,6 +118,13 @@ public class SignupActivity extends ActionBarActivity {
 		sendConfirmSMS();
 	}
 
+	private String getDeviceId(){
+		TelephonyManager telephonyManager = (TelephonyManager)getBaseContext()
+				                        .getSystemService(Context.TELEPHONY_SERVICE);
+		String deviceId = telephonyManager.getDeviceId();
+		return deviceId;
+	}
+	
 	private boolean passwordsMatch(String password, String confirmPassword) {
 		return password.equals(confirmPassword);
 	}

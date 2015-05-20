@@ -22,17 +22,23 @@ public class User extends BackendlessUser {
 	@DatabaseField
 	private String name;
 	
+	@DatabaseField
+	private String deviceId;
+	
 	public User() {
 		super();
 	}
 
-	public User(String name, String password, String phone, boolean isConfirmed) {
+	public User(String name, String password, String phone, String deviceId, boolean isConfirmed) {
 		super();
 		this.password = password;
 		this.name = name;
-		setPassword(password);
+		this.deviceId = deviceId;
+		
 		setProperty("name", name);
+		setProperty("password", password);
 		setProperty("phone", phone);
+		setProperty("deviceid", deviceId);
 		setProperty("isconfirmed", isConfirmed);
 	}
 
@@ -76,4 +82,13 @@ public class User extends BackendlessUser {
 	public void setName(String name) {
 		this.name = name;
 	}
+
+	public String getDeviceId() {
+		return deviceId;
+	}
+
+	public void setDeviceId(String deviceId) {
+		this.deviceId = deviceId;
+	}
+	
 }

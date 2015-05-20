@@ -10,10 +10,10 @@ import com.backendless.BackendlessUser;
 import com.backendless.async.callback.AsyncCallback;
 import com.backendless.exceptions.BackendlessFault;
 import com.backendless.persistence.BackendlessDataQuery;
-import com.melanie.dataaccesslayer.DataUtil.DataCallBack;
 import com.melanie.dataaccesslayer.datasource.DataSourceManager;
 import com.melanie.entities.User;
 import com.melanie.support.MelanieOperationCallBack;
+import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieDataLayerException;
 
 @SuppressWarnings("unchecked")
@@ -199,26 +199,18 @@ public class MelanieCloudAccess {
 		Backendless.UserService.update(user, new BackendAsynCallBack<BackendlessUser>(null));
 	}
 	
-	public void login(final User user, final MelanieOperationCallBack<User> operationCallBack){
-		BackendAsynCallBack<BackendlessUser> wrapperCallback = new BackendAsynCallBack<BackendlessUser>(null){
-
-			@Override
-			public void handleFault(BackendlessFault fault) {
-				operationCallBack.onOperationFailed(new MelanieDataLayerException(fault.getMessage()));
-			}
-
-			@Override
-			public void handleResponse(BackendlessUser responseObject) {
-				operationCallBack.onOperationSuccessful(user);
-			}
-			
-		};
-		Backendless.UserService.login(user.getName(), user.getPassword(), wrapperCallback);
+	public OperationResult login(final User user){
+		OperationResult result = OperationResult.FAILED;
+		BackendlessUser loggedInUser = Backendless.UserService.login(user.getDeviceId(), user.getPassword());
+		if(loggedInUser != null)
+			result = OperationResult.SUCCESSFUL;
+		
+		return result;
 	}
 	
 	private class BackendAsynCallBack<T> implements AsyncCallback<T> {
 
-		private MelanieOperationCallBack<T> operationCallBack;
+		private final MelanieOperationCallBack<T> operationCallBack;
 
 		public BackendAsynCallBack(MelanieOperationCallBack<T> operationCallBack) {
 			this.operationCallBack = operationCallBack;

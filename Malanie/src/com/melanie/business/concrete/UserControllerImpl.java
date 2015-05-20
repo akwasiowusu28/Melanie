@@ -1,6 +1,5 @@
 package com.melanie.business.concrete;
 
-import com.backendless.BackendlessUser;
 import com.melanie.business.UserController;
 import com.melanie.dataaccesslayer.MelanieCloudAccess;
 import com.melanie.dataaccesslayer.MelanieDataAccessLayer;
@@ -13,8 +12,8 @@ import com.melanie.support.exceptions.MelanieDataLayerException;
 
 public class UserControllerImpl implements UserController {
 
-	private MelanieDataAccessLayer dataAccess;
-	private MelanieCloudAccess cloudAccess;
+	private final MelanieDataAccessLayer dataAccess;
+	private final MelanieCloudAccess cloudAccess;
 	
 	public UserControllerImpl() {
 		dataAccess = MelanieDataFactory.makeDataAccess();
@@ -22,9 +21,9 @@ public class UserControllerImpl implements UserController {
 	}
 	
 	@Override
-	public void createUser(String name, String phone, String password,
+	public void createUser(String name, String phone, String password,String deviceId,
 			final MelanieOperationCallBack<User> operationCallBack) throws MelanieBusinessException {
-		User user = new User(name, password, phone, false);
+		User user = new User(name, password, phone, deviceId, false);
 		if(dataAccess !=null){
 			try {
 				dataAccess.addDataItem(user, User.class, operationCallBack);
@@ -36,14 +35,14 @@ public class UserControllerImpl implements UserController {
 	}
 
 	@Override
-	public OperationResult login(MelanieOperationCallBack<User> operationCallBack) throws MelanieBusinessException {
+	public OperationResult login() throws MelanieBusinessException {
 		OperationResult result = OperationResult.FAILED;
 		//Since there's should be only one user on this device, find the user with id 1 from cache
 		if(dataAccess !=null){
 			try {
 				User user = dataAccess.findItemById(1, User.class, null);
 				if(user !=null && cloudAccess != null){
-					cloudAccess.login(user, operationCallBack);
+					cloudAccess.login(user);
 				   result = OperationResult.SUCCESSFUL;
 				}
 			} catch (MelanieDataLayerException e) {

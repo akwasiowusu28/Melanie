@@ -6,5 +6,4 @@ public interface MelanieBusiness {
 
 	 <T> void initializeAlternate(T dataContext);
 	
-	 void clearResources();
 }

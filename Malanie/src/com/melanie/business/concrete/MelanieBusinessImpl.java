@@ -7,21 +7,23 @@ import com.melanie.support.MelanieDataFactory;
 
 public class MelanieBusinessImpl implements MelanieBusiness {
 
-	private MelanieDataAccessLayer dataAccess = MelanieDataFactory.makeDataAccess();
+	private static MelanieDataAccessLayer dataAccess = MelanieDataFactory.makeDataAccess();
+	private static boolean isInitialized = false;
+	
 	@Override
 	public <T> void initialize(T dataContext) {
 		if (dataAccess != null)
 			dataAccess.initialize(dataContext);
+		isInitialized = true;
 	}
 
 	@Override
 	public <T> void initializeAlternate(T dataContext) {
 		MelanieCloudAccess.initialize(dataContext);
 	}
-
-	@Override
-	public void clearResources() {
-		if (dataAccess != null) {
+	
+	public static void clearResources() {
+		if (isInitialized && dataAccess != null) {
 			dataAccess.clearResources();
 		}
 	}

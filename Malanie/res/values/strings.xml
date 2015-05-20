@@ -114,4 +114,5 @@
     <string name="enterConfirmDigits">Enter the digits received via sms</string>
     <string name="confirm">Confirm</string>
     <string name="phoneNumberHint">Please begin with +country code</string>
+    <string name="mustbeLoggedIn">You are not logged in. Trying to log you in now. Make sure you have internet connection.</string>
 </resources>

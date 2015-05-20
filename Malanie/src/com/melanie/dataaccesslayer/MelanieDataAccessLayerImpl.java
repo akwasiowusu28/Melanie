@@ -4,7 +4,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.backendless.Backendless;
 import com.backendless.BackendlessUser;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
@@ -29,7 +28,7 @@ import com.melanie.support.exceptions.MelanieDataLayerException;
 @SuppressWarnings("unchecked")
 public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 
-	private MelanieCloudAccess cloudAccess;
+	private final MelanieCloudAccess cloudAccess;
 
 	public MelanieDataAccessLayerImpl() {
 		super();
@@ -184,7 +183,8 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 					.getCachedDaoFor(itemClass);
 			if (dao != null && dao.idExists(itemId)) {
 				item = itemClass.cast(dao.queryForId(itemId));
-				DataUtil.updateDataCache(item);
+				if(itemClass != User.class)
+				   DataUtil.updateDataCache(item);
 			} else if (operationCallBack != null && cloudAccess != null)
 				cloudAccess.findItemById(itemId, itemClass,
 						new DataUtil.DataCallBack<T>(operationCallBack));
@@ -388,25 +388,31 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 		return result;
 	}
 
-	private <T> void addUser(T user, MelanieOperationCallBack<T> operationCallBack) 
+	private <T> void addUser(T user, final MelanieOperationCallBack<T> operationCallBack) 
 			throws MelanieDataLayerException{
 		try {
 			Dao<Object,Integer> dao = DataSourceManager.getCachedDaoFor(User.class);
 			DataUtil.addOrUpdateItem(dao, user);
-			addUserToCloud(user,dao, operationCallBack);
+			addUserToCloud((User)user,dao, new MelanieOperationCallBack<User>(){
+
+				@Override
+				public void onOperationSuccessful(User result) {
+					operationCallBack.onOperationSuccessful((T)result);
+				}
+			});
 		} catch (MelanieDataLayerException | SQLException e) {
 			throw new MelanieDataLayerException(e.getMessage(),e);
 		}
 	}
 	
-	private <T> void addUserToCloud(T user, final Dao<Object, Integer> dao, final MelanieOperationCallBack<T> operationCallBack){
-		final User userInstance = (User)user;
+	private void addUserToCloud(User user, final Dao<Object, Integer> dao, final MelanieOperationCallBack<User> operationCallBack){
+		final User userInstance = user;
 		cloudAccess.addUser(userInstance, new MelanieOperationCallBack<BackendlessUser>(){
 			@Override
 			public void onOperationSuccessful(BackendlessUser result) {
-				operationCallBack.onOperationSuccessful((T) result);
 				try {
 					 userInstance.setObjectId(result.getProperty("objectId").toString());
+					 operationCallBack.onOperationSuccessful(userInstance);
 					DataUtil.addOrUpdateItem(dao, userInstance);
 				} catch (SQLException e) {
 					operationCallBack.onOperationFailed(e);

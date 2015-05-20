@@ -40,6 +40,7 @@ public final class Utils {
 		public static final String CONFIRM_SMS_MESSAGE= "Your Melanie confirmation code is: ";
 		public static final String PHONE_NUMBER ="phoneNumber";
 		public static final String CONFIRM_CODE ="confirmCode";
+		public static final String PREF_FILE = "melaniepref";
 	}
 
 	/**

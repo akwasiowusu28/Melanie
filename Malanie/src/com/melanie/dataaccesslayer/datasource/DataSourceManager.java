@@ -82,6 +82,7 @@ public class DataSourceManager {
 	 */
 	public static void initialize(DataSource dataSourceParam) {
 		dataSource = dataSourceParam;
+		//dataSource.
 	}
 
 	/**
