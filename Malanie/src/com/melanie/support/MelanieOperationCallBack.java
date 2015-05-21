@@ -12,6 +12,6 @@ public class MelanieOperationCallBack<T> {
 
 	public void onOperationFailed(Throwable e) {
 
-		e.printStackTrace(); // log it
+		e.printStackTrace(); //TODO log it
 	}
 }

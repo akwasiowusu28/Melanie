@@ -16,7 +16,7 @@
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature
@@ -150,11 +150,17 @@
         </activity>
         <activity
             android:name=".SignupActivity"
-            android:label="@string/title_activity_signup" >
+            android:label="@string/signup"
+            android:noHistory="true" >
         </activity>
         <activity
             android:name=".ConfirmActivity"
-            android:label="@string/title_activity_confirm" >
+            android:label="@string/title_activity_confirm"
+            android:noHistory="true" >
+        </activity>
+        <activity
+            android:name=".LoginActivity"
+            android:label="@string/title_activity_login" >
         </activity>
     </application>
 

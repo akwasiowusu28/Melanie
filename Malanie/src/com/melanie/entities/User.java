@@ -6,7 +6,14 @@ import com.j256.ormlite.field.DatabaseField;
 public class User extends BackendlessUser {
 
 	private static final long serialVersionUID = 1L;
-
+	
+    private static final String NAME = "name";
+    private static final String PASSWORD = "password";
+    private static final String DEVICEID = "deviceid";
+    private static final String ISCONFIRMED = "isconfirmed";
+    private static final String PHONE = "phone";
+    
+    
 	@DatabaseField(generatedId = true, allowGeneratedIdInsert = true)
 	private int id;
 
@@ -35,11 +42,11 @@ public class User extends BackendlessUser {
 		this.name = name;
 		this.deviceId = deviceId;
 		
-		setProperty("name", name);
-		setProperty("password", password);
-		setProperty("phone", phone);
-		setProperty("deviceid", deviceId);
-		setProperty("isconfirmed", isConfirmed);
+		setProperty(NAME, name);
+		setProperty(PASSWORD, password);
+		setProperty(PHONE, phone);
+		setProperty(DEVICEID, deviceId);
+		setProperty(ISCONFIRMED, isConfirmed);
 	}
 
 	@Override
@@ -67,10 +74,12 @@ public class User extends BackendlessUser {
 		this.isConfirmed = isConfirmed;
 	}
 
+	@Override
 	public String getPassword() {
 		return password;
 	}
 
+	@Override
 	public void setPassword(String password) {
 		this.password = password;
 	}

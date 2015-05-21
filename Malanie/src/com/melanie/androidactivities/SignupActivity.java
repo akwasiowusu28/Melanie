@@ -1,7 +1,6 @@
 package com.melanie.androidactivities;
 
 import java.util.Calendar;
-import java.util.Date;
 
 import android.app.PendingIntent;
 import android.content.Context;
@@ -9,7 +8,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.telecom.TelecomManager;
 import android.telephony.SmsManager;
 import android.telephony.TelephonyManager;
 import android.view.View;
@@ -19,7 +17,7 @@ import android.widget.EditText;
 
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.melanie.androidactivities.support.Utils;
-import com.melanie.business.MelanieBusiness;
+import com.melanie.business.MelanieSession;
 import com.melanie.business.UserController;
 import com.melanie.dataaccesslayer.datasource.DataSource;
 import com.melanie.entities.User;
@@ -37,7 +35,7 @@ public class SignupActivity extends ActionBarActivity {
     private String phoneNumber;
     private String confirmCode;
     
-    private MelanieBusiness business;
+    private MelanieSession business;
     
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +43,7 @@ public class SignupActivity extends ActionBarActivity {
 		setContentView(R.layout.activity_signup);
 		initializeFields();
 		setupCreateAccountButton();
-		business = MelanieBusinessFactory.makeMelanieBusiness();
+		business = MelanieBusinessFactory.getSession();
 		
 		DataSource dataSource = OpenHelperManager.getHelper(getBaseContext(), DataSource.class);
 		
@@ -53,7 +51,7 @@ public class SignupActivity extends ActionBarActivity {
 		business.initialize(dataSource);
 		
 		// Backendless
-		business.initializeAlternate(this);
+		business.initializeCloud(this);
 	}
 
 	private void initializeFields() {
@@ -100,8 +98,6 @@ public class SignupActivity extends ActionBarActivity {
 						@Override
 						public void onOperationSuccessful(User result) {
 							switchPasswordFieldsBackColor(true);
-							Utils.makeToast(SignupActivity.this,
-									R.string.createAccountSuccess);
 							clearFields();
 						}
 
@@ -138,8 +134,8 @@ public class SignupActivity extends ActionBarActivity {
 
 	private void switchPasswordFieldsBackColor(boolean isValid) {
 		if (isValid) {
-			passwordField.setBackgroundColor(Color.WHITE);
-			confirmPasswordField.setBackgroundColor(Color.WHITE);
+			passwordField.setBackgroundResource(android.R.drawable.edit_text);
+			confirmPasswordField.setBackgroundResource(android.R.drawable.edit_text);
 		} else {
 			passwordField.setBackgroundColor(Color.rgb(250, 213, 182));
 			confirmPasswordField.setBackgroundColor(Color.rgb(250, 213, 182));
@@ -150,7 +146,6 @@ public class SignupActivity extends ActionBarActivity {
 		generateConfirmCode();
 		
 		Intent intent = new Intent(this,ConfirmActivity.class);
-		intent.putExtra(Utils.Constants.PHONE_NUMBER, phoneNumber);
 		intent.putExtra(Utils.Constants.CONFIRM_CODE, confirmCode);
 		
 		PendingIntent pendingIntent = PendingIntent.getActivity(this, 28, 

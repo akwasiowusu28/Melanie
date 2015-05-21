@@ -102,7 +102,7 @@
     <string name="month">Month</string>
     <string name="totalSold">Total sold</string>
     <string name="Date">Date</string>
-    <string name="title_activity_signup">Sign up</string>
+    <string name="signup">Sign up</string>
     <string name="password">Password:</string>
     <string name="confirmPassword">Confirm password:</string>
     <string name="phone">Phone:</string>
@@ -115,4 +115,8 @@
     <string name="confirm">Confirm</string>
     <string name="phoneNumberHint">Please begin with +country code</string>
     <string name="mustbeLoggedIn">You are not logged in. Trying to log you in now. Make sure you have internet connection.</string>
+    <string name="enterPhone">Type in your phone number below</string>
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="accountExists">Already have an account?</string>
+    <string name="login">login</string>
 </resources>

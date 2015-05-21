@@ -13,7 +13,6 @@ import com.backendless.persistence.BackendlessDataQuery;
 import com.melanie.dataaccesslayer.datasource.DataSourceManager;
 import com.melanie.entities.User;
 import com.melanie.support.MelanieOperationCallBack;
-import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieDataLayerException;
 
 @SuppressWarnings("unchecked")
@@ -25,10 +24,10 @@ public class MelanieCloudAccess {
 	private static final String AND = "' and ";
 	private static final String IS_LESS_OR_EQUAL_TO = "<='";
 	private static final String SINGLE_QUOTE = "'";
-	private boolean isCollectionSearch;
+	private boolean isCollectionOperation;
 
 	public MelanieCloudAccess() {
-		isCollectionSearch = false;
+		isCollectionOperation = false;
 	}
 
 	public static <T> void initialize(T dataContext) {
@@ -66,15 +65,8 @@ public class MelanieCloudAccess {
 			throws MelanieDataLayerException {
 		try {
 			Backendless.Persistence.of(itemClass).remove(dataItem,
-					AsyncCallback.class.cast(operationCallBack)); // currently
-																	// passing
-																	// in null
-																	// from
-																	// DataAccessLayerImpl.
-																	// Not sure
-																	// of the
-																	// behavior
-																	// yet
+					AsyncCallback.class.cast(operationCallBack)); // currently passing in null fromDataAccessLayerImpl.
+																 // Not sure of the behavior yet
 		} catch (Exception e) {
 			throw new MelanieDataLayerException(e.getMessage(), e);
 		}
@@ -113,7 +105,7 @@ public class MelanieCloudAccess {
 			MelanieOperationCallBack<T> operationCallBack)
 			throws MelanieDataLayerException {
 		try {
-			isCollectionSearch = true;
+			isCollectionOperation = true;
 			Backendless.Persistence
 					.of(itemClass)
 					.find((AsyncCallback<BackendlessCollection<T>>) new BackendAsynCallBack<T>(
@@ -139,7 +131,7 @@ public class MelanieCloudAccess {
 			Class<T> itemClass, MelanieOperationCallBack<T> operationCallBack)
 			throws MelanieDataLayerException {
 		try {
-			isCollectionSearch = true;
+			isCollectionOperation = true;
 
 			String whereClause = fieldName + "='" + searchValue + "'";
 			BackendlessDataQuery query = new BackendlessDataQuery(whereClause);
@@ -158,7 +150,7 @@ public class MelanieCloudAccess {
 			MelanieOperationCallBack<T> operationCallBack)
 			throws MelanieDataLayerException {
 		try {
-			isCollectionSearch = true;
+			isCollectionOperation = true;
 
 			// Find a way to remove the date formatting thingy to a different
 			// method. I'm programming under the influence of a 9.5% Alc double
@@ -195,17 +187,15 @@ public class MelanieCloudAccess {
 				new BackendAsynCallBack<BackendlessUser>(operationCallBack));
 	}
 
-	public void updateUser(User user){
-		Backendless.UserService.update(user, new BackendAsynCallBack<BackendlessUser>(null));
+	public void updateUser(User user, MelanieOperationCallBack<BackendlessUser> operationCallBack){
+		Backendless.UserService.update(user, new BackendAsynCallBack<>(operationCallBack));
 	}
 	
-	public OperationResult login(final User user){
-		OperationResult result = OperationResult.FAILED;
-		BackendlessUser loggedInUser = Backendless.UserService.login(user.getDeviceId(), user.getPassword());
-		if(loggedInUser != null)
-			result = OperationResult.SUCCESSFUL;
+	public void login(final User user, MelanieOperationCallBack<BackendlessUser> operationCallBack){
 		
-		return result;
+		Backendless.UserService.login(user.getDeviceId(), user.getPassword(),
+				                     new BackendAsynCallBack<>(operationCallBack));
+		
 	}
 	
 	private class BackendAsynCallBack<T> implements AsyncCallback<T> {
@@ -218,7 +208,8 @@ public class MelanieCloudAccess {
 
 		@Override
 		public void handleFault(BackendlessFault fault) {
-			operationCallBack.onOperationFailed(new MelanieDataLayerException(
+			if(operationCallBack !=null)
+			   operationCallBack.onOperationFailed(new MelanieDataLayerException(
 					fault.getMessage()));
 		}
 
@@ -228,7 +219,7 @@ public class MelanieCloudAccess {
 				if (responseObject instanceof BackendlessCollection) {
 					List<T> responseData = ((BackendlessCollection<T>) responseObject)
 							.getData();
-					if (!isCollectionSearch) {
+					if (!isCollectionOperation) {
 						T item = responseData.size() > 0 ? responseData.get(0)
 								: null;
 						operationCallBack.onOperationSuccessful(item);
@@ -237,7 +228,11 @@ public class MelanieCloudAccess {
 								.onCollectionOperationSuccessful(responseData);
 				} else
 					operationCallBack.onOperationSuccessful(responseObject);
-			isCollectionSearch = false;
+			isCollectionOperation = false;
 		}
+	}
+	
+	public void checkUserExistOnCloud(String deviceId, final MelanieOperationCallBack<BackendlessUser>operationCallBack){
+		 Backendless.UserService.findById(deviceId, new BackendAsynCallBack<BackendlessUser>(operationCallBack));
 	}
 }

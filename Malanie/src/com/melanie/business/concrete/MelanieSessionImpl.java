@@ -1,0 +1,90 @@
+package com.melanie.business.concrete;
+
+import com.melanie.business.MelanieSession;
+import com.melanie.dataaccesslayer.MelanieCloudAccess;
+import com.melanie.dataaccesslayer.MelanieDataAccessLayer;
+import com.melanie.entities.User;
+import com.melanie.support.MelanieBusinessFactory;
+import com.melanie.support.MelanieDataFactory;
+import com.melanie.support.exceptions.MelanieBusinessException;
+
+public class MelanieSessionImpl implements MelanieSession {
+
+	private static MelanieSession instance;
+	
+	private static MelanieDataAccessLayer dataAccess;
+	private static boolean isCacheInitialized;
+	private User user;
+
+	private MelanieSessionImpl(){
+		initializeMelanieSession();
+	}
+	
+	private void initializeMelanieSession(){
+	    dataAccess =	MelanieDataFactory.makeDataAccess();
+	    isCacheInitialized = false;
+	    user = null;
+	}
+	
+	public static MelanieSession getInstance(){
+		 
+			if (instance == null)
+				synchronized (MelanieSessionImpl.class) {
+					if (instance == null)
+						instance = new MelanieSessionImpl();
+				}
+			return instance;
+	}
+	
+	@Override
+	public <T> void initialize(T dataContext) {
+		if (dataAccess != null)
+			dataAccess.initialize(dataContext);
+		isCacheInitialized = true;
+	}
+
+	@Override
+	public <T> void initializeCloud(T dataContext) {
+		MelanieCloudAccess.initialize(dataContext);
+	}
+	
+	@Override
+	public boolean isInitialized() {
+		return isCacheInitialized;
+	}
+
+	@Override
+	public boolean isUserLoggedIn() {
+		return user != null;
+	}
+	
+	@Override
+	public User getUser() {
+		return user;
+	}
+
+	@Override
+	public void setUser(User user) {
+		this.user = user;
+	}
+
+	@Override
+	public boolean isUserRegisteredOnDevice() {
+		boolean localUserExists = false;
+		
+		try {
+			localUserExists = MelanieBusinessFactory.makeUserController().localUserExists();
+		} catch (MelanieBusinessException e) {
+			e.printStackTrace(); //TODO log it
+		}
+		
+		return localUserExists;
+	}
+	
+	@Override
+	public void clearResources() {
+		if (isCacheInitialized && dataAccess != null) {
+			dataAccess.clearResources();
+		}
+	}
+}

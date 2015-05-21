@@ -14,9 +14,8 @@ import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.melanie.androidactivities.support.NavigationHelper;
 import com.melanie.androidactivities.support.NavigationListViewAdapter;
 import com.melanie.androidactivities.support.Utils;
-import com.melanie.business.MelanieBusiness;
+import com.melanie.business.MelanieSession;
 import com.melanie.business.UserController;
-import com.melanie.business.concrete.MelanieBusinessImpl;
 import com.melanie.dataaccesslayer.datasource.DataSource;
 import com.melanie.support.MelanieBusinessFactory;
 import com.melanie.support.exceptions.MelanieBusinessException;
@@ -25,32 +24,32 @@ public class MainActivity extends Activity {
 
 	private static final String IS_FIRST_LAUNCH = "isFirstLaunch";
 	
-	private MelanieBusiness business;
-    private final boolean isLoggedIn = false;
-    private boolean isDataSourceInitializedFromHere = false;
+	private MelanieSession session;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
 		if(!isFirstLaunchAndRedirectedToSignup()){
-			business = MelanieBusinessFactory.makeMelanieBusiness();
+			session = MelanieBusinessFactory.getSession();
 			
-			//would be nice to push the initialization down to lower layers
-			DataSource dataSource = OpenHelperManager.getHelper(getBaseContext(), DataSource.class);
-			
-			// ORMLite
-			business.initialize(dataSource);
+			if(!session.isInitialized()){
+				//would be nice to push this data initialization down to lower layers
+				//Not doing that right now 'cause I hate to import android context in my 
+				//business or data logic
+				DataSource dataSource = OpenHelperManager.getHelper(getBaseContext(), DataSource.class);
+				
+				// ORMLite
+				session.initialize(dataSource);
 
-			// Backendless
-			business.initializeAlternate(this);
-
-			isDataSourceInitializedFromHere = true;
+				// Backendless
+				session.initializeCloud(this);
+			}
 			
 			setContentView(R.layout.activity_main);
 			
 			setupMainListView();
-			if(!isLoggedIn)
+			if(!session.isUserLoggedIn())
 			   loginUser();
 		}
 	}
@@ -66,7 +65,7 @@ public class MainActivity extends Activity {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-				if(isLoggedIn){
+				if(session.isUserLoggedIn()){
 				Intent intent = new Intent(MainActivity.this, NavigationHelper
 						.getMelanieMainActivities().get(position));
 				startActivity(intent);
@@ -75,16 +74,14 @@ public class MainActivity extends Activity {
 					Utils.makeToast(MainActivity.this, R.string.mustbeLoggedIn);
 					loginUser();
 				}
-
 			}
-
 		});
 	}
 	
 	private void loginUser(){
 		UserController userController = MelanieBusinessFactory.makeUserController();
 		try {
-			userController.login();
+			userController.loginSavedUser();
 		} catch (MelanieBusinessException e) {
 			e.printStackTrace(); //TODO log it
 		}
@@ -108,7 +105,10 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		if(isDataSourceInitializedFromHere)
-		  MelanieBusinessImpl.clearResources();
+		if(session != null){
+			session.clearResources();
+			session = null;	
+		}
+		 
 	}
 }

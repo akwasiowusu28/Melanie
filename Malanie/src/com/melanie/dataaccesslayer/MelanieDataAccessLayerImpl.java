@@ -127,9 +127,6 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 	public <T> OperationResult updateDataItem(T dataItem, Class<T> itemClass)
 			throws MelanieDataLayerException {
 		if (cloudAccess != null){
-			if(dataItem instanceof User)
-				cloudAccess.updateUser((User)dataItem);
-			else
 			cloudAccess.updateDataItem(dataItem, itemClass,
 					new DataUtil.DataCallBack<T>(null));
 		}
