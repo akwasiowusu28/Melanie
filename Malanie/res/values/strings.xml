@@ -124,4 +124,7 @@
     <string name="differentDevices">Different Devices</string>
     <string name="loginFailed">Login failed</string>
     <string name="pleaseWait">Please wait&#8230;</string>
+    <string name ="confirmNumber">Confirm phone number</string>
+    <string name="confirmNumberQuestion">An sms with your confirmation code will be sent to the phone number provided. Do you want to continue?</string>
+    <string name="sendConfirmCode">Send confirmation code</string>
 </resources>

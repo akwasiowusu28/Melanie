@@ -6,41 +6,67 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.telephony.TelephonyManager;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.melanie.androidactivities.support.MelanieAlertDialog;
 import com.melanie.androidactivities.support.MelanieAlertDialog.MelanieAlertDialogButtonModes;
 import com.melanie.androidactivities.support.Utils;
+import com.melanie.business.MelanieSession;
 import com.melanie.business.UserController;
+import com.melanie.dataaccesslayer.datasource.DataSource;
 import com.melanie.entities.User;
+import com.melanie.support.CodeStrings;
 import com.melanie.support.MelanieBusinessFactory;
 import com.melanie.support.MelanieOperationCallBack;
 import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieBusinessException;
 
-public class LoginActivity extends  Activity {
+public class LoginActivity extends Activity {
 
 	private UserController userController;
 	private MelanieAlertDialog differntDeviceAlertDialog;
 	private ProgressDialog progressDialog;
+	private Handler handler;
+	private MelanieSession session;
+	private String currentDeviceId;
+	private User user;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
 		initializeFields();
+		initializeSession();
 		setupSignupButton();
 		setupLoginButton();
 		setupDifferntDeviceAlertDialog();
-		
+
 	}
-	
+
+	private void initializeSession() {
+		session = MelanieBusinessFactory.getSession();
+
+		DataSource dataSource = OpenHelperManager.getHelper(getBaseContext(),
+				DataSource.class);
+
+		// ORMLite
+		session.initializeLocal(dataSource);
+
+		// Backendless
+		session.initializeCloud(this);
+	}
+
 	private void initializeFields() {
 		userController = MelanieBusinessFactory.makeUserController();
+		handler = new Handler(getMainLooper());
+		session = MelanieBusinessFactory.getSession();
+		currentDeviceId = getCurrentDeviceId();
 	}
 
 	private void setupSignupButton() {
@@ -62,8 +88,8 @@ public class LoginActivity extends  Activity {
 
 			@Override
 			public void onClick(View v) {
-				loginAsync.execute(null,null,null);
- 			}
+				loginAsync().execute(null, null, null);
+			}
 		});
 	}
 
@@ -80,7 +106,7 @@ public class LoginActivity extends  Activity {
 		EditText phoneTextField = (EditText) findViewById(R.id.loginPhoneNumber);
 		EditText passwordTextField = (EditText) findViewById(R.id.loginPassword);
 		String phoneNumber = phoneTextField.getText().toString();
-        final String password = passwordTextField.getText().toString();
+		final String password = passwordTextField.getText().toString();
 		if (userController != null) {
 			try {
 				userController.checkUserExistOnCloud(phoneNumber,
@@ -88,15 +114,17 @@ public class LoginActivity extends  Activity {
 
 							@Override
 							public void onOperationSuccessful(User user) {
-								if (progressDialog != null && progressDialog.isShowing()) {
+								if (progressDialog != null
+										&& progressDialog.isShowing()) {
 									progressDialog.dismiss();
 								}
 								if (user != null) {
 									user.setPassword(password);
 									handleUserExists(user);
-								} else
-									Utils.makeToast(LoginActivity.this,
-											R.string.accountLookupFailed);
+								} else {
+									postToastToUIThread(R.string.accountLookupFailed);
+								}
+
 							}
 						});
 			} catch (MelanieBusinessException e) {
@@ -107,7 +135,8 @@ public class LoginActivity extends  Activity {
 	}
 
 	private void handleUserExists(User user) {
-		if (user.getDeviceId().equals(getCurrentDeviceId())) {
+		this.user = user;
+		if (user.getDeviceId().equals(currentDeviceId)) {
 			userController.login(user,
 					new MelanieOperationCallBack<OperationResult>() {
 
@@ -119,12 +148,23 @@ public class LoginActivity extends  Activity {
 								startActivity(intent);
 								finish();
 							} else
-								Utils.makeToast(LoginActivity.this,
-										R.string.loginFailed);
+								postToastToUIThread(R.string.loginFailed);
 						}
 					});
 		} else {
 			differntDeviceAlertDialog.show();
+		}
+	}
+
+	private void postToastToUIThread(final int toastStringId) {
+		if (handler != null) {
+			handler.post(new Runnable() {
+
+				@Override
+				public void run() {
+					Utils.makeToast(LoginActivity.this, toastStringId);
+				}
+			});
 		}
 	}
 
@@ -144,14 +184,25 @@ public class LoginActivity extends  Activity {
 
 					@Override
 					public void yesButtonOperation() {
-
+						updateUserDeviceId();
 					}
 
 					@Override
 					public void noButtonOperation() {
-
+						this.cancelButtonOperation();
 					}
 				});
+	}
+
+	private void updateUserDeviceId() {
+		if (userController != null)
+			try {
+				userController.updateUser(user, CodeStrings.DEVICEID,
+						currentDeviceId);
+			} catch (MelanieBusinessException e) {
+				// TODO log it
+				e.printStackTrace();
+			}
 	}
 
 	private String getCurrentDeviceId() {
@@ -161,19 +212,21 @@ public class LoginActivity extends  Activity {
 		return deviceId;
 	}
 
-	private final AsyncTask<Void, Void, Void> loginAsync = new AsyncTask<Void, Void, Void>() {
+	private final AsyncTask<Void, Void, Void> loginAsync() {
+		return new AsyncTask<Void, Void, Void>() {
 
-		@Override
-		protected void onPreExecute() {
-			setupProgressDialog();
-			if (progressDialog != null)
-				progressDialog.show();
-		}
+			@Override
+			protected void onPreExecute() {
+				setupProgressDialog();
+				if (progressDialog != null)
+					progressDialog.show();
+			}
 
-		@Override
-		protected Void doInBackground(Void... params) {
-			login();
-			return null;
-		}
-	};
+			@Override
+			protected Void doInBackground(Void... params) {
+				login();
+				return null;
+			}
+		};
+	}
 }

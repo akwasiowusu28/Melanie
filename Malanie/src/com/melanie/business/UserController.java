@@ -14,9 +14,9 @@ public interface UserController {
 	
     void login(User user,MelanieOperationCallBack<OperationResult> operationCallBack);
 	
-	void loginSavedUser()  throws MelanieBusinessException;
+	void loginSavedUser(MelanieOperationCallBack<User> operationCallBack)  throws MelanieBusinessException;
 
 	boolean localUserExists() throws MelanieBusinessException;
 	
-	void updateUser(boolean isConfirmed) throws MelanieBusinessException;
+	void updateUser(User user, String field, Object value) throws MelanieBusinessException;
 }

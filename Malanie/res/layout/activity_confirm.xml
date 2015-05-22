@@ -7,6 +7,7 @@
     tools:context="com.melanie.androidactivities.ConfirmActivity" >
 
     <TextView
+        android:id="@+id/confirmLabel"
         android:layout_gravity="center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -25,5 +26,13 @@
         android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:text="@string/confirm"/>
+    
+     <Button 
+        android:layout_gravity="center"
+        android:id="@+id/sendConfirmCode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/sendConfirmCode"
+        android:visibility="gone"/>
 
 </LinearLayout>

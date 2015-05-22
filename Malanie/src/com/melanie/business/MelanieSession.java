@@ -4,7 +4,7 @@ import com.melanie.entities.User;
 
 public interface MelanieSession {
 
-	 <T> void initialize(T dataContext);
+	 <T> void initializeLocal(T dataContext);
 
 	 <T> void initializeCloud(T dataContext);
 	

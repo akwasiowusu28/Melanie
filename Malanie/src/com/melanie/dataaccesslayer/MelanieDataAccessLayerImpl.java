@@ -29,7 +29,8 @@ import com.melanie.support.exceptions.MelanieDataLayerException;
 public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 
 	private final MelanieCloudAccess cloudAccess;
-
+    private static final String OBJECTID = "objectId";
+    
 	public MelanieDataAccessLayerImpl() {
 		super();
 		cloudAccess = new MelanieCloudAccess();
@@ -408,7 +409,7 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 			@Override
 			public void onOperationSuccessful(BackendlessUser result) {
 				try {
-					 userInstance.setObjectId(result.getProperty("objectId").toString());
+					 userInstance.setObjectId(result.getProperty(OBJECTID).toString());
 					 operationCallBack.onOperationSuccessful(userInstance);
 					DataUtil.addOrUpdateItem(dao, userInstance);
 				} catch (SQLException e) {

@@ -37,7 +37,7 @@ public class MelanieSessionImpl implements MelanieSession {
 	}
 	
 	@Override
-	public <T> void initialize(T dataContext) {
+	public <T> void initializeLocal(T dataContext) {
 		if (dataAccess != null)
 			dataAccess.initialize(dataContext);
 		isCacheInitialized = true;

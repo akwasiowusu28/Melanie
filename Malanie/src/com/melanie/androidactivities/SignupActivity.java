@@ -1,25 +1,18 @@
 package com.melanie.androidactivities;
 
-import java.util.Calendar;
-
 import android.app.Activity;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.telephony.SmsManager;
 import android.telephony.TelephonyManager;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.melanie.androidactivities.support.Utils;
-import com.melanie.business.MelanieSession;
 import com.melanie.business.UserController;
-import com.melanie.dataaccesslayer.datasource.DataSource;
 import com.melanie.entities.User;
 import com.melanie.support.MelanieBusinessFactory;
 import com.melanie.support.MelanieOperationCallBack;
@@ -33,9 +26,6 @@ public class SignupActivity extends Activity {
 	private EditText nameField;
 	private EditText phoneField;
     private String phoneNumber;
-    private String confirmCode;
-    
-    private MelanieSession business;
     
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -43,15 +33,6 @@ public class SignupActivity extends Activity {
 		setContentView(R.layout.activity_signup);
 		initializeFields();
 		setupCreateAccountButton();
-		business = MelanieBusinessFactory.getSession();
-		
-		DataSource dataSource = OpenHelperManager.getHelper(getBaseContext(), DataSource.class);
-		
-		// ORMLite
-		business.initialize(dataSource);
-		
-		// Backendless
-		business.initializeCloud(this);
 	}
 
 	private void initializeFields() {
@@ -99,6 +80,7 @@ public class SignupActivity extends Activity {
 						public void onOperationSuccessful(User result) {
 							switchPasswordFieldsBackColor(true);
 							clearFields();
+							launchMainActivity();
 						}
 
 						@Override
@@ -111,7 +93,6 @@ public class SignupActivity extends Activity {
 			// TODO log it
 			e.printStackTrace();
 		}
-		sendConfirmSMS();
 	}
 
 	private String getDeviceId(){
@@ -142,26 +123,13 @@ public class SignupActivity extends Activity {
 		}
 	}
 	
-	private void sendConfirmSMS(){
-		generateConfirmCode();
-		
-		Intent intent = new Intent(this,ConfirmActivity.class);
-		intent.putExtra(Utils.Constants.CONFIRM_CODE, confirmCode);
-		
-		PendingIntent pendingIntent = PendingIntent.getActivity(this, 28, 
-				      intent, 0);
-		SmsManager manager = SmsManager.getDefault();
-		manager.sendTextMessage(phoneNumber, null, getConfirmMessage(), pendingIntent, null);
+	
+	private void launchMainActivity() {
+		Intent intent = new Intent(this, MainActivity.class);
+		startActivity(intent);
+		finish();
 	}
 	
-	private String getConfirmMessage(){
-		return Utils.Constants.CONFIRM_SMS_MESSAGE + confirmCode;
-	}
-	
-	private void generateConfirmCode(){
-		String currentTimeString = String.valueOf(Calendar.getInstance().getTimeInMillis());
-		confirmCode = currentTimeString.substring(currentTimeString.length() - 4);
-	}
 
 	@Override
 	protected void onPause() {

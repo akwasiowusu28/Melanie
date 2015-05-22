@@ -6,14 +6,24 @@
     android:padding="10dp"
     tools:context="com.melanie.androidactivities.LoginActivity" >
 
+     <ImageView
+        android:id="@+id/melanielogo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/melanie" />
+    
+    
     <Button
         android:id="@+id/loginSignupButton"
         android:layout_width="150dp"
+        android:layout_gravity="right"
         android:layout_height="wrap_content"
         android:background="@drawable/backroundselector"
-        android:text="@string/signup"
+        android:text="@string/signupUnderlined"
         android:textColor="@android:color/darker_gray"
-        android:layout_marginBottom="10dp" />
+        android:layout_marginBottom="12dp" />
 
     <TextView
         android:layout_width="wrap_content"

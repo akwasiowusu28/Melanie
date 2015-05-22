@@ -187,7 +187,7 @@ public class MelanieCloudAccess {
 				new BackendAsynCallBack<BackendlessUser>(operationCallBack));
 	}
 
-	public void updateUser(User user, MelanieOperationCallBack<BackendlessUser> operationCallBack){
+	public void updateUser(BackendlessUser user, MelanieOperationCallBack<BackendlessUser> operationCallBack){
 		Backendless.UserService.update(user, new BackendAsynCallBack<>(operationCallBack));
 	}
 	

@@ -2,18 +2,12 @@ package com.melanie.entities;
 
 import com.backendless.BackendlessUser;
 import com.j256.ormlite.field.DatabaseField;
+import com.melanie.support.CodeStrings;
 
 public class User extends BackendlessUser {
 
 	private static final long serialVersionUID = 1L;
 	
-    private static final String NAME = "name";
-    private static final String PASSWORD = "password";
-    private static final String DEVICEID = "deviceid";
-    private static final String ISCONFIRMED = "isconfirmed";
-    private static final String PHONE = "phone";
-    
-    
 	@DatabaseField(generatedId = true, allowGeneratedIdInsert = true)
 	private int id;
 
@@ -42,11 +36,11 @@ public class User extends BackendlessUser {
 		this.name = name;
 		this.deviceId = deviceId;
 		
-		setProperty(NAME, name);
-		setProperty(PASSWORD, password);
-		setProperty(PHONE, phone);
-		setProperty(DEVICEID, deviceId);
-		setProperty(ISCONFIRMED, isConfirmed);
+		setProperty(CodeStrings.NAME, name);
+		setProperty(CodeStrings.PASSWORD, password);
+		setProperty(CodeStrings.PHONE, phone);
+		setProperty(CodeStrings.DEVICEID, deviceId);
+		setProperty(CodeStrings.ISCONFIRMED, isConfirmed);
 	}
 
 	@Override
@@ -82,7 +76,7 @@ public class User extends BackendlessUser {
 	@Override
 	public void setPassword(String password) {
 		this.password = password;
-		setProperty(PASSWORD, password);
+		setProperty(CodeStrings.PASSWORD, password);
 	}
 
 	public String getName() {
@@ -99,7 +93,7 @@ public class User extends BackendlessUser {
 
 	public void setDeviceId(String deviceId) {
 		this.deviceId = deviceId;
-		setProperty(DEVICEID, deviceId);
+		setProperty(CodeStrings.DEVICEID, deviceId);
 	}
 	
 }
