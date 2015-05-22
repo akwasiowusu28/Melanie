@@ -5,7 +5,7 @@ import java.util.List;
 
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
@@ -21,9 +21,9 @@ import com.melanie.support.MelanieBusinessFactory;
 import com.melanie.support.MelanieOperationCallBack;
 import com.melanie.support.exceptions.MelanieBusinessException;
 
-public class CategoriesActivity extends ActionBarActivity {
+public class CategoriesActivity extends AppCompatActivity {
 
-	private ProductEntryController productController;
+	private final ProductEntryController productController;
 	private List<Category> categories;
 	private ArrayAdapter<Category> listAdapter;
 	private Handler handler;

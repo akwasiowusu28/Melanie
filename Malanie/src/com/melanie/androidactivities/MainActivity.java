@@ -95,7 +95,7 @@ public class MainActivity extends Activity {
 	    	Editor preferencesEditor = preferences.edit();
 	    	preferencesEditor.putBoolean(IS_FIRST_LAUNCH, false);
 	    	preferencesEditor.apply();
-	    	Intent intent = new Intent(this, SignupActivity.class);
+	    	Intent intent = new Intent(this, LoginActivity.class);
 	    	startActivity(intent);
 	    	finish();
 	    }

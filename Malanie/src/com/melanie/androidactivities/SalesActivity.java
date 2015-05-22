@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -35,7 +35,7 @@ import com.melanie.support.MelanieOperationCallBack;
 import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieBusinessException;
 
-public class SalesActivity extends ActionBarActivity {
+public class SalesActivity extends AppCompatActivity {
 
 	private static final int SCAN_REQUEST_CODE = 28;
 	private static final int CUSTOMER_REQUEST_CODE = 288;
@@ -50,7 +50,7 @@ public class SalesActivity extends ActionBarActivity {
 	private TextListener discountListener, amountListener;
 	private MelanieAlertDialog alertDialog;
 	private double balance, amountReceived, discount, total;
-	private boolean isPrinterFound = false;
+	private final boolean isPrinterFound = false;
 	private ReceiptPrintingHelper receiptPrintingHelper;
 	private ListView listView;
 	private String printerInfo;
@@ -101,7 +101,7 @@ public class SalesActivity extends ActionBarActivity {
 		saveSaleButton.setOnClickListener(buttonsClickListener);
 	}
 
-	private OnClickListener buttonsClickListener = new OnClickListener() {
+	private final OnClickListener buttonsClickListener = new OnClickListener() {
 
 		@Override
 		public void onClick(View v) {
@@ -351,7 +351,7 @@ public class SalesActivity extends ActionBarActivity {
 
 	private class TextListener implements TextWatcher {
 
-		private int senderTextViewId;
+		private final int senderTextViewId;
 
 		public TextListener(int senderTextViewId) {
 			this.senderTextViewId = senderTextViewId;

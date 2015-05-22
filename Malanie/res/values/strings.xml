@@ -103,6 +103,7 @@
     <string name="totalSold">Total sold</string>
     <string name="Date">Date</string>
     <string name="signup">Sign up</string>
+    <string name="signupUnderlined"><u>Sign up</u></string>
     <string name="password">Password:</string>
     <string name="confirmPassword">Confirm password:</string>
     <string name="phone">Phone:</string>
@@ -117,6 +118,10 @@
     <string name="mustbeLoggedIn">You are not logged in. Trying to log you in now. Make sure you have internet connection.</string>
     <string name="enterPhone">Type in your phone number below</string>
     <string name="title_activity_login">LoginActivity</string>
-    <string name="accountExists">Already have an account?</string>
     <string name="login">login</string>
+    <string name="accountLookupFailed">No user exists with this number in the system</string>
+    <string name = "accountExistForOtherDevice">An account has already been set up on a different device. Would you like to set it up for this device instead?</string>
+    <string name="differentDevices">Different Devices</string>
+    <string name="loginFailed">Login failed</string>
+    <string name="pleaseWait">Please wait&#8230;</string>
 </resources>

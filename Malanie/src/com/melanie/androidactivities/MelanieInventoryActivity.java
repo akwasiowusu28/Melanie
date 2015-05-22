@@ -5,7 +5,7 @@ import java.util.List;
 
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -22,7 +22,7 @@ import com.melanie.support.MelanieBusinessFactory;
 import com.melanie.support.MelanieOperationCallBack;
 import com.melanie.support.exceptions.MelanieBusinessException;
 
-public class MelanieInventoryActivity extends ActionBarActivity {
+public class MelanieInventoryActivity extends AppCompatActivity {
 
 	private List<Product> allProducts;
 	private ProductsAndSalesListViewAdapter<Product> productsAdapter;

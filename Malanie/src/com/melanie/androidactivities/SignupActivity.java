@@ -2,12 +2,12 @@ package com.melanie.androidactivities;
 
 import java.util.Calendar;
 
+import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.telephony.SmsManager;
 import android.telephony.TelephonyManager;
 import android.view.View;
@@ -25,7 +25,7 @@ import com.melanie.support.MelanieBusinessFactory;
 import com.melanie.support.MelanieOperationCallBack;
 import com.melanie.support.exceptions.MelanieBusinessException;
 
-public class SignupActivity extends ActionBarActivity {
+public class SignupActivity extends Activity {
 
 	private UserController userController;
 	private EditText passwordField;
@@ -161,6 +161,12 @@ public class SignupActivity extends ActionBarActivity {
 	private void generateConfirmCode(){
 		String currentTimeString = String.valueOf(Calendar.getInstance().getTimeInMillis());
 		confirmCode = currentTimeString.substring(currentTimeString.length() - 4);
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		finish();
 	}
 	
 }

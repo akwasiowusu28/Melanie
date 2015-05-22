@@ -8,15 +8,18 @@ import com.melanie.entities.User;
 import com.melanie.support.MelanieBusinessFactory;
 import com.melanie.support.MelanieDataFactory;
 import com.melanie.support.MelanieOperationCallBack;
+import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieBusinessException;
 import com.melanie.support.exceptions.MelanieDataLayerException;
 
 public class UserControllerImpl implements UserController {
 
-	private static final String IS_CONFIRMED = "isconfirmed";
-	 private static final String PHONE = "phone";
-	 private static final String NONE ="none";
-	 
+	private static final String NAME = "name";
+	private static final String DEVICEID = "deviceid";
+	private static final String ISCONFIRMED = "isconfirmed";
+	private static final String PHONE = "phone";
+	private static final String OBJECTID = "objectid";
+
 	private final MelanieDataAccessLayer dataAccess;
 	private final MelanieCloudAccess cloudAccess;
 
@@ -81,8 +84,11 @@ public class UserControllerImpl implements UserController {
 								public void onOperationSuccessful(
 										BackendlessUser result) {
 									user.setProperties(result.getProperties());
-									user.setProperty(IS_CONFIRMED, true);
-									cloudAccess.updateUser(user, new MelanieOperationCallBack<BackendlessUser>());
+									user.setProperty(ISCONFIRMED, true);
+									cloudAccess
+											.updateUser(
+													user,
+													new MelanieOperationCallBack<BackendlessUser>());
 								}
 							});
 				}
@@ -116,28 +122,65 @@ public class UserControllerImpl implements UserController {
 	}
 
 	@Override
-	public void login(String phone, String deviceId, String password) {
-		
+	public void login(final User user, final MelanieOperationCallBack<OperationResult> operationCallBack) {
+       if(cloudAccess != null){
+    	   cloudAccess.login(user, new MelanieOperationCallBack<BackendlessUser>(){
+
+			@Override
+			public void onOperationSuccessful(BackendlessUser result) {
+				MelanieSessionImpl.getInstance().setUser(user);
+				operationCallBack.onOperationSuccessful(OperationResult.SUCCESSFUL);
+			   }
+
+			@Override
+			public void onOperationFailed(Throwable e) {
+				operationCallBack.onOperationFailed(e); // for logging purposes
+				operationCallBack.onOperationSuccessful(OperationResult.FAILED);
+			}
+    	   });
+       }
 	}
 
 	@Override
-	public void checkUserExistOnCloud(String deviceId,
-			final MelanieOperationCallBack<String> operationCallBack) {
-		if(cloudAccess != null){
-			cloudAccess.checkUserExistOnCloud(deviceId, new MelanieOperationCallBack<BackendlessUser>(){
+	public void checkUserExistOnCloud(String phone,
+			final MelanieOperationCallBack<User> operationCallBack)
+			throws MelanieBusinessException {
+		if (cloudAccess != null) {
+			try {
+				cloudAccess.findItemByFieldName(PHONE, phone,
+						BackendlessUser.class,
+						new MelanieOperationCallBack<BackendlessUser>() {
 
-				@Override
-				public void onOperationSuccessful(BackendlessUser result) {
-					operationCallBack.onOperationSuccessful(result.getProperty(PHONE).toString());
-				}
+							@Override
+							public void onOperationSuccessful(
+									BackendlessUser result) {
 
-				@Override
-				public void onOperationFailed(Throwable e) {
-					operationCallBack.onOperationSuccessful(NONE);
-				}
-			});
+								operationCallBack
+										.onOperationSuccessful(constructUserFromBackendless(result));
+							}
+
+							@Override
+							public void onOperationFailed(Throwable e) {
+								//TODO log it
+								operationCallBack.onOperationSuccessful(null); // return null to caller if user not found or any error occured
+							}
+						});
+			} catch (MelanieDataLayerException e) {
+				throw new MelanieBusinessException(e.getMessage(), e);
+			}
 		}
-		
+
 	}
-	
+
+	private User constructUserFromBackendless(BackendlessUser backendlessUser) {
+		String objectId = backendlessUser.getProperty(OBJECTID).toString();
+		String name = backendlessUser.getProperty(NAME).toString();
+		String phone = backendlessUser.getProperty(PHONE).toString();
+		String deviceId = backendlessUser.getProperty(DEVICEID).toString();
+		boolean isConfirmed = Boolean.getBoolean(backendlessUser.getProperty(
+				ISCONFIRMED).toString());
+		User user = new User(name, null, phone, deviceId, isConfirmed);
+		user.setObjectId(objectId);
+		return user;
+	}
 }

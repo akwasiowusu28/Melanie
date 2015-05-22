@@ -5,7 +5,7 @@ import java.util.List;
 
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -30,7 +30,7 @@ import com.melanie.support.MelanieOperationCallBack;
 import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieBusinessException;
 
-public class PaymentActivity extends ActionBarActivity {
+public class PaymentActivity extends AppCompatActivity {
 
 	private List<Sale> sales;
 	private SalesController salesController;
@@ -92,7 +92,7 @@ public class PaymentActivity extends ActionBarActivity {
 		cancelPaymentButton.setOnClickListener(buttonsClickListener);
 	}
 
-	private OnClickListener buttonsClickListener = new OnClickListener() {
+	private final OnClickListener buttonsClickListener = new OnClickListener() {
 
 		@Override
 		public void onClick(View v) {
@@ -109,7 +109,7 @@ public class PaymentActivity extends ActionBarActivity {
 		}
 	};
 
-	private OnItemClickListener autoCompleteListener = new OnItemClickListener() {
+	private final OnItemClickListener autoCompleteListener = new OnItemClickListener() {
 
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position,
@@ -218,7 +218,7 @@ public class PaymentActivity extends ActionBarActivity {
 				findViewById(R.id.paymentBalance));
 	}
 
-	private TextWatcher amountTextChangedListener = new TextWatcher() {
+	private final TextWatcher amountTextChangedListener = new TextWatcher() {
 
 		@Override
 		public void onTextChanged(CharSequence s, int start, int before,

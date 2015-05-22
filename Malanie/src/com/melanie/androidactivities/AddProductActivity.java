@@ -16,7 +16,7 @@ import android.content.res.AssetManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.SparseIntArray;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -42,7 +42,7 @@ import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieBusinessException;
 
 @SuppressWarnings("unchecked")
-public class AddProductActivity extends ActionBarActivity {
+public class AddProductActivity extends AppCompatActivity {
 
 	private ProductEntryController productController;
 
@@ -80,7 +80,7 @@ public class AddProductActivity extends ActionBarActivity {
 		setupAddProductListener();
 
 		Switch btn = (Switch) findViewById(R.id.toggleButton1);
-		btn.setThumbDrawable(getDrawable(R.drawable.datepickerbackroundselector));
+		btn.setThumbDrawable(getDrawable(R.drawable.backroundselector));
 		// btn.setBackground();
 	}
 
@@ -299,7 +299,7 @@ public class AddProductActivity extends ActionBarActivity {
 
 	private class PrintCallBack implements LWPrintCallback {
 
-		private SparseIntArray phaseMessage;
+		private final SparseIntArray phaseMessage;
 
 		public PrintCallBack() {
 			phaseMessage = new SparseIntArray(3) {

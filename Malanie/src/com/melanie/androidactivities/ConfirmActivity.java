@@ -2,7 +2,7 @@ package com.melanie.androidactivities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -14,7 +14,7 @@ import com.melanie.support.MelanieBusinessFactory;
 import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieBusinessException;
 
-public class ConfirmActivity extends ActionBarActivity {
+public class ConfirmActivity extends AppCompatActivity {
 
 	private Button confirmButton;
 	private String confirmCode;

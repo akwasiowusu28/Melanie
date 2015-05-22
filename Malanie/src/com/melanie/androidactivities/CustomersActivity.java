@@ -7,7 +7,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -25,7 +25,7 @@ import com.melanie.support.MelanieOperationCallBack;
 import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieBusinessException;
 
-public class CustomersActivity extends ActionBarActivity {
+public class CustomersActivity extends AppCompatActivity {
 
 	private CustomersController customersController;
 	private List<Customer> customers;
@@ -109,7 +109,7 @@ public class CustomersActivity extends ActionBarActivity {
 		customerNameTextView.setOnItemClickListener(autoCompleteListener);
 	}
 
-	private OnItemClickListener autoCompleteListener = new OnItemClickListener() {
+	private final OnItemClickListener autoCompleteListener = new OnItemClickListener() {
 
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position,

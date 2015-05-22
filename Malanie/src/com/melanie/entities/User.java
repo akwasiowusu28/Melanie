@@ -82,6 +82,7 @@ public class User extends BackendlessUser {
 	@Override
 	public void setPassword(String password) {
 		this.password = password;
+		setProperty(PASSWORD, password);
 	}
 
 	public String getName() {
@@ -98,6 +99,7 @@ public class User extends BackendlessUser {
 
 	public void setDeviceId(String deviceId) {
 		this.deviceId = deviceId;
+		setProperty(DEVICEID, deviceId);
 	}
 	
 }

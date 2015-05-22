@@ -231,8 +231,4 @@ public class MelanieCloudAccess {
 			isCollectionOperation = false;
 		}
 	}
-	
-	public void checkUserExistOnCloud(String deviceId, final MelanieOperationCallBack<BackendlessUser>operationCallBack){
-		 Backendless.UserService.findById(deviceId, new BackendAsynCallBack<BackendlessUser>(operationCallBack));
-	}
 }

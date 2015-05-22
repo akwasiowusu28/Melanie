@@ -3,13 +3,13 @@ package com.melanie.androidactivities;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 
 import com.melanie.androidactivities.support.MelanieTabsAdapter;
 import com.melanie.androidactivities.support.NavigationHelper;
 import com.melanie.androidactivities.support.SlidingTabLayout;
 
-public class DailySalesReportActivity extends ActionBarActivity {
+public class DailySalesReportActivity extends AppCompatActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

@@ -5,7 +5,7 @@ import java.util.List;
 
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ListView;
 
@@ -17,7 +17,7 @@ import com.melanie.support.MelanieBusinessFactory;
 import com.melanie.support.MelanieOperationCallBack;
 import com.melanie.support.exceptions.MelanieBusinessException;
 
-public class CustomerListActivity extends ActionBarActivity {
+public class CustomerListActivity extends AppCompatActivity {
 
 	private List<Customer> customers;
 	private CustomersController customersController;

@@ -2,7 +2,7 @@ package com.melanie.androidactivities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -11,7 +11,7 @@ import android.widget.ListView;
 import com.melanie.androidactivities.support.NavigationHelper;
 import com.melanie.androidactivities.support.NavigationListViewAdapter;
 
-public class ProductsMainActivity extends ActionBarActivity {
+public class ProductsMainActivity extends AppCompatActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
