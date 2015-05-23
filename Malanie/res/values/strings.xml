@@ -127,4 +127,5 @@
     <string name ="confirmNumber">Confirm phone number</string>
     <string name="confirmNumberQuestion">An sms with your confirmation code will be sent to the phone number provided. Do you want to continue?</string>
     <string name="sendConfirmCode">Send confirmation code</string>
+    <string name ="accessDenied">Cannot have multiple devices per account. Use existing device or update to current</string>
 </resources>

@@ -27,6 +27,10 @@ import com.melanie.support.MelanieOperationCallBack;
 import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieBusinessException;
 
+//Dear future author,
+//The login in process could better be implemented with the state design pattern
+//Indeed, the whole user module should be implemented with the state design pattern
+
 public class LoginActivity extends Activity {
 
 	private UserController userController;
@@ -36,6 +40,7 @@ public class LoginActivity extends Activity {
 	private MelanieSession session;
 	private String currentDeviceId;
 	private User user;
+	private String password;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -52,8 +57,7 @@ public class LoginActivity extends Activity {
 	private void initializeSession() {
 		session = MelanieBusinessFactory.getSession();
 
-		DataSource dataSource = OpenHelperManager.getHelper(getBaseContext(),
-				DataSource.class);
+		DataSource dataSource = OpenHelperManager.getHelper(getBaseContext(), DataSource.class);
 
 		// ORMLite
 		session.initializeLocal(dataSource);
@@ -67,6 +71,7 @@ public class LoginActivity extends Activity {
 		handler = new Handler(getMainLooper());
 		session = MelanieBusinessFactory.getSession();
 		currentDeviceId = getCurrentDeviceId();
+		password = Utils.Constants.EMPTY_STRING;
 	}
 
 	private void setupSignupButton() {
@@ -75,8 +80,7 @@ public class LoginActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				Intent intent = new Intent(LoginActivity.this,
-						SignupActivity.class);
+				Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
 				startActivity(intent);
 			}
 		});
@@ -106,27 +110,25 @@ public class LoginActivity extends Activity {
 		EditText phoneTextField = (EditText) findViewById(R.id.loginPhoneNumber);
 		EditText passwordTextField = (EditText) findViewById(R.id.loginPassword);
 		String phoneNumber = phoneTextField.getText().toString();
-		final String password = passwordTextField.getText().toString();
+		password = passwordTextField.getText().toString();
 		if (userController != null) {
 			try {
-				userController.checkUserExistOnCloud(phoneNumber,
-						new MelanieOperationCallBack<User>() {
+				userController.checkUserExistOnCloud(phoneNumber, new MelanieOperationCallBack<User>() {
 
-							@Override
-							public void onOperationSuccessful(User user) {
-								if (progressDialog != null
-										&& progressDialog.isShowing()) {
-									progressDialog.dismiss();
-								}
-								if (user != null) {
-									user.setPassword(password);
-									handleUserExists(user);
-								} else {
-									postToastToUIThread(R.string.accountLookupFailed);
-								}
+					@Override
+					public void onOperationSuccessful(User user) {
+						if (progressDialog != null && progressDialog.isShowing()) {
+							progressDialog.dismiss();
+						}
+						if (user != null) {
+							user.setPassword(password);
+							handleUserExists(user);
+						} else {
+							postToastToUIThread(R.string.accountLookupFailed);
+						}
 
-							}
-						});
+					}
+				});
 			} catch (MelanieBusinessException e) {
 				// TODO Log it
 				e.printStackTrace();
@@ -137,20 +139,7 @@ public class LoginActivity extends Activity {
 	private void handleUserExists(User user) {
 		this.user = user;
 		if (user.getDeviceId().equals(currentDeviceId)) {
-			userController.login(user,
-					new MelanieOperationCallBack<OperationResult>() {
-
-						@Override
-						public void onOperationSuccessful(OperationResult result) {
-							if (result.equals(OperationResult.SUCCESSFUL)) {
-								Intent intent = new Intent(LoginActivity.this,
-										MainActivity.class);
-								startActivity(intent);
-								finish();
-							} else
-								postToastToUIThread(R.string.loginFailed);
-						}
-					});
+			performLogin();
 		} else {
 			differntDeviceAlertDialog.show();
 		}
@@ -170,35 +159,58 @@ public class LoginActivity extends Activity {
 
 	private void setupDifferntDeviceAlertDialog() {
 		differntDeviceAlertDialog = makeAlertDialog();
-		differntDeviceAlertDialog
-				.setTitle(getString(R.string.differentDevices));
-		differntDeviceAlertDialog
-				.setMessage(getString(R.string.accountExistForOtherDevice));
+		differntDeviceAlertDialog.setTitle(getString(R.string.differentDevices));
+		differntDeviceAlertDialog.setMessage(getString(R.string.accountExistForOtherDevice));
 		differntDeviceAlertDialog.create();
 	}
 
 	private MelanieAlertDialog makeAlertDialog() {
-		return new MelanieAlertDialog(this,
-				MelanieAlertDialogButtonModes.YES_NO,
+		return new MelanieAlertDialog(this, MelanieAlertDialogButtonModes.YES_NO,
 				new MelanieAlertDialog.ButtonMethods() {
 
 					@Override
 					public void yesButtonOperation() {
-						updateUserDeviceId();
+						updateUserDeviceId(new MelanieOperationCallBack<OperationResult>() {
+
+							@Override
+							public void onOperationSuccessful(OperationResult result) {
+								performLogin();
+							}
+						});
 					}
 
 					@Override
 					public void noButtonOperation() {
+						postToastToUIThread(R.string.accessDenied);
 						this.cancelButtonOperation();
 					}
 				});
 	}
 
-	private void updateUserDeviceId() {
+	private void performLogin() {
+		user.setDeviceId(currentDeviceId);
+		user.setPassword(password);
+		userController.login(user, new MelanieOperationCallBack<OperationResult>() {
+			@Override
+			public void onOperationSuccessful(OperationResult result) {
+				if (result.equals(OperationResult.SUCCESSFUL)) {
+					launchMainActivity();
+				} else
+					postToastToUIThread(R.string.loginFailed);
+			}
+		});
+	}
+
+	private void launchMainActivity() {
+		Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+		startActivity(intent);
+		finish();
+	}
+
+	private void updateUserDeviceId(MelanieOperationCallBack<OperationResult> operationCallBack) {
 		if (userController != null)
 			try {
-				userController.updateUser(user, CodeStrings.DEVICEID,
-						currentDeviceId);
+				userController.updateUser(user, CodeStrings.DEVICEID, currentDeviceId,operationCallBack);
 			} catch (MelanieBusinessException e) {
 				// TODO log it
 				e.printStackTrace();
@@ -206,8 +218,8 @@ public class LoginActivity extends Activity {
 	}
 
 	private String getCurrentDeviceId() {
-		TelephonyManager telephonyManager = (TelephonyManager) getBaseContext()
-				.getSystemService(Context.TELEPHONY_SERVICE);
+		TelephonyManager telephonyManager = (TelephonyManager) getBaseContext().getSystemService(
+				Context.TELEPHONY_SERVICE);
 		String deviceId = telephonyManager.getDeviceId();
 		return deviceId;
 	}

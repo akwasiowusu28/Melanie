@@ -26,6 +26,9 @@ public class User extends BackendlessUser {
 	@DatabaseField
 	private String deviceId;
 	
+	@DatabaseField
+	private String phone;
+	
 	public User() {
 		super();
 	}
@@ -35,6 +38,7 @@ public class User extends BackendlessUser {
 		this.password = password;
 		this.name = name;
 		this.deviceId = deviceId;
+		this.phone = phone;
 		
 		setProperty(CodeStrings.NAME, name);
 		setProperty(CodeStrings.PASSWORD, password);
@@ -94,6 +98,14 @@ public class User extends BackendlessUser {
 	public void setDeviceId(String deviceId) {
 		this.deviceId = deviceId;
 		setProperty(CodeStrings.DEVICEID, deviceId);
+	}
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
 	}
 	
 }

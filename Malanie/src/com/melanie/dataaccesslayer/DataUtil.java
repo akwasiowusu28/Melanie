@@ -7,16 +7,14 @@ import java.util.Date;
 import java.util.List;
 
 import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.dao.Dao.CreateOrUpdateStatus;
 import com.melanie.dataaccesslayer.datasource.DataSourceManager;
 import com.melanie.entities.BaseEntity;
-import com.melanie.entities.User;
 import com.melanie.support.MelanieOperationCallBack;
 import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieDataLayerException;
 
 @SuppressWarnings("unchecked")
-public final class DataUtil {
+final class DataUtil {
 
 	public static <T> void updateItemRecentUse(T dataItem) {
 		((BaseEntity) dataItem).setRecentUse(new Date());
@@ -79,7 +77,7 @@ public final class DataUtil {
 	
 	public static class DataCallBack<T> extends MelanieOperationCallBack<T> {
 
-		private MelanieOperationCallBack<T> businessCallBack;
+		private final MelanieOperationCallBack<T> businessCallBack;
 
 		public DataCallBack(MelanieOperationCallBack<T> businessCallback) {
 			super();

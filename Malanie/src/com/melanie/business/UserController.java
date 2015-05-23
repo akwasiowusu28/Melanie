@@ -18,5 +18,5 @@ public interface UserController {
 
 	boolean localUserExists() throws MelanieBusinessException;
 	
-	void updateUser(User user, String field, Object value) throws MelanieBusinessException;
+	void updateUser(User user, String field, Object value, MelanieOperationCallBack<OperationResult> operationCallBack) throws MelanieBusinessException;
 }

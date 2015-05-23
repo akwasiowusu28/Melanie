@@ -40,7 +40,7 @@ public class CustomersControllerImpl implements CustomersController {
 			throws MelanieBusinessException {
 		if (dataAccess != null)
 			try {
-				dataAccess.addDataItemToLocalDataStoreOnly(customer,
+				dataAccess.addOrUpdateDataItemInLocalDataStoreOnly(customer,
 						Customer.class);
 			} catch (MelanieDataLayerException e) {
 				throw new MelanieBusinessException(e.getMessage(), e);

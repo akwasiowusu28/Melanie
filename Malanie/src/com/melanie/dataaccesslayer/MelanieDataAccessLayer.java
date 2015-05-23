@@ -45,7 +45,7 @@ public interface MelanieDataAccessLayer {
 	<T> OperationResult refreshItem(T dataItem, Class<T> itemClass)
 			throws MelanieDataLayerException;
 
-	<T> OperationResult addDataItemToLocalDataStoreOnly(T dataItem,
+	<T> OperationResult addOrUpdateDataItemInLocalDataStoreOnly(T dataItem,
 			Class<T> itemClass) throws MelanieDataLayerException;
 
 	<T, E> List<T> findItemsBetween(String fieldName, E lowerBound,

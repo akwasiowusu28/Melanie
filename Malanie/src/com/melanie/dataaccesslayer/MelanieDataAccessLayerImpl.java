@@ -354,9 +354,21 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 	}
 
 	@Override
-	public <T> OperationResult addDataItemToLocalDataStoreOnly(T dataItem,
+	public <T> OperationResult addOrUpdateDataItemInLocalDataStoreOnly(T dataItem,
 			Class<T> itemClass) throws MelanieDataLayerException {
-		return DataUtil.updateDataCache(dataItem);
+		OperationResult result = OperationResult.FAILED;
+		if(dataItem instanceof User){
+			Dao<Object, Integer> dao = DataSourceManager.getCachedDaoFor(itemClass);
+			try {
+				result = DataUtil.addOrUpdateItem(dao, dataItem);
+			} catch (SQLException e) {
+				throw new MelanieDataLayerException(e.getMessage(),e);
+			}
+		}
+		else{
+			result = DataUtil.updateDataCache(dataItem);
+		}
+		return  result;  
 	}
 
 	@Override
@@ -391,13 +403,7 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 		try {
 			Dao<Object,Integer> dao = DataSourceManager.getCachedDaoFor(User.class);
 			DataUtil.addOrUpdateItem(dao, user);
-			addUserToCloud((User)user,dao, new MelanieOperationCallBack<User>(){
-
-				@Override
-				public void onOperationSuccessful(User result) {
-					operationCallBack.onOperationSuccessful((T)result);
-				}
-			});
+			addUserToCloud((User)user,dao, (MelanieOperationCallBack<User>)operationCallBack);
 		} catch (MelanieDataLayerException | SQLException e) {
 			throw new MelanieDataLayerException(e.getMessage(),e);
 		}
@@ -410,6 +416,7 @@ public class MelanieDataAccessLayerImpl implements MelanieDataAccessLayer {
 			public void onOperationSuccessful(BackendlessUser result) {
 				try {
 					 userInstance.setObjectId(result.getProperty(OBJECTID).toString());
+					 userInstance.setProperties(result.getProperties());
 					 operationCallBack.onOperationSuccessful(userInstance);
 					DataUtil.addOrUpdateItem(dao, userInstance);
 				} catch (SQLException e) {

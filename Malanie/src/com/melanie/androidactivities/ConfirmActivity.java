@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.melanie.androidactivities.support.MelanieAlertDialog;
 import com.melanie.androidactivities.support.MelanieAlertDialog.MelanieAlertDialogButtonModes;
 import com.melanie.androidactivities.support.Utils;
+import com.melanie.business.MelanieSession;
 import com.melanie.business.UserController;
 import com.melanie.support.CodeStrings;
 import com.melanie.support.MelanieBusinessFactory;
@@ -130,10 +131,8 @@ public class ConfirmActivity extends AppCompatActivity {
 				.getText().toString();
 		if (enteredConfirmCode.equals(confirmCode)) {
 			try {
-				// Would pass in session.getUser() but user wouldn't be logged
-				// in at this point so passing in null.
-				// Idea is, ultimately the cached user in the db should be used
-				userController.updateUser(null, CodeStrings.ISCONFIRMED, true);
+				MelanieSession session = MelanieBusinessFactory.getSession();
+				userController.updateUser(session.getUser(), CodeStrings.ISCONFIRMED, true,null);
 			} catch (MelanieBusinessException e) {
 				// TODO log it
 				e.printStackTrace();

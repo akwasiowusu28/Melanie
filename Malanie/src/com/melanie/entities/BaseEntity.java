@@ -24,7 +24,7 @@ public abstract class BaseEntity implements Comparable<BaseEntity> {
 	@DatabaseField
 	private String objectId;
 
-	@DatabaseField(columnName = "UserId", foreignAutoCreate = true, foreignAutoRefresh = true, canBeNull = true, foreign = true)
+	@DatabaseField(columnName = "UserId", foreignAutoCreate = true, foreignAutoRefresh = true, canBeNull = false, foreign = true)
 	private User user;
 
 	public int getId() {

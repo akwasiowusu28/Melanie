@@ -77,9 +77,9 @@ public class SignupActivity extends Activity {
 					new MelanieOperationCallBack<User>() {
 
 						@Override
-						public void onOperationSuccessful(User result) {
+						public void onOperationSuccessful(User user) {
 							switchPasswordFieldsBackColor(true);
-							clearFields();
+							MelanieBusinessFactory.getSession().setUser(user);
 							launchMainActivity();
 						}
 
@@ -104,13 +104,6 @@ public class SignupActivity extends Activity {
 	
 	private boolean passwordsMatch(String password, String confirmPassword) {
 		return password.equals(confirmPassword);
-	}
-
-	private void clearFields() {
-		nameField.setText(Utils.Constants.EMPTY_STRING);
-		passwordField.setText(Utils.Constants.EMPTY_STRING);
-		confirmPasswordField.setText(Utils.Constants.EMPTY_STRING);
-		phoneField.setText(Utils.Constants.EMPTY_STRING);
 	}
 
 	private void switchPasswordFieldsBackColor(boolean isValid) {
