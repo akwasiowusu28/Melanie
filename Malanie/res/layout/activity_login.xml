@@ -15,17 +15,6 @@
         android:contentDescription="@string/app_name"
         android:src="@drawable/melanie" />
     
-    
-    <Button
-        android:id="@+id/loginSignupButton"
-        android:layout_width="150dp"
-        android:layout_gravity="right"
-        android:layout_height="wrap_content"
-        android:background="@drawable/backroundselector"
-        android:text="@string/signupUnderlined"
-        android:textColor="@android:color/darker_gray"
-        android:layout_marginBottom="12dp" />
-
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -54,5 +43,24 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/login" />
-
+ 
+    
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/dontHaveAccount"
+        android:layout_marginTop="50dp"
+        android:layout_marginBottom="10dp"
+        />
+    
+<Button
+        android:id="@+id/loginSignupButton"
+        android:layout_width="match_parent"
+        android:layout_gravity="right"
+        android:layout_height="wrap_content"
+        android:text="@string/signupUnderlined"
+        android:textColor="@android:color/white"
+        android:background="#59BC59"
+        android:layout_marginBottom="12dp" />
+    
 </LinearLayout>

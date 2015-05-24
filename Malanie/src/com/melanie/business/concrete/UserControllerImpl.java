@@ -102,22 +102,21 @@ public class UserControllerImpl implements UserController {
 	@Override
 	public boolean localUserExists() throws MelanieBusinessException {
 		boolean userExists = false;
-		try {
+		
 			userExists = getLocalUser() != null;
-		} catch (MelanieDataLayerException e) {
-			throw new MelanieBusinessException(e.getMessage(), e);
-		}
+		
 		return userExists;
 	}
 
-	private User getLocalUser() throws MelanieDataLayerException {
+	@Override
+	public User getLocalUser() throws MelanieBusinessException {
 		User user = null;
 		try {
 			if (dataAccess != null) {
 				user = dataAccess.findItemById(1, User.class, null);
 			}
 		} catch (MelanieDataLayerException e) {
-			throw new MelanieDataLayerException(e.getMessage(), e);
+			throw new MelanieBusinessException(e.getMessage(), e);
 		}
 		return user;
 	}
@@ -131,6 +130,15 @@ public class UserControllerImpl implements UserController {
 				public void onOperationSuccessful(BackendlessUser result) {
 					user.setProperties(result.getProperties());
 					MelanieSessionImpl.getInstance().setUser(user);
+					
+					
+						try {
+							if(!localUserExists())
+							addUserToLocalDataStore(user);
+						} catch (MelanieDataLayerException | MelanieBusinessException e) {
+							operationCallBack.onOperationFailed(e);
+						}
+					
 					operationCallBack.onOperationSuccessful(OperationResult.SUCCESSFUL);
 				}
 

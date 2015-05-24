@@ -2,7 +2,6 @@ package com.melanie.androidactivities;
 
 import java.util.Calendar;
 
-import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -25,6 +24,8 @@ import com.melanie.support.exceptions.MelanieBusinessException;
 
 public class ConfirmActivity extends AppCompatActivity {
 
+	private static final String IS_MESSAGE_SENT = "isMessageSent";
+	
 	private Button confirmButton;
 	private String confirmCode;
 	private UserController userController;
@@ -34,11 +35,15 @@ public class ConfirmActivity extends AppCompatActivity {
 	private EditText confirmTextField;
 	private TextView confirmLabel;
 	private Button sendCodeButton;
+	private boolean isMessageSent;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_confirm);
+		if(savedInstanceState != null){
+			isMessageSent =savedInstanceState.getBoolean(IS_MESSAGE_SENT);
+		}
 		initializeFields();
 		setupConfirmButton();
 		showConfirmAlertDialog();
@@ -85,7 +90,7 @@ public class ConfirmActivity extends AppCompatActivity {
 		confirmAlertDialog.setTitle(getString(R.string.confirmNumber));
 		confirmAlertDialog
 				.setMessage(getString(R.string.confirmNumberQuestion));
-		confirmAlertDialog.create();
+		confirmAlertDialog.show();
 	}
 
 	private MelanieAlertDialog makeAlertDialog() {
@@ -106,7 +111,7 @@ public class ConfirmActivity extends AppCompatActivity {
 					@Override
 					public void noButtonOperation() {
 						confirmFieldsDisabled = true;
-						changeConfirmFieldsVisibility(true);
+						changeConfirmFieldsVisibility(false);
 						sendCodeButton.setVisibility(View.VISIBLE);
 						this.cancelButtonOperation();
 					}
@@ -145,13 +150,14 @@ public class ConfirmActivity extends AppCompatActivity {
 	private void sendConfirmSMS() {
 		generateConfirmCode();
 
-		Intent intent = new Intent(this, MainActivity.class);
+		//Intent intent = new Intent(this,null);
 
-		PendingIntent pendingIntent = PendingIntent.getActivity(this, 28,
-				intent, 0);
+		//PendingIntent pendingIntent = PendingIntent.getActivity(this, 28,
+		//		intent, 0);
+		isMessageSent = true;
 		SmsManager manager = SmsManager.getDefault();
 		manager.sendTextMessage(phoneNumber, null, getConfirmMessage(),
-				pendingIntent, null);
+				null, null);
 	}
 
 	private String getConfirmMessage() {
@@ -169,5 +175,11 @@ public class ConfirmActivity extends AppCompatActivity {
 		Intent intent = new Intent(this, MainActivity.class);
 		startActivity(intent);
 		finish();
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle savedInstanceState) {
+		savedInstanceState.putBoolean(IS_MESSAGE_SENT, isMessageSent);
+		super.onSaveInstanceState(savedInstanceState);
 	}
 }

@@ -1,38 +1,43 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="10dp"
-    android:orientation="vertical"
     tools:context="com.melanie.androidactivities.ConfirmActivity" >
 
-    <TextView
-        android:id="@+id/confirmLabel"
-        android:layout_gravity="center"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/enterConfirmDigits" />
-    
-    <EditText
-        android:layout_gravity="center"
-        android:id="@+id/confirmTextField"
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
-        android:inputType="number"
-        />
-    <Button 
-        android:layout_gravity="center"
-        android:id="@+id/confirmButton"
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
-        android:text="@string/confirm"/>
-    
-     <Button 
-        android:layout_gravity="center"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/confirmLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/enterConfirmDigits" />
+
+        <EditText
+            android:id="@+id/confirmTextField"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:inputType="number" />
+
+        <Button
+            android:id="@+id/confirmButton"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/confirm" />
+    </LinearLayout>
+
+    <Button
         android:id="@+id/sendConfirmCode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
         android:text="@string/sendConfirmCode"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
-</LinearLayout>
+</RelativeLayout>

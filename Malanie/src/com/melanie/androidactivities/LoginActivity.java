@@ -47,7 +47,10 @@ public class LoginActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
 		initializeFields();
-		initializeSession();
+		
+		if(!session.isInitialized())
+		   initializeSession();
+		
 		setupSignupButton();
 		setupLoginButton();
 		setupDifferntDeviceAlertDialog();

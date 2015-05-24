@@ -2,8 +2,6 @@ package com.melanie.androidactivities;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -24,33 +22,33 @@ import com.melanie.support.exceptions.MelanieBusinessException;
 
 public class MainActivity extends Activity {
 
-	private static final String IS_FIRST_LAUNCH = "isFirstLaunch";
-
 	private MelanieSession session;
+    private boolean isRedirectingForFirstUseAction;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		if (!isFirstLaunchAndRedirectedToSignup()) {
-			session = MelanieBusinessFactory.getSession();
+		session = MelanieBusinessFactory.getSession();
 
-			if (!session.isInitialized()) {
-				// would be nice to push this data initialization down to lower
-				// layers
-				// Not doing that right now 'cause I hate to import android
-				// context in my
-				// business or data logic
-				DataSource dataSource = OpenHelperManager.getHelper(
-						getBaseContext(), DataSource.class);
+		if (!session.isInitialized()) {
+			// would be nice to push this data initialization down to lower
+			// layers
+			// Not doing that right now 'cause I hate to import android
+			// context in my
+			// business or data logic
+			DataSource dataSource = OpenHelperManager.getHelper(getBaseContext(), DataSource.class);
 
-				// ORMLite
-				session.initializeLocal(dataSource);
+			// ORMLite
+			session.initializeLocal(dataSource);
 
-				// Backendless
-				session.initializeCloud(this);
-			}
+			// Backendless
+			session.initializeCloud(this);
+		}
 
+		isRedirectingForFirstUseAction = needsUserFirstUseAction();
+		
+		if (!isRedirectingForFirstUseAction) {
 			setContentView(R.layout.activity_main);
 
 			setupMainListView();
@@ -61,19 +59,15 @@ public class MainActivity extends Activity {
 
 	private void setupMainListView() {
 		ListView mainListView = (ListView) findViewById(R.id.mainpagelistview);
-		mainListView.setAdapter(new NavigationListViewAdapter(this,
-				NavigationHelper.getMainPageIcons(), NavigationHelper
-						.getMainPageNavigationItems(), NavigationHelper
-						.getMainPageNavigationDescription()));
+		mainListView.setAdapter(new NavigationListViewAdapter(this, NavigationHelper.getMainPageIcons(),
+				NavigationHelper.getMainPageNavigationItems(), NavigationHelper.getMainPageNavigationDescription()));
 		mainListView.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				if (session.isUserLoggedIn()) {
-					Intent intent = new Intent(MainActivity.this,
-							NavigationHelper.getMelanieMainActivities().get(
-									position));
+					Intent intent = new Intent(MainActivity.this, NavigationHelper.getMelanieMainActivities().get(
+							position));
 					startActivity(intent);
 				} else {
 					Utils.makeToast(MainActivity.this, R.string.mustbeLoggedIn);
@@ -88,8 +82,7 @@ public class MainActivity extends Activity {
 		@Override
 		public void onOperationSuccessful(User user) {
 			if (!user.isConfirmed()) {
-				Intent intent = new Intent(MainActivity.this,
-						ConfirmActivity.class);
+				Intent intent = new Intent(MainActivity.this, ConfirmActivity.class);
 				startActivity(intent);
 			}
 		}
@@ -97,8 +90,7 @@ public class MainActivity extends Activity {
 	};
 
 	private void loginUser(MelanieOperationCallBack<User> operationCallBack) {
-		UserController userController = MelanieBusinessFactory
-				.makeUserController();
+		UserController userController = MelanieBusinessFactory.makeUserController();
 		try {
 			userController.loginSavedUser(operationCallBack);
 		} catch (MelanieBusinessException e) {
@@ -106,25 +98,42 @@ public class MainActivity extends Activity {
 		}
 	}
 
-	private boolean isFirstLaunchAndRedirectedToSignup() {
-		SharedPreferences preferences = getSharedPreferences(
-				Utils.Constants.PREF_FILE, MODE_PRIVATE);
-		boolean isFirstLaunch = preferences.getBoolean(IS_FIRST_LAUNCH, true);
-		if (isFirstLaunch) {
-			Editor preferencesEditor = preferences.edit();
-			preferencesEditor.putBoolean(IS_FIRST_LAUNCH, false);
-			preferencesEditor.apply();
-			Intent intent = new Intent(this, LoginActivity.class);
-			startActivity(intent);
-			finish();
+	private boolean needsUserFirstUseAction() {
+
+		boolean needsUserFirstUseAction = false;
+
+		User user = getLocalUser();
+		Intent intent = null;
+		needsUserFirstUseAction = user == null || user.isConfirmed() == false;
+		
+		if (user == null) {
+			intent = new Intent(this, LoginActivity.class);
+		} else if (!user.isConfirmed()) {
+			intent = new Intent(this, ConfirmActivity.class);
+			intent.putExtra(Utils.Constants.PHONE_NUMBER, user.getPhone());
 		}
-		return isFirstLaunch;
+
+		startActivity(intent);
+		finish();
+
+		return needsUserFirstUseAction;
+	}
+
+	private User getLocalUser() {
+		User user = null;
+		try {
+			user = MelanieBusinessFactory.makeUserController().getLocalUser();
+		} catch (MelanieBusinessException e) {
+			// TODO log it
+			e.printStackTrace();
+		}
+		return user;
 	}
 
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		if (session != null) {
+		if (!isRedirectingForFirstUseAction && session != null) {
 			session.clearResources();
 			session = null;
 		}
