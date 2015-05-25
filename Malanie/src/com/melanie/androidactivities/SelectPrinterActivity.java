@@ -18,6 +18,7 @@ import com.melanie.androidactivities.support.MelaniePrinterDiscoverer;
 import com.melanie.androidactivities.support.MelanieSingleTextListAdapter;
 import com.melanie.androidactivities.support.PrinterType;
 import com.melanie.androidactivities.support.Utils;
+import com.melanie.support.CodeStrings;
 import com.melanie.support.OperationCallBack;
 
 public class SelectPrinterActivity extends Activity {
@@ -38,8 +39,7 @@ public class SelectPrinterActivity extends Activity {
 		initializeFields();
 
 		callerActivityIntent = getIntent();
-		printerType = PrinterType.valueOf(callerActivityIntent
-				.getStringExtra(Utils.Constants.PRINTER_TYPE));
+		printerType = PrinterType.valueOf(callerActivityIntent.getStringExtra(Utils.Constants.PRINTER_TYPE));
 		setupListView();
 		setupPrinterDiscoverer();
 		discoverPrinter();
@@ -54,16 +54,20 @@ public class SelectPrinterActivity extends Activity {
 
 	private void setupPrinterDiscoverer() {
 
-		printerDiscoverer = new MelaniePrinterDiscoverer(this,
-				new OperationCallBack<Map<String, String>>() {
-					@Override
-					public void onOperationSuccessful(Map<String, String> result) {
-						printerInfo.putAll(result);
-						printers.add(printerInfo.keySet().iterator().next());
-						Utils.notifyListUpdate(printersAdapter, handler);
-					}
+		printerDiscoverer = new MelaniePrinterDiscoverer(this, new OperationCallBack<Map<String, String>>() {
+			@Override
+			public void onOperationSuccessful(Map<String, String> result) {
+				printerInfo.putAll(result);
+				
+				if (printerType.equals(PrinterType.Barcode))
+					printers.add(printerInfo.get(CodeStrings.NAME));
+				else
+					printers.add(printerInfo.keySet().iterator().next());
 
-				}, printerType);
+				Utils.notifyListUpdate(printersAdapter, handler);
+			}
+
+		}, printerType);
 
 	}
 
@@ -80,19 +84,17 @@ public class SelectPrinterActivity extends Activity {
 		listView.setOnItemClickListener(itemClickListener);
 	}
 
-	private OnItemClickListener itemClickListener = new OnItemClickListener() {
+	private final OnItemClickListener itemClickListener = new OnItemClickListener() {
 
 		@Override
-		public void onItemClick(AdapterView<?> parent, View view, int position,
-				long id) {
+		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
 			if (printerType.equals(PrinterType.Barcode)) {
 				Bundle bundle = new Bundle();
 				bundle.putSerializable(Utils.Constants.PRINTER_INFO, printerInfo);
 				callerActivityIntent.putExtras(bundle);
 			} else
-				callerActivityIntent.putExtra(Utils.Constants.PRINTER_INFO,
-						printerInfo.get(printers.get(position)));
+				callerActivityIntent.putExtra(Utils.Constants.PRINTER_INFO, printerInfo.get(printers.get(position)));
 
 			setResult(RESULT_OK, callerActivityIntent);
 			finish();

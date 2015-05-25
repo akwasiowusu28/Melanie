@@ -63,17 +63,22 @@
         android:hint="@string/amountZeroes"
         android:inputType="numberDecimal" />
 
+    
+    <CheckBox 
+        android:checked="true"
+        android:layout_margin="12dp"
+        android:id="@+id/printBarcodeCheckBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/printBarcodeCheck"
+        />
+    
+    
     <Button
         android:id="@+id/addProductButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
         android:text="@string/add" />
-
-    <Switch
-        android:id="@+id/toggleButton1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="ToggleButton" />
 
 </LinearLayout>

@@ -19,4 +19,5 @@ public interface MelanieSession {
 	 boolean isUserRegisteredOnDevice();
 	 
 	 void clearResources();
+	 
 }

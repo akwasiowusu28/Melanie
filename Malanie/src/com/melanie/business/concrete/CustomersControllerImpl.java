@@ -67,7 +67,7 @@ public class CustomersControllerImpl implements CustomersController {
 
 		if (dataAccess != null && customer != null)
 			try {
-				customer.setUser(session.getUser());
+				  customer.setOwnerId(session.getUser().getObjectId());
 				result = dataAccess.addDataItem(customer, Customer.class, null);
 			} catch (MelanieDataLayerException e) {
 				throw new MelanieBusinessException(e.getMessage(), e);

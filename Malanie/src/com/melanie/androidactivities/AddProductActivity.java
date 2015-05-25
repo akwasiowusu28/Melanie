@@ -22,9 +22,9 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.Switch;
 
 import com.epson.lwprint.sdk.LWPrint;
 import com.epson.lwprint.sdk.LWPrintCallback;
@@ -79,17 +79,13 @@ public class AddProductActivity extends AppCompatActivity {
 		initializePrinter();
 		setupAddProductListener();
 
-		Switch btn = (Switch) findViewById(R.id.toggleButton1);
-		btn.setThumbDrawable(getDrawable(R.drawable.backroundselector));
-		// btn.setBackground();
 	}
 
 	private void initializeFields() {
 		productController = BusinessFactory.makeProductEntryController();
 		handler = new Handler(getMainLooper());
 		getAllCategories();
-		categoriesAdapter = new ArrayAdapter<Category>(this,
-				android.R.layout.simple_spinner_dropdown_item, categories);
+		categoriesAdapter = new ArrayAdapter<Category>(this, android.R.layout.simple_spinner_dropdown_item, categories);
 		createPrintProgressDialog();
 	}
 
@@ -97,15 +93,13 @@ public class AddProductActivity extends AppCompatActivity {
 		categories = new ArrayList<Category>();
 		try {
 			List<Category> tempCategories = null;
-			tempCategories = productController
-					.getAllCategories(new OperationCallBack<Category>() {
-						@Override
-						public void onCollectionOperationSuccessful(
-								List<Category> results) {
-							Utils.mergeItems(results, categories);
-							Utils.notifyListUpdate(categoriesAdapter, handler);
-						}
-					});
+			tempCategories = productController.getAllCategories(new OperationCallBack<Category>() {
+				@Override
+				public void onCollectionOperationSuccessful(List<Category> results) {
+					Utils.mergeItems(results, categories);
+					Utils.notifyListUpdate(categoriesAdapter, handler);
+				}
+			});
 			if (tempCategories != null && !tempCategories.isEmpty())
 				categories.addAll(tempCategories);
 
@@ -126,8 +120,7 @@ public class AddProductActivity extends AppCompatActivity {
 	}
 
 	private void setProgressBarHandlers() {
-		progressDialog.setButton(DialogInterface.BUTTON_NEGATIVE,
-				getText(R.string.cancel),
+		progressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getText(R.string.cancel),
 				new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
@@ -136,13 +129,12 @@ public class AddProductActivity extends AppCompatActivity {
 
 					}
 				});
-		progressDialog
-				.setOnCancelListener(new DialogInterface.OnCancelListener() {
-					@Override
-					public void onCancel(DialogInterface dialog) {
-						printer.cancelPrint();
-					}
-				});
+		progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+			@Override
+			public void onCancel(DialogInterface dialog) {
+				printer.cancelPrint();
+			}
+		});
 	}
 
 	private void setupAddProductListener() {
@@ -165,36 +157,27 @@ public class AddProductActivity extends AppCompatActivity {
 	public void addProduct() {
 
 		Category category = getSelectedCategory();
-		String productName = ((EditText) findViewById(R.id.productName))
-				.getText().toString();
+		String productName = ((EditText) findViewById(R.id.productName)).getText().toString();
 
-		String priceStr = ((EditText) findViewById(R.id.price)).getText()
-				.toString();
+		String priceStr = ((EditText) findViewById(R.id.price)).getText().toString();
 		double price = Double.parseDouble(priceStr);
-		currentProductQuantity = Integer
-				.parseInt(((EditText) findViewById(R.id.quantity)).getText()
-						.toString());
-		OperationResult result = addProductAndReturnResult(category,
-				productName, price, currentProductQuantity);
+		currentProductQuantity = Integer.parseInt(((EditText) findViewById(R.id.quantity)).getText().toString());
+		OperationResult result = addProductAndReturnResult(category, productName, price, currentProductQuantity);
 		if (result == OperationResult.SUCCESSFUL) {
 			printBarcode();
 			clearTextFields();
 		}
-		Utils.makeToastBasedOnOperationResult(this, result,
-				R.string.productAddSuccessful, R.string.productAddFailed);
+		Utils.makeToastBasedOnOperationResult(this, result, R.string.productAddSuccessful, R.string.productAddFailed);
 	}
 
-	private OperationResult addProductAndReturnResult(Category category,
-			String productName, double price, int quantity) {
+	private OperationResult addProductAndReturnResult(Category category, String productName, double price, int quantity) {
 		OperationResult result = OperationResult.FAILED;
 		if (category != null)
 			try {
-				int lastProductId = productController
-						.getLastInsertedProductId();
+				int lastProductId = productController.getLastInsertedProductId();
 				currentBarcode = generateBarcodeString(lastProductId);
-				result = productController
-						.addProduct(productName, currentProductQuantity, price,
-								category, currentBarcode);
+				result = productController.addProduct(productName, currentProductQuantity, price, category,
+						currentBarcode);
 			} catch (MelanieBusinessException e) {
 				e.printStackTrace(); // log it
 			}
@@ -205,14 +188,13 @@ public class AddProductActivity extends AppCompatActivity {
 		lastItemId++;
 		int trailingZeroes = 6 - String.valueOf(lastItemId).length();
 		String format = "%0" + trailingZeroes + "d";
-		String barcodeNumber = Utils.getBarcodePrefix()
-				+ String.format(format, lastItemId);
+		String barcodeNumber = Utils.getBarcodePrefix() + String.format(format, lastItemId);
 		return barcodeNumber;
 	}
 
 	private void clearTextFields() {
-		Utils.clearInputTextFields(findViewById(R.id.productName),
-				findViewById(R.id.quantity), findViewById(R.id.price));
+		Utils.clearInputTextFields(findViewById(R.id.productName), findViewById(R.id.quantity),
+				findViewById(R.id.price));
 	}
 
 	private Category getSelectedCategory() {
@@ -222,31 +204,36 @@ public class AddProductActivity extends AppCompatActivity {
 
 	private void initializePrinter() {
 		if (printer == null && printerInfo == null) {
-			new MelaniePrinterDiscoverer(this,
-					new OperationCallBack<Map<String, String>>() {
+			new MelaniePrinterDiscoverer(this, new OperationCallBack<Map<String, String>>() {
 
-						@Override
-						public void onOperationSuccessful(
-								Map<String, String> result) {
-							printerInfo = result;
-							isPrinterFound = true;
-						}
+				@Override
+				public void onOperationSuccessful(Map<String, String> result) {
+					printerInfo = result;
+					isPrinterFound = true;
+				}
 
-					}, PrinterType.Barcode).discoverBarcodePrinter();
+			}, PrinterType.Barcode).discoverBarcodePrinter();
 			printer = new LWPrint(this);
 			printer.setCallback(new PrintCallBack());
 		}
 	}
 
 	private void printBarcode() {
-		if (isPrinterFound)
-			performPrint();
-		else {
-			Intent intent = new Intent(this, SelectPrinterActivity.class);
-			intent.putExtra(Utils.Constants.PRINTER_TYPE,
-					PrinterType.Barcode.toString());
-			startActivityForResult(intent, PRINTER_SELECT_REQUEST_CODE);
+
+		if (userWantsToPrintBarcode()) {
+			if (isPrinterFound)
+				performPrint();
+			else {
+				Intent intent = new Intent(this, SelectPrinterActivity.class);
+				intent.putExtra(Utils.Constants.PRINTER_TYPE, PrinterType.Barcode.toString());
+				startActivityForResult(intent, PRINTER_SELECT_REQUEST_CODE);
+			}
 		}
+	}
+
+	private boolean userWantsToPrintBarcode() {
+		CheckBox checkBox = (CheckBox) findViewById(R.id.printBarcodeCheckBox);
+		return checkBox.isChecked();
 	}
 
 	private HashMap<String, Object> getPrintSettings() {
@@ -271,8 +258,7 @@ public class AddProductActivity extends AppCompatActivity {
 			}
 		}, 2);
 
-		new MelaniePrintAsyncTask().execute(printer, printerInfo,
-				getPrintSettings(), getAssets(), currentBarcode);
+		new MelaniePrintAsyncTask().execute(printer, printerInfo, getPrintSettings(), getAssets(), currentBarcode);
 
 		setProgressDialogUpdates();
 	}
@@ -287,8 +273,7 @@ public class AddProductActivity extends AppCompatActivity {
 					@Override
 					public void run() {
 
-						progressDialog.setProgress((int) (printer
-								.getProgressOfPrint() * 100));
+						progressDialog.setProgress((int) (printer.getProgressOfPrint() * 100));
 						progressDialog.setMessage(getText(printPhaseMessage));
 					}
 
@@ -306,10 +291,8 @@ public class AddProductActivity extends AppCompatActivity {
 				{
 					put(LWPrintPrintingPhase.Prepare, R.string.printPreparing);
 					put(LWPrintPrintingPhase.Processing, R.string.printing);
-					put(LWPrintPrintingPhase.Complete,
-							R.string.printingComplete);
-					put(LWPrintPrintingPhase.WaitingForPrint,
-							R.string.waitingForPrint);
+					put(LWPrintPrintingPhase.Complete, R.string.printingComplete);
+					put(LWPrintPrintingPhase.WaitingForPrint, R.string.waitingForPrint);
 				}
 			};
 		}
@@ -376,21 +359,18 @@ public class AddProductActivity extends AppCompatActivity {
 			String barcode = (String) params[BARCODE];
 
 			printer.setPrinterInformation(printerInfo);
-			printer.doPrint(new MelanieBarcodeDataProvider(assetManager,
-					barcode), printSettings);
+			printer.doPrint(new MelanieBarcodeDataProvider(assetManager, barcode, currentProductQuantity),
+					printSettings);
 			return null;
 		}
 
 	}
 
 	@Override
-	protected void onActivityResult(int requestCode, int resultCode,
-			Intent intentData) {
-		if (resultCode == RESULT_OK
-				&& requestCode == PRINTER_SELECT_REQUEST_CODE) {
+	protected void onActivityResult(int requestCode, int resultCode, Intent intentData) {
+		if (resultCode == RESULT_OK && requestCode == PRINTER_SELECT_REQUEST_CODE) {
 			Bundle bundle = intentData.getExtras();
-			printerInfo = (Map<String, String>) bundle
-					.get(Utils.Constants.PRINTER_INFO);
+			printerInfo = (Map<String, String>) bundle.get(Utils.Constants.PRINTER_INFO);
 			if (printerInfo != null)
 				performPrint();
 		}

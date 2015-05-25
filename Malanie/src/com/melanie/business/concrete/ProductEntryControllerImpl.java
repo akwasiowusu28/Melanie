@@ -8,13 +8,13 @@ import com.melanie.business.ProductEntryController;
 import com.melanie.dataaccesslayer.DataAccessLayer;
 import com.melanie.entities.Category;
 import com.melanie.entities.Product;
-import com.melanie.support.MelanieArgumentValidator;
-import com.melanie.support.MelanieArgumentValidatorImpl;
 import com.melanie.support.BusinessFactory;
 import com.melanie.support.DataFactory;
+import com.melanie.support.MelanieArgumentValidator;
+import com.melanie.support.MelanieArgumentValidatorImpl;
 import com.melanie.support.OperationCallBack;
-import com.melanie.support.SupportFactory;
 import com.melanie.support.OperationResult;
+import com.melanie.support.SupportFactory;
 import com.melanie.support.exceptions.MelanieBusinessException;
 import com.melanie.support.exceptions.MelanieDataLayerException;
 
@@ -58,7 +58,7 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 		Category category = null;
 		if (dataAccess != null) {
 			category = new Category(categoryName);
-			category.setUser(session.getUser());
+			category.setOwnerId(session.getUser().getObjectId());
 			OperationResult result;
 			try {
 				result = dataAccess.addDataItem(category, Category.class, null);
@@ -167,7 +167,7 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 		if (dataAccess != null) {
 			Product product = new Product(productName, quantity, price,
 					category, barcode);
-			product.setUser(session.getUser());
+			product.setOwnerId(session.getUser().getObjectId());
 			try {
 				result = dataAccess.addDataItem(product, Product.class, null);
 			} catch (MelanieDataLayerException e) {

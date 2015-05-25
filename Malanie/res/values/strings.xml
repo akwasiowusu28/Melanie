@@ -32,7 +32,7 @@
     <string name="Quantity">Quantity:</string>
     <string name="Price">Price:</string>
     <string name="productNameHint">Eg. Only the polished skeleton</string>
-    <string name="productQuantityHint">Enter quantity of product</string>
+    <string name="productQuantityHint">0</string>
     <string name="amountZeroes">0.00</string>
     <string name="bluetoothNotSupported">Bluetooth is not supported on this device</string>
     <string name="printerNotFound">Printer cannot be found. Make sure the printer is turned on and in discovery mode</string>
@@ -129,4 +129,5 @@
     <string name="sendConfirmCode">Send confirmation code</string>
     <string name ="accessDenied">Cannot have multiple devices per account. Use existing device or update to current</string>
     <string name ="dontHaveAccount">Don&#8217;t have an account?</string>
+    <string name="printBarcodeCheck">Print barcodes</string>
 </resources>

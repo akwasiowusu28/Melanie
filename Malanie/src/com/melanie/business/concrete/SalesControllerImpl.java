@@ -105,7 +105,7 @@ public class SalesControllerImpl implements SalesController {
 			sale.setSaleDate(Calendar.getInstance(TimeZone.getDefault())
 					.getTime());
 			sale.setQuantitySold(count);
-			sale.setUser(session.getUser());
+			sale.setOwnerId(session.getUser().getObjectId());
 			sales.add(sale);
 		}
 	}
@@ -131,7 +131,7 @@ public class SalesControllerImpl implements SalesController {
 				// TODO: Figure out a way to do this transactionally
 				Payment payment = new Payment(customer, amountReceived,
 						discount, balance);
-				payment.setUser(session.getUser());
+				payment.setOwnerId(session.getUser().getObjectId());
 
 				dataAccess.addDataItem(payment, Payment.class,
 						new OperationCallBack<Payment>() {

@@ -24,8 +24,8 @@ public abstract class BaseEntity implements Comparable<BaseEntity> {
 	@DatabaseField
 	private String objectId;
 
-	@DatabaseField(columnName = "UserId", foreignAutoCreate = true, foreignAutoRefresh = true, canBeNull = false, foreign = true)
-	private User user;
+	@DatabaseField
+	private String ownerId;
 
 	public int getId() {
 		return id;
@@ -51,12 +51,12 @@ public abstract class BaseEntity implements Comparable<BaseEntity> {
 		this.objectId = objectId;
 	}
 
-	public User getUser() {
-		return user;
+	public String getOwnerId() {
+		return ownerId;
 	}
 
-	public void setUser(User user) {
-		this.user = user;
+	public void setOwnerId(String ownerId) {
+		this.ownerId = ownerId;
 	}
 
 	@Override

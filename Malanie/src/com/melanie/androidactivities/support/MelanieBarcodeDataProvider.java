@@ -17,8 +17,9 @@ import com.epson.lwprint.sdk.LWPrintDataProvider;
 public class MelanieBarcodeDataProvider implements LWPrintDataProvider {
 
 	private static final String BARCODE_CONFIG_FILE = "BarcodeData/Barcode.plist";
-	private AssetManager assetManager;
-	private String barcodeString;
+	private final AssetManager assetManager;
+	private final String barcodeString;
+	private final int numberOfPages;
 
 	/**
 	 * Initilizes the data provider with path to the assets. This is needed to
@@ -28,11 +29,13 @@ public class MelanieBarcodeDataProvider implements LWPrintDataProvider {
 	 *            the asset manager
 	 * @param barcodeString
 	 *            the barcode to send to the printer
+	 * @param numberOfPages Number of pages
 	 */
 	public MelanieBarcodeDataProvider(AssetManager assetManager,
-			String barcodeString) {
+			String barcodeString, int numberOfPages) {
 		this.assetManager = assetManager;
 		this.barcodeString = barcodeString;
+		this.numberOfPages = numberOfPages;
 	}
 
 	private InputStream inputStream;
@@ -68,7 +71,7 @@ public class MelanieBarcodeDataProvider implements LWPrintDataProvider {
 
 	@Override
 	public int getNumberOfPages() {
-		return 1;
+		return numberOfPages;
 	}
 
 	@Override
@@ -88,5 +91,4 @@ public class MelanieBarcodeDataProvider implements LWPrintDataProvider {
 		// Do nothing
 
 	}
-
 }

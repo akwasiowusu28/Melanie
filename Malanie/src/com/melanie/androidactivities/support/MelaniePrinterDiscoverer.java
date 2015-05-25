@@ -25,12 +25,12 @@ public class MelaniePrinterDiscoverer {
 
 	private final int BLUETOOTH_REQUEST_CODE = 208;
 
-	private OperationCallBack<Map<String, String>> operationCallBack;
+	private final OperationCallBack<Map<String, String>> operationCallBack;
 	private LWPrintDiscoverPrinter printerDiscoverHelper;
 	private BluetoothAdapter bluetoothAdapter = null;
 	private BluetoothService receiptPrinterService;
-	private PrinterType printerType;
-	private Context context;
+	private final PrinterType printerType;
+	private final Context context;
 
 	public MelaniePrinterDiscoverer(Context context,
 			OperationCallBack<Map<String, String>> operationCallBack,
@@ -77,7 +77,7 @@ public class MelaniePrinterDiscoverer {
 		printerDiscoverHelper.startDiscover(context);
 	}
 
-	private LWPrintDiscoverPrinterCallback discoverBarcodePrinterCallBack = new LWPrintDiscoverPrinterCallback() {
+	private final LWPrintDiscoverPrinterCallback discoverBarcodePrinterCallBack = new LWPrintDiscoverPrinterCallback() {
 		@Override
 		public void onFindPrinter(LWPrintDiscoverPrinter arg0,
 				Map<String, String> printerInfo) {
@@ -86,14 +86,14 @@ public class MelaniePrinterDiscoverer {
 
 			operationCallBack.onOperationSuccessful(printerInfo);
 		}
-
+		
 		@Override
 		public void onRemovePrinter(LWPrintDiscoverPrinter arg0,
 				Map<String, String> arg1) {
 		}
 	};
 
-	private BroadcastReceiver bluetoothBroadcastReceiver = new BroadcastReceiver() {
+	private final BroadcastReceiver bluetoothBroadcastReceiver = new BroadcastReceiver() {
 
 		@Override
 		public void onReceive(Context context, Intent intent) {

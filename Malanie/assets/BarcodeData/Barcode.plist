@@ -8,8 +8,6 @@
 	<true/>
 	<key>LWLayoutDirection</key>
 	<string>LWLayoutDirectionHorizontal</string>
-	<key>LWMargins</key>
-	<string>LWMarginsMinimum</string>
 	<key>LWLengthMM</key>
 	<integer>35</integer>
 	<key>LWFrameSizeMode</key>
