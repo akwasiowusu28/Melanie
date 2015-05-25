@@ -2,7 +2,7 @@ package com.melanie.support;
 
 import java.util.List;
 
-public class MelanieOperationCallBack<T> {
+public class OperationCallBack<T> {
 
 	public void onCollectionOperationSuccessful(List<T> results) {
 	}

@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.melanie.entities.Customer;
 import com.melanie.entities.Sale;
-import com.melanie.support.MelanieOperationCallBack;
+import com.melanie.support.OperationCallBack;
 import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieBusinessException;
 
@@ -18,11 +18,11 @@ import com.melanie.support.exceptions.MelanieBusinessException;
 public interface SalesController {
 
 	List<Sale> generateSaleItems(List<String> barcodes,
-			MelanieOperationCallBack<Sale> salesCallBack)
+			OperationCallBack<Sale> salesCallBack)
 			throws MelanieBusinessException;
 
 	List<Sale> findSalesByCustomer(Customer customer,
-			MelanieOperationCallBack<Sale> operationCallBack)
+			OperationCallBack<Sale> operationCallBack)
 			throws MelanieBusinessException;
 
 	OperationResult recordPayment(Customer customer, List<Sale> sale,
@@ -30,7 +30,7 @@ public interface SalesController {
 			throws MelanieBusinessException;
 
 	List<Sale> getSalesBetween(Date fromDate, Date toDate,
-			MelanieOperationCallBack<Sale> operationCallBack)
+			OperationCallBack<Sale> operationCallBack)
 			throws MelanieBusinessException;
 
 	OperationResult saveCurrentSales(Customer customer, double amountReceived,

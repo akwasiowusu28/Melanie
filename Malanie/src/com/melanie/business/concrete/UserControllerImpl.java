@@ -2,30 +2,30 @@ package com.melanie.business.concrete;
 
 import com.backendless.BackendlessUser;
 import com.melanie.business.UserController;
-import com.melanie.dataaccesslayer.MelanieCloudAccess;
-import com.melanie.dataaccesslayer.MelanieDataAccessLayer;
+import com.melanie.dataaccesslayer.CloudAccess;
+import com.melanie.dataaccesslayer.DataAccessLayer;
 import com.melanie.entities.User;
 import com.melanie.support.CodeStrings;
-import com.melanie.support.MelanieBusinessFactory;
-import com.melanie.support.MelanieDataFactory;
-import com.melanie.support.MelanieOperationCallBack;
+import com.melanie.support.BusinessFactory;
+import com.melanie.support.DataFactory;
+import com.melanie.support.OperationCallBack;
 import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieBusinessException;
 import com.melanie.support.exceptions.MelanieDataLayerException;
 
 public class UserControllerImpl implements UserController {
 
-	private final MelanieDataAccessLayer dataAccess;
-	private final MelanieCloudAccess cloudAccess;
+	private final DataAccessLayer dataAccess;
+	private final CloudAccess cloudAccess;
 
 	public UserControllerImpl() {
-		dataAccess = MelanieDataFactory.makeDataAccess();
-		cloudAccess = MelanieDataFactory.makeCloudAccess();
+		dataAccess = DataFactory.makeDataAccess();
+		cloudAccess = DataFactory.makeCloudAccess();
 	}
 
 	@Override
 	public void createUser(String name, String phone, String password, String deviceId,
-			final MelanieOperationCallBack<User> operationCallBack) throws MelanieBusinessException {
+			final OperationCallBack<User> operationCallBack) throws MelanieBusinessException {
 		User user = new User(name, password, phone, deviceId, false);
 		if (dataAccess != null) {
 			try {
@@ -38,19 +38,19 @@ public class UserControllerImpl implements UserController {
 	}
 
 	@Override
-	public void loginSavedUser(final MelanieOperationCallBack<User> operationCallBack) throws MelanieBusinessException {
+	public void loginSavedUser(final OperationCallBack<User> operationCallBack) throws MelanieBusinessException {
 		// Since there's should be only one user on this device, find the user
 		// with id 1 from cache
 		if (dataAccess != null) {
 			try {
 				final User user = dataAccess.findItemById(1, User.class, null);
 				if (user != null && cloudAccess != null) {
-					cloudAccess.login(user, new MelanieOperationCallBack<BackendlessUser>() {
+					cloudAccess.login(user, new OperationCallBack<BackendlessUser>() {
 
 						@Override
 						public void onOperationSuccessful(BackendlessUser result) {
 							user.setProperties(result.getProperties());
-							MelanieBusinessFactory.getSession().setUser(user);
+							BusinessFactory.getSession().setUser(user);
 							operationCallBack.onOperationSuccessful(user);
 						}
 					});
@@ -62,7 +62,8 @@ public class UserControllerImpl implements UserController {
 	}
 
 	@Override
-	public void updateUser(User user, String field, Object value, final MelanieOperationCallBack<OperationResult> operationCallBack) throws MelanieBusinessException {
+	public void updateUser(User user, String field, Object value,
+			final OperationCallBack<OperationResult> operationCallBack) throws MelanieBusinessException {
 
 		if (dataAccess != null) {
 			try {
@@ -70,11 +71,12 @@ public class UserControllerImpl implements UserController {
 					user = getLocalUser();
 				}
 				user.setProperty(field, value);
-				performUpdate(user,new MelanieOperationCallBack<BackendlessUser>(){
+				performUpdate(user, new OperationCallBack<BackendlessUser>() {
 
 					@Override
 					public void onOperationSuccessful(BackendlessUser result) {
-						operationCallBack.onOperationSuccessful(OperationResult.SUCCESSFUL);
+						if(operationCallBack != null)
+						  operationCallBack.onOperationSuccessful(OperationResult.SUCCESSFUL);
 					}
 
 					@Override
@@ -91,20 +93,20 @@ public class UserControllerImpl implements UserController {
 		}
 	}
 
-	private void performUpdate(final User user, MelanieOperationCallBack<BackendlessUser> operationCallBack)
+	private void performUpdate(final User user, OperationCallBack<BackendlessUser> operationCallBack)
 			throws MelanieDataLayerException {
 		if (user != null && cloudAccess != null) {
 			addUserToLocalDataStore(user);
-			cloudAccess.updateUser(user,operationCallBack);
+			cloudAccess.updateUser(user, operationCallBack);
 		}
 	}
 
 	@Override
 	public boolean localUserExists() throws MelanieBusinessException {
 		boolean userExists = false;
-		
-			userExists = getLocalUser() != null;
-		
+
+		userExists = getLocalUser() != null;
+
 		return userExists;
 	}
 
@@ -122,23 +124,24 @@ public class UserControllerImpl implements UserController {
 	}
 
 	@Override
-	public void login(final User user, final MelanieOperationCallBack<OperationResult> operationCallBack) {
+	public void login(final User user, final OperationCallBack<OperationResult> operationCallBack) {
 		if (cloudAccess != null) {
-			cloudAccess.login(user, new MelanieOperationCallBack<BackendlessUser>() {
+			cloudAccess.login(user, new OperationCallBack<BackendlessUser>() {
 
 				@Override
 				public void onOperationSuccessful(BackendlessUser result) {
 					user.setProperties(result.getProperties());
 					MelanieSessionImpl.getInstance().setUser(user);
-					
-					
-						try {
-							if(!localUserExists())
+
+					try {
+						if (!localUserExists()) {
+							user.setConfirmed((boolean) user.getProperty(CodeStrings.ISCONFIRMED));
 							addUserToLocalDataStore(user);
-						} catch (MelanieDataLayerException | MelanieBusinessException e) {
-							operationCallBack.onOperationFailed(e);
 						}
-					
+					} catch (MelanieDataLayerException | MelanieBusinessException e) {
+						operationCallBack.onOperationFailed(e);
+					}
+
 					operationCallBack.onOperationSuccessful(OperationResult.SUCCESSFUL);
 				}
 
@@ -153,12 +156,12 @@ public class UserControllerImpl implements UserController {
 	}
 
 	@Override
-	public void checkUserExistOnCloud(String phone, final MelanieOperationCallBack<User> operationCallBack)
+	public void checkPhoneExistOnCloud(String phone, final OperationCallBack<User> operationCallBack)
 			throws MelanieBusinessException {
 		if (cloudAccess != null) {
 			try {
 				cloudAccess.findItemByFieldName(CodeStrings.PHONE, phone, BackendlessUser.class,
-						new MelanieOperationCallBack<BackendlessUser>() {
+						new OperationCallBack<BackendlessUser>() {
 
 							@Override
 							public void onOperationSuccessful(BackendlessUser result) {

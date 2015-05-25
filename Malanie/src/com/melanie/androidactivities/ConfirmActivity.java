@@ -17,15 +17,14 @@ import com.melanie.androidactivities.support.MelanieAlertDialog.MelanieAlertDial
 import com.melanie.androidactivities.support.Utils;
 import com.melanie.business.MelanieSession;
 import com.melanie.business.UserController;
+import com.melanie.entities.User;
 import com.melanie.support.CodeStrings;
-import com.melanie.support.MelanieBusinessFactory;
+import com.melanie.support.BusinessFactory;
 import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieBusinessException;
 
 public class ConfirmActivity extends AppCompatActivity {
 
-	private static final String IS_MESSAGE_SENT = "isMessageSent";
-	
 	private Button confirmButton;
 	private String confirmCode;
 	private UserController userController;
@@ -35,15 +34,12 @@ public class ConfirmActivity extends AppCompatActivity {
 	private EditText confirmTextField;
 	private TextView confirmLabel;
 	private Button sendCodeButton;
-	private boolean isMessageSent;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_confirm);
-		if(savedInstanceState != null){
-			isMessageSent =savedInstanceState.getBoolean(IS_MESSAGE_SENT);
-		}
+		
 		initializeFields();
 		setupConfirmButton();
 		showConfirmAlertDialog();
@@ -51,7 +47,7 @@ public class ConfirmActivity extends AppCompatActivity {
 	}
 
 	private void initializeFields() {
-		userController = MelanieBusinessFactory.makeUserController();
+		userController = BusinessFactory.makeUserController();
 		Intent intent = getIntent();
 		phoneNumber = intent.getStringExtra(Utils.Constants.PHONE_NUMBER);
 		confirmFieldsDisabled = false;
@@ -136,8 +132,10 @@ public class ConfirmActivity extends AppCompatActivity {
 				.getText().toString();
 		if (enteredConfirmCode.equals(confirmCode)) {
 			try {
-				MelanieSession session = MelanieBusinessFactory.getSession();
-				userController.updateUser(session.getUser(), CodeStrings.ISCONFIRMED, true,null);
+				MelanieSession session = BusinessFactory.getSession();
+				User user = session.getUser();
+				user.setConfirmed(true);
+				userController.updateUser(user, CodeStrings.ISCONFIRMED, true,null);
 			} catch (MelanieBusinessException e) {
 				// TODO log it
 				e.printStackTrace();
@@ -150,11 +148,6 @@ public class ConfirmActivity extends AppCompatActivity {
 	private void sendConfirmSMS() {
 		generateConfirmCode();
 
-		//Intent intent = new Intent(this,null);
-
-		//PendingIntent pendingIntent = PendingIntent.getActivity(this, 28,
-		//		intent, 0);
-		isMessageSent = true;
 		SmsManager manager = SmsManager.getDefault();
 		manager.sendTextMessage(phoneNumber, null, getConfirmMessage(),
 				null, null);
@@ -177,9 +170,4 @@ public class ConfirmActivity extends AppCompatActivity {
 		finish();
 	}
 
-	@Override
-	protected void onSaveInstanceState(Bundle savedInstanceState) {
-		savedInstanceState.putBoolean(IS_MESSAGE_SENT, isMessageSent);
-		super.onSaveInstanceState(savedInstanceState);
-	}
 }

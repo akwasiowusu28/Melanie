@@ -18,7 +18,7 @@ import com.melanie.androidactivities.support.MelaniePrinterDiscoverer;
 import com.melanie.androidactivities.support.MelanieSingleTextListAdapter;
 import com.melanie.androidactivities.support.PrinterType;
 import com.melanie.androidactivities.support.Utils;
-import com.melanie.support.MelanieOperationCallBack;
+import com.melanie.support.OperationCallBack;
 
 public class SelectPrinterActivity extends Activity {
 
@@ -55,7 +55,7 @@ public class SelectPrinterActivity extends Activity {
 	private void setupPrinterDiscoverer() {
 
 		printerDiscoverer = new MelaniePrinterDiscoverer(this,
-				new MelanieOperationCallBack<Map<String, String>>() {
+				new OperationCallBack<Map<String, String>>() {
 					@Override
 					public void onOperationSuccessful(Map<String, String> result) {
 						printerInfo.putAll(result);

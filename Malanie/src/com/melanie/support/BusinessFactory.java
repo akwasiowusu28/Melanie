@@ -11,7 +11,7 @@ import com.melanie.business.concrete.ProductEntryControllerImpl;
 import com.melanie.business.concrete.SalesControllerImpl;
 import com.melanie.business.concrete.UserControllerImpl;
 
-public class MelanieBusinessFactory {
+public class BusinessFactory {
 
 	public static MelanieSession getSession() {
 		return  MelanieSessionImpl.getInstance();

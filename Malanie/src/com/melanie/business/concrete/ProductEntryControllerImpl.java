@@ -3,15 +3,17 @@ package com.melanie.business.concrete;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.melanie.business.MelanieSession;
 import com.melanie.business.ProductEntryController;
-import com.melanie.dataaccesslayer.MelanieDataAccessLayer;
+import com.melanie.dataaccesslayer.DataAccessLayer;
 import com.melanie.entities.Category;
 import com.melanie.entities.Product;
 import com.melanie.support.MelanieArgumentValidator;
 import com.melanie.support.MelanieArgumentValidatorImpl;
-import com.melanie.support.MelanieDataFactory;
-import com.melanie.support.MelanieOperationCallBack;
-import com.melanie.support.MelanieSupportFactory;
+import com.melanie.support.BusinessFactory;
+import com.melanie.support.DataFactory;
+import com.melanie.support.OperationCallBack;
+import com.melanie.support.SupportFactory;
 import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieBusinessException;
 import com.melanie.support.exceptions.MelanieDataLayerException;
@@ -31,12 +33,15 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 		public static final String BARCODE = "Barcode";
 	}
 
-	private MelanieArgumentValidator argumentValidator;
-	private MelanieDataAccessLayer dataAccess;
+	private final MelanieArgumentValidator argumentValidator;
+	private final DataAccessLayer dataAccess;
+	
+	private final MelanieSession session;
 
 	public ProductEntryControllerImpl() {
-		argumentValidator = MelanieSupportFactory.makeValidator();
-		dataAccess = MelanieDataFactory.makeDataAccess();
+		argumentValidator = SupportFactory.makeValidator();
+		dataAccess = DataFactory.makeDataAccess();
+		session = BusinessFactory.getSession();
 	}
 
 	/**
@@ -53,6 +58,7 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 		Category category = null;
 		if (dataAccess != null) {
 			category = new Category(categoryName);
+			category.setUser(session.getUser());
 			OperationResult result;
 			try {
 				result = dataAccess.addDataItem(category, Category.class, null);
@@ -75,7 +81,7 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 	 */
 	@Override
 	public Category findCategory(int id,
-			MelanieOperationCallBack<Category> operationCallBack)
+			OperationCallBack<Category> operationCallBack)
 			throws MelanieBusinessException {
 		Category category = null;
 		if (dataAccess != null)
@@ -101,7 +107,7 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 
 	@Override
 	public Category findCategory(String categoryName,
-			MelanieOperationCallBack<Category> operationCallBack)
+			OperationCallBack<Category> operationCallBack)
 			throws MelanieBusinessException {
 		new MelanieArgumentValidatorImpl().VerifyNotEmptyString(categoryName);
 		Category category = null;
@@ -124,7 +130,7 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 	 */
 	@Override
 	public List<Category> getAllCategories(
-			MelanieOperationCallBack<Category> operationCallBack)
+			OperationCallBack<Category> operationCallBack)
 			throws MelanieBusinessException {
 		List<Category> allCategories = new ArrayList<Category>();
 		if (dataAccess != null)
@@ -161,6 +167,7 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 		if (dataAccess != null) {
 			Product product = new Product(productName, quantity, price,
 					category, barcode);
+			product.setUser(session.getUser());
 			try {
 				result = dataAccess.addDataItem(product, Product.class, null);
 			} catch (MelanieDataLayerException e) {
@@ -175,7 +182,7 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 	 */
 	@Override
 	public List<Product> findAllProducts(
-			MelanieOperationCallBack<Product> operationCallBack)
+			OperationCallBack<Product> operationCallBack)
 			throws MelanieBusinessException {
 
 		List<Product> allProducts = new ArrayList<Product>();
@@ -203,7 +210,7 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 	public OperationResult removeProduct(int productId)
 			throws MelanieBusinessException {
 		try {
-			findProduct(productId, new MelanieOperationCallBack<Product>() {
+			findProduct(productId, new OperationCallBack<Product>() {
 
 				@Override
 				public void onOperationSuccessful(Product result) {
@@ -229,7 +236,7 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 	 */
 	@Override
 	public Product findProduct(int productId,
-			MelanieOperationCallBack<Product> operationCallBack)
+			OperationCallBack<Product> operationCallBack)
 			throws MelanieBusinessException {
 		Product product = null;
 		if (dataAccess != null)
@@ -251,7 +258,7 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 	 */
 	@Override
 	public Product findProduct(String productName,
-			MelanieOperationCallBack<Product> operationCallBack)
+			OperationCallBack<Product> operationCallBack)
 			throws MelanieBusinessException {
 		Product product = null;
 		if (dataAccess != null)
@@ -319,7 +326,7 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 	 */
 	@Override
 	public Product findProductByBarcode(String barcode,
-			MelanieOperationCallBack<Product> operationCallBack)
+			OperationCallBack<Product> operationCallBack)
 			throws MelanieBusinessException {
 		Product product = null;
 		argumentValidator.VerifyNotEmptyString(barcode);

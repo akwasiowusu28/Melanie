@@ -1,18 +1,18 @@
 package com.melanie.business.concrete;
 
 import com.melanie.business.MelanieSession;
-import com.melanie.dataaccesslayer.MelanieCloudAccess;
-import com.melanie.dataaccesslayer.MelanieDataAccessLayer;
+import com.melanie.dataaccesslayer.CloudAccess;
+import com.melanie.dataaccesslayer.DataAccessLayer;
 import com.melanie.entities.User;
-import com.melanie.support.MelanieBusinessFactory;
-import com.melanie.support.MelanieDataFactory;
+import com.melanie.support.BusinessFactory;
+import com.melanie.support.DataFactory;
 import com.melanie.support.exceptions.MelanieBusinessException;
 
 public class MelanieSessionImpl implements MelanieSession {
 
 	private static MelanieSession instance;
 	
-	private static MelanieDataAccessLayer dataAccess;
+	private static DataAccessLayer dataAccess;
 	private static boolean isCacheInitialized;
 	private User user;
 
@@ -21,7 +21,7 @@ public class MelanieSessionImpl implements MelanieSession {
 	}
 	
 	private void initializeMelanieSession(){
-	    dataAccess =	MelanieDataFactory.makeDataAccess();
+	    dataAccess =	DataFactory.makeDataAccess();
 	    isCacheInitialized = false;
 	    user = null;
 	}
@@ -45,7 +45,7 @@ public class MelanieSessionImpl implements MelanieSession {
 
 	@Override
 	public <T> void initializeCloud(T dataContext) {
-		MelanieCloudAccess.initialize(dataContext);
+		CloudAccess.initialize(dataContext);
 	}
 	
 	@Override
@@ -73,7 +73,7 @@ public class MelanieSessionImpl implements MelanieSession {
 		boolean localUserExists = false;
 		
 		try {
-			localUserExists = MelanieBusinessFactory.makeUserController().localUserExists();
+			localUserExists = BusinessFactory.makeUserController().localUserExists();
 		} catch (MelanieBusinessException e) {
 			e.printStackTrace(); //TODO log it
 		}

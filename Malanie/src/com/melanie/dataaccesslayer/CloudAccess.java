@@ -12,11 +12,11 @@ import com.backendless.exceptions.BackendlessFault;
 import com.backendless.persistence.BackendlessDataQuery;
 import com.melanie.dataaccesslayer.datasource.DataSourceManager;
 import com.melanie.entities.User;
-import com.melanie.support.MelanieOperationCallBack;
+import com.melanie.support.OperationCallBack;
 import com.melanie.support.exceptions.MelanieDataLayerException;
 
 @SuppressWarnings("unchecked")
-public class MelanieCloudAccess {
+public class CloudAccess {
 
 	private static final String ID = "Id";
 	private static final String DATEFORMAT = "yyyyMMddHHmmss";
@@ -26,7 +26,7 @@ public class MelanieCloudAccess {
 	private static final String SINGLE_QUOTE = "'";
 	private boolean isCollectionOperation;
 
-	public MelanieCloudAccess() {
+	public CloudAccess() {
 		isCollectionOperation = false;
 	}
 
@@ -35,7 +35,7 @@ public class MelanieCloudAccess {
 	}
 
 	public <T> void addDataItem(T dataItem, Class<T> itemClass,
-			MelanieOperationCallBack<T> operationCallBack)
+			OperationCallBack<T> operationCallBack)
 			throws MelanieDataLayerException {
 		try {
 			Backendless.Persistence.of(itemClass).save(dataItem,
@@ -55,13 +55,13 @@ public class MelanieCloudAccess {
 	}
 
 	public <T> void updateDataItem(T dataItem, Class<T> itemClass,
-			MelanieOperationCallBack<T> operationCallBack)
+			OperationCallBack<T> operationCallBack)
 			throws MelanieDataLayerException {
 		addDataItem(dataItem, itemClass, operationCallBack);
 	}
 
 	public <T> void deleteDataItem(T dataItem, Class<T> itemClass,
-			MelanieOperationCallBack<T> operationCallBack)
+			OperationCallBack<T> operationCallBack)
 			throws MelanieDataLayerException {
 		try {
 			Backendless.Persistence.of(itemClass).remove(dataItem,
@@ -74,7 +74,7 @@ public class MelanieCloudAccess {
 	}
 
 	public <T> void findItemById(int itemId, Class<T> itemClass,
-			MelanieOperationCallBack<T> operationCallBack)
+			OperationCallBack<T> operationCallBack)
 			throws MelanieDataLayerException {
 		try {
 			findItemByFieldName(ID, String.valueOf(itemId), itemClass,
@@ -85,7 +85,7 @@ public class MelanieCloudAccess {
 	}
 
 	public <T> void findItemByFieldName(String fieldName, String searchValue,
-			Class<T> itemClass, MelanieOperationCallBack<T> operationCallBack)
+			Class<T> itemClass, OperationCallBack<T> operationCallBack)
 			throws MelanieDataLayerException {
 		try {
 			String whereClause = fieldName + "='" + searchValue + "'";
@@ -102,7 +102,7 @@ public class MelanieCloudAccess {
 	}
 
 	public <T> void findAllItems(Class<T> itemClass,
-			MelanieOperationCallBack<T> operationCallBack)
+			OperationCallBack<T> operationCallBack)
 			throws MelanieDataLayerException {
 		try {
 			isCollectionOperation = true;
@@ -116,7 +116,7 @@ public class MelanieCloudAccess {
 	}
 
 	public <T> void getLastInsertedItem(Class<T> itemClass,
-			MelanieOperationCallBack<T> operationCallBack)
+			OperationCallBack<T> operationCallBack)
 			throws MelanieDataLayerException {
 		try {
 			Backendless.Persistence.of(itemClass).findLast(
@@ -128,7 +128,7 @@ public class MelanieCloudAccess {
 	}
 
 	public <T> void findItemsByFieldName(String fieldName, String searchValue,
-			Class<T> itemClass, MelanieOperationCallBack<T> operationCallBack)
+			Class<T> itemClass, OperationCallBack<T> operationCallBack)
 			throws MelanieDataLayerException {
 		try {
 			isCollectionOperation = true;
@@ -147,7 +147,7 @@ public class MelanieCloudAccess {
 
 	public <T, E> void findItemsBetween(String fieldName, E lowerBound,
 			E upperBound, Class<T> itemClass,
-			MelanieOperationCallBack<T> operationCallBack)
+			OperationCallBack<T> operationCallBack)
 			throws MelanieDataLayerException {
 		try {
 			isCollectionOperation = true;
@@ -181,17 +181,17 @@ public class MelanieCloudAccess {
 
 	}
 
-	public void addUser(User user, MelanieOperationCallBack<BackendlessUser> operationCallBack) {
+	public void addUser(User user, OperationCallBack<BackendlessUser> operationCallBack) {
 
 		Backendless.UserService.register(user,
 				new BackendAsynCallBack<BackendlessUser>(operationCallBack));
 	}
 
-	public void updateUser(User user, MelanieOperationCallBack<BackendlessUser> operationCallBack){
+	public void updateUser(User user, OperationCallBack<BackendlessUser> operationCallBack){
 		Backendless.UserService.update(user, new BackendAsynCallBack<>(operationCallBack));
 	}
 	
-	public void login(final User user, MelanieOperationCallBack<BackendlessUser> operationCallBack){
+	public void login(final User user, OperationCallBack<BackendlessUser> operationCallBack){
 		
 		Backendless.UserService.login(user.getDeviceId(), user.getPassword(),
 				                     new BackendAsynCallBack<>(operationCallBack));
@@ -200,9 +200,9 @@ public class MelanieCloudAccess {
 	
 	private class BackendAsynCallBack<T> implements AsyncCallback<T> {
 
-		private final MelanieOperationCallBack<T> operationCallBack;
+		private final OperationCallBack<T> operationCallBack;
 
-		public BackendAsynCallBack(MelanieOperationCallBack<T> operationCallBack) {
+		public BackendAsynCallBack(OperationCallBack<T> operationCallBack) {
 			this.operationCallBack = operationCallBack;
 		}
 

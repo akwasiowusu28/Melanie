@@ -1,6 +1,6 @@
 package com.melanie.support;
 
-public class MelanieSupportFactory {
+public class SupportFactory {
 
 	public static MelanieArgumentValidator makeValidator(){
 		return new MelanieArgumentValidatorImpl();

@@ -3,7 +3,7 @@ package com.melanie.business;
 import java.util.List;
 
 import com.melanie.entities.Customer;
-import com.melanie.support.MelanieOperationCallBack;
+import com.melanie.support.OperationCallBack;
 import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieBusinessException;
 
@@ -22,7 +22,7 @@ public interface CustomersController {
 	OperationResult addCachedCustomer() throws MelanieBusinessException;
 
 	List<Customer> getAllCustomers(
-			MelanieOperationCallBack<Customer> operationCallBack)
+			OperationCallBack<Customer> operationCallBack)
 			throws MelanieBusinessException;
 
 	OperationResult updateCustomer(Customer customer)
@@ -32,7 +32,7 @@ public interface CustomersController {
 			throws MelanieBusinessException;
 
 	Customer findCustomer(int customerId,
-			MelanieOperationCallBack<Customer> operationCallBack)
+			OperationCallBack<Customer> operationCallBack)
 			throws MelanieBusinessException;
 
 	int getLastInsertedCustomerId() throws MelanieBusinessException;

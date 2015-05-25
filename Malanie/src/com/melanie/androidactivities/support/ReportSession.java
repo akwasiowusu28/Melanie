@@ -13,8 +13,8 @@ import java.util.TimeZone;
 
 import com.melanie.business.SalesController;
 import com.melanie.entities.Sale;
-import com.melanie.support.MelanieBusinessFactory;
-import com.melanie.support.MelanieOperationCallBack;
+import com.melanie.support.BusinessFactory;
+import com.melanie.support.OperationCallBack;
 import com.melanie.support.exceptions.MelanieBusinessException;
 
 public class ReportSession {
@@ -63,7 +63,7 @@ public class ReportSession {
 		dailySalesDisplayItems = new ArrayList<Map.Entry<String, Integer>>();
 		monthlySalesDisplayItems = new ArrayList<Map.Entry<String, Integer>>();
 		sales = new ArrayList<Sale>();
-		salesController = MelanieBusinessFactory.makeSalesController();
+		salesController = BusinessFactory.makeSalesController();
 		dateformater = new SimpleDateFormat(DATEFORMAT, Locale.getDefault());
 		initializeDates();
 		getGroupedSales(false);
@@ -83,7 +83,7 @@ public class ReportSession {
 				sales.clear();
 			try {
 				sales.addAll(salesController.getSalesBetween(startDate,
-						endDate, new MelanieOperationCallBack<Sale>() {
+						endDate, new OperationCallBack<Sale>() {
 
 							@Override
 							public void onCollectionOperationSuccessful(

@@ -36,6 +36,7 @@
         android:id="@+id/sendConfirmCode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="#59BC59"
         android:layout_centerInParent="true"
         android:text="@string/sendConfirmCode"
         android:visibility="gone" />

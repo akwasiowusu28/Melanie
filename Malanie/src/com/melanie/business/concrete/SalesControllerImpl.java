@@ -11,17 +11,18 @@ import java.util.Set;
 import java.util.TimeZone;
 
 import com.melanie.androidactivities.support.Utils;
+import com.melanie.business.MelanieSession;
 import com.melanie.business.ProductEntryController;
 import com.melanie.business.SalesController;
-import com.melanie.dataaccesslayer.MelanieDataAccessLayer;
+import com.melanie.dataaccesslayer.DataAccessLayer;
 import com.melanie.entities.Customer;
 import com.melanie.entities.Payment;
 import com.melanie.entities.Product;
 import com.melanie.entities.Sale;
 import com.melanie.entities.SalePayment;
-import com.melanie.support.MelanieBusinessFactory;
-import com.melanie.support.MelanieDataFactory;
-import com.melanie.support.MelanieOperationCallBack;
+import com.melanie.support.BusinessFactory;
+import com.melanie.support.DataFactory;
+import com.melanie.support.OperationCallBack;
 import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieBusinessException;
 import com.melanie.support.exceptions.MelanieDataLayerException;
@@ -31,22 +32,24 @@ public class SalesControllerImpl implements SalesController {
 	private static final String CUSTOMEROBJECTID = "Customer.ObjectId";
 	private static final String ADDNEWSALE = "addNewSale";
 
-	private ProductEntryController productController;
-	private MelanieDataAccessLayer dataAccess;
+	private final ProductEntryController productController;
+	private final DataAccessLayer dataAccess;
 	private List<Sale> sales;
-	private Queue<String> notFoundProducts;
+	private final Queue<String> notFoundProducts;
 	private int operationCount = 0;
+	private final MelanieSession session;
 
 	public SalesControllerImpl() {
-		productController = MelanieBusinessFactory.makeProductEntryController();
-		dataAccess = MelanieDataFactory.makeDataAccess();
+		productController = BusinessFactory.makeProductEntryController();
+		dataAccess = DataFactory.makeDataAccess();
 		sales = new ArrayList<Sale>();
 		notFoundProducts = new LinkedList<String>();
+		session = BusinessFactory.getSession();
 	}
 
 	@Override
 	public List<Sale> generateSaleItems(List<String> barcodes,
-			MelanieOperationCallBack<Sale> uiCallBack)
+			OperationCallBack<Sale> uiCallBack)
 			throws MelanieBusinessException {
 		operationCount = 0;
 		Map<String, Integer> itemGroup = Utils.groupItems(barcodes);
@@ -72,12 +75,12 @@ public class SalesControllerImpl implements SalesController {
 	}
 
 	private void addNewSale(final String barcode, final int count,
-			final int total, final MelanieOperationCallBack<Sale> uiCallBack)
+			final int total, final OperationCallBack<Sale> uiCallBack)
 			throws MelanieBusinessException {
 		Product product;
 
 		product = productController.findProductByBarcode(barcode,
-				new MelanieOperationCallBack<Product>() {
+				new OperationCallBack<Product>() {
 
 					@Override
 					public void onOperationSuccessful(Product result) {
@@ -102,6 +105,7 @@ public class SalesControllerImpl implements SalesController {
 			sale.setSaleDate(Calendar.getInstance(TimeZone.getDefault())
 					.getTime());
 			sale.setQuantitySold(count);
+			sale.setUser(session.getUser());
 			sales.add(sale);
 		}
 	}
@@ -127,9 +131,10 @@ public class SalesControllerImpl implements SalesController {
 				// TODO: Figure out a way to do this transactionally
 				Payment payment = new Payment(customer, amountReceived,
 						discount, balance);
+				payment.setUser(session.getUser());
 
 				dataAccess.addDataItem(payment, Payment.class,
-						new MelanieOperationCallBack<Payment>() {
+						new OperationCallBack<Payment>() {
 							@Override
 							public void onOperationSuccessful(Payment payment) {
 								for (Sale sale : sales) {
@@ -162,7 +167,7 @@ public class SalesControllerImpl implements SalesController {
 
 	@Override
 	public List<Sale> findSalesByCustomer(Customer customer,
-			MelanieOperationCallBack<Sale> operationCallBack)
+			OperationCallBack<Sale> operationCallBack)
 			throws MelanieBusinessException {
 
 		List<Sale> customerSales = new ArrayList<Sale>();
@@ -198,7 +203,7 @@ public class SalesControllerImpl implements SalesController {
 
 	@Override
 	public List<Sale> getSalesBetween(Date fromDate, Date toDate,
-			final MelanieOperationCallBack<Sale> operationCallBack)
+			final OperationCallBack<Sale> operationCallBack)
 			throws MelanieBusinessException {
 		List<Sale> sales = new ArrayList<Sale>();
 		try {

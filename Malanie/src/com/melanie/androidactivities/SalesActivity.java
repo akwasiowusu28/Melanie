@@ -30,8 +30,8 @@ import com.melanie.business.CustomersController;
 import com.melanie.business.SalesController;
 import com.melanie.entities.Customer;
 import com.melanie.entities.Sale;
-import com.melanie.support.MelanieBusinessFactory;
-import com.melanie.support.MelanieOperationCallBack;
+import com.melanie.support.BusinessFactory;
+import com.melanie.support.OperationCallBack;
 import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieBusinessException;
 
@@ -81,13 +81,13 @@ public class SalesActivity extends AppCompatActivity {
 	private void initializeFields() {
 		handler = new Handler(getMainLooper());
 		executorService = Executors.newScheduledThreadPool(2);
-		salesController = MelanieBusinessFactory.makeSalesController();
+		salesController = BusinessFactory.makeSalesController();
 		sales = new ArrayList<Sale>();
 		salesListAdapter = new ProductsAndSalesListViewAdapter<Sale>(this,
 				sales, false);
 		discountListener = new TextListener(R.id.discountValue);
 		amountListener = new TextListener(R.id.amountReceived);
-		customersController = MelanieBusinessFactory.makeCustomersController();
+		customersController = BusinessFactory.makeCustomersController();
 		amountReceived = discount = balance = total = 0;
 		receiptPrintingHelper = new ReceiptPrintingHelper(this);
 	}
@@ -313,7 +313,7 @@ public class SalesActivity extends AppCompatActivity {
 		try {
 			sales.clear();
 			sales.addAll(salesController.generateSaleItems(barcodes,
-					new MelanieOperationCallBack<Sale>() {
+					new OperationCallBack<Sale>() {
 
 						@Override
 						public void onCollectionOperationSuccessful(

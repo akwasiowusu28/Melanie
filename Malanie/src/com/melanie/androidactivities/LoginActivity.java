@@ -22,8 +22,8 @@ import com.melanie.business.UserController;
 import com.melanie.dataaccesslayer.datasource.DataSource;
 import com.melanie.entities.User;
 import com.melanie.support.CodeStrings;
-import com.melanie.support.MelanieBusinessFactory;
-import com.melanie.support.MelanieOperationCallBack;
+import com.melanie.support.BusinessFactory;
+import com.melanie.support.OperationCallBack;
 import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieBusinessException;
 
@@ -58,7 +58,7 @@ public class LoginActivity extends Activity {
 	}
 
 	private void initializeSession() {
-		session = MelanieBusinessFactory.getSession();
+		session = BusinessFactory.getSession();
 
 		DataSource dataSource = OpenHelperManager.getHelper(getBaseContext(), DataSource.class);
 
@@ -70,9 +70,9 @@ public class LoginActivity extends Activity {
 	}
 
 	private void initializeFields() {
-		userController = MelanieBusinessFactory.makeUserController();
+		userController = BusinessFactory.makeUserController();
 		handler = new Handler(getMainLooper());
-		session = MelanieBusinessFactory.getSession();
+		session = BusinessFactory.getSession();
 		currentDeviceId = getCurrentDeviceId();
 		password = Utils.Constants.EMPTY_STRING;
 	}
@@ -116,7 +116,7 @@ public class LoginActivity extends Activity {
 		password = passwordTextField.getText().toString();
 		if (userController != null) {
 			try {
-				userController.checkUserExistOnCloud(phoneNumber, new MelanieOperationCallBack<User>() {
+				userController.checkPhoneExistOnCloud(phoneNumber, new OperationCallBack<User>() {
 
 					@Override
 					public void onOperationSuccessful(User user) {
@@ -173,7 +173,7 @@ public class LoginActivity extends Activity {
 
 					@Override
 					public void yesButtonOperation() {
-						updateUserDeviceId(new MelanieOperationCallBack<OperationResult>() {
+						updateUserDeviceId(new OperationCallBack<OperationResult>() {
 
 							@Override
 							public void onOperationSuccessful(OperationResult result) {
@@ -193,7 +193,7 @@ public class LoginActivity extends Activity {
 	private void performLogin() {
 		user.setDeviceId(currentDeviceId);
 		user.setPassword(password);
-		userController.login(user, new MelanieOperationCallBack<OperationResult>() {
+		userController.login(user, new OperationCallBack<OperationResult>() {
 			@Override
 			public void onOperationSuccessful(OperationResult result) {
 				if (result.equals(OperationResult.SUCCESSFUL)) {
@@ -210,7 +210,7 @@ public class LoginActivity extends Activity {
 		finish();
 	}
 
-	private void updateUserDeviceId(MelanieOperationCallBack<OperationResult> operationCallBack) {
+	private void updateUserDeviceId(OperationCallBack<OperationResult> operationCallBack) {
 		if (userController != null)
 			try {
 				userController.updateUser(user, CodeStrings.DEVICEID, currentDeviceId,operationCallBack);

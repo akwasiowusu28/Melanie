@@ -50,7 +50,9 @@
             android:name=".CategoriesActivity"
             android:label="@string/app_name" >
         </activity>
-        <activity android:name=".ProductsMainActivity" >
+        <activity
+            android:name=".ProductsMainActivity"
+            android:label="@string/title_activity_products" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.melanie.androidactivities.MainActivity" />
@@ -73,6 +75,9 @@
         <activity
             android:name=".SalesActivity"
             android:label="@string/title_activity_sales" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.melanie.androidactivities.MainActivity" />
         </activity>
         <activity
             android:name=".CustomersActivity"
@@ -104,8 +109,7 @@
         </activity>
         <activity
             android:name=".MelanieInventoryActivity"
-            android:label="@string/melanie_inventory"
-            android:parentActivityName=".ProductsMainActivity" >
+            android:label="@string/melanie_inventory" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.melanie.androidactivities.ProductsMainActivity" />
@@ -116,16 +120,14 @@
         </activity>
         <activity
             android:name=".DailySalesReportActivity"
-            android:label="@string/title_activity_sales_report"
-            android:parentActivityName=".MainActivity" >
+            android:label="@string/title_activity_sales_report" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.melanie.androidactivities.MainActivity" />
         </activity>
         <activity
             android:name=".CustomerMainActivity"
-            android:label="@string/title_activity_customer_main"
-            android:parentActivityName=".MainActivity" >
+            android:label="@string/title_activity_customer_main" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.melanie.androidactivities.MainActivity" />
@@ -160,7 +162,8 @@
         </activity>
         <activity
             android:name=".LoginActivity"
-            android:label="@string/title_activity_login" >
+            android:label="@string/title_activity_login"
+            android:noHistory="true" >
         </activity>
     </application>
 

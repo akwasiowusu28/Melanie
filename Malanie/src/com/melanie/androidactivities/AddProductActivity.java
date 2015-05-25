@@ -36,8 +36,8 @@ import com.melanie.androidactivities.support.PrinterType;
 import com.melanie.androidactivities.support.Utils;
 import com.melanie.business.ProductEntryController;
 import com.melanie.entities.Category;
-import com.melanie.support.MelanieBusinessFactory;
-import com.melanie.support.MelanieOperationCallBack;
+import com.melanie.support.BusinessFactory;
+import com.melanie.support.OperationCallBack;
 import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieBusinessException;
 
@@ -85,7 +85,7 @@ public class AddProductActivity extends AppCompatActivity {
 	}
 
 	private void initializeFields() {
-		productController = MelanieBusinessFactory.makeProductEntryController();
+		productController = BusinessFactory.makeProductEntryController();
 		handler = new Handler(getMainLooper());
 		getAllCategories();
 		categoriesAdapter = new ArrayAdapter<Category>(this,
@@ -98,7 +98,7 @@ public class AddProductActivity extends AppCompatActivity {
 		try {
 			List<Category> tempCategories = null;
 			tempCategories = productController
-					.getAllCategories(new MelanieOperationCallBack<Category>() {
+					.getAllCategories(new OperationCallBack<Category>() {
 						@Override
 						public void onCollectionOperationSuccessful(
 								List<Category> results) {
@@ -223,7 +223,7 @@ public class AddProductActivity extends AppCompatActivity {
 	private void initializePrinter() {
 		if (printer == null && printerInfo == null) {
 			new MelaniePrinterDiscoverer(this,
-					new MelanieOperationCallBack<Map<String, String>>() {
+					new OperationCallBack<Map<String, String>>() {
 
 						@Override
 						public void onOperationSuccessful(

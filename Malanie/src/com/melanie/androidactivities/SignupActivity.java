@@ -1,10 +1,10 @@
 package com.melanie.androidactivities;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.telephony.TelephonyManager;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -14,11 +14,11 @@ import android.widget.EditText;
 import com.melanie.androidactivities.support.Utils;
 import com.melanie.business.UserController;
 import com.melanie.entities.User;
-import com.melanie.support.MelanieBusinessFactory;
-import com.melanie.support.MelanieOperationCallBack;
+import com.melanie.support.BusinessFactory;
+import com.melanie.support.OperationCallBack;
 import com.melanie.support.exceptions.MelanieBusinessException;
 
-public class SignupActivity extends Activity {
+public class SignupActivity extends AppCompatActivity {
 
 	private UserController userController;
 	private EditText passwordField;
@@ -36,7 +36,7 @@ public class SignupActivity extends Activity {
 	}
 
 	private void initializeFields() {
-		userController = MelanieBusinessFactory.makeUserController();
+		userController = BusinessFactory.makeUserController();
 		passwordField = (EditText) findViewById(R.id.password);
 		confirmPasswordField = (EditText) findViewById(R.id.confirmPassword);
 		nameField = (EditText) findViewById(R.id.userName);
@@ -74,12 +74,12 @@ public class SignupActivity extends Activity {
 	private void createUser(String name, String phone, String password) {
 		try {
 			userController.createUser(name, phone, password, getDeviceId(),
-					new MelanieOperationCallBack<User>() {
+					new OperationCallBack<User>() {
 
 						@Override
 						public void onOperationSuccessful(User user) {
 							switchPasswordFieldsBackColor(true);
-							MelanieBusinessFactory.getSession().setUser(user);
+							BusinessFactory.getSession().setUser(user);
 							launchMainActivity();
 						}
 

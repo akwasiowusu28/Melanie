@@ -2,16 +2,16 @@ package com.melanie.dataaccesslayer;
 
 import java.util.List;
 
-import com.melanie.support.MelanieOperationCallBack;
+import com.melanie.support.OperationCallBack;
 import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieDataLayerException;
 
-public interface MelanieDataAccessLayer {
+public interface DataAccessLayer {
 
 	<T> void initialize(T dataContext);
 
 	<T> OperationResult addDataItem(T dataItem, Class<T> itemClass,
-			MelanieOperationCallBack<T> operationCallBack)
+			OperationCallBack<T> operationCallBack)
 			throws MelanieDataLayerException;
 
 	public <T> OperationResult addDataItemSync(T dataItem, Class<T> itemClass)
@@ -24,22 +24,22 @@ public interface MelanieDataAccessLayer {
 			throws MelanieDataLayerException;
 
 	<T> T findItemById(int itemId, Class<T> itemClass,
-			MelanieOperationCallBack<T> operationCallBack)
+			OperationCallBack<T> operationCallBack)
 			throws MelanieDataLayerException;
 
 	<T> T findItemByFieldName(String fieldName, String searchValue,
-			Class<T> itemClass, MelanieOperationCallBack<T> operationCallBack)
+			Class<T> itemClass, OperationCallBack<T> operationCallBack)
 			throws MelanieDataLayerException;
 
 	<T> List<T> findAllItems(Class<T> itemClass,
-			MelanieOperationCallBack<T> operationCallBack)
+			OperationCallBack<T> operationCallBack)
 			throws MelanieDataLayerException;
 
 	<T> int getLastInsertedId(Class<T> itemClass)
 			throws MelanieDataLayerException;
 
 	<T> List<T> findItemsByFieldName(String fieldName, String searchValue,
-			Class<T> itemClass, MelanieOperationCallBack<T> operationCallBack)
+			Class<T> itemClass, OperationCallBack<T> operationCallBack)
 			throws MelanieDataLayerException;
 
 	<T> OperationResult refreshItem(T dataItem, Class<T> itemClass)
@@ -50,7 +50,7 @@ public interface MelanieDataAccessLayer {
 
 	<T, E> List<T> findItemsBetween(String fieldName, E lowerBound,
 			E upperBound, Class<T> itemClass,
-			MelanieOperationCallBack<T> operationCallBack)
+			OperationCallBack<T> operationCallBack)
 			throws MelanieDataLayerException;
 	
 	void clearResources();

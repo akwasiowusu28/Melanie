@@ -17,7 +17,7 @@ import com.epson.lwprint.sdk.LWPrintDiscoverConnectionType;
 import com.epson.lwprint.sdk.LWPrintDiscoverPrinter;
 import com.epson.lwprint.sdk.LWPrintDiscoverPrinterCallback;
 import com.melanie.androidactivities.R;
-import com.melanie.support.MelanieOperationCallBack;
+import com.melanie.support.OperationCallBack;
 import com.zj.btsdk.BluetoothService;
 
 @SuppressWarnings("unchecked")
@@ -25,7 +25,7 @@ public class MelaniePrinterDiscoverer {
 
 	private final int BLUETOOTH_REQUEST_CODE = 208;
 
-	private MelanieOperationCallBack<Map<String, String>> operationCallBack;
+	private OperationCallBack<Map<String, String>> operationCallBack;
 	private LWPrintDiscoverPrinter printerDiscoverHelper;
 	private BluetoothAdapter bluetoothAdapter = null;
 	private BluetoothService receiptPrinterService;
@@ -33,7 +33,7 @@ public class MelaniePrinterDiscoverer {
 	private Context context;
 
 	public MelaniePrinterDiscoverer(Context context,
-			MelanieOperationCallBack<Map<String, String>> operationCallBack,
+			OperationCallBack<Map<String, String>> operationCallBack,
 			PrinterType printerType) {
 
 		this.operationCallBack = operationCallBack;

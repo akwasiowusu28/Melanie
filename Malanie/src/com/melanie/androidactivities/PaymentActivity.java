@@ -25,8 +25,8 @@ import com.melanie.business.CustomersController;
 import com.melanie.business.SalesController;
 import com.melanie.entities.Customer;
 import com.melanie.entities.Sale;
-import com.melanie.support.MelanieBusinessFactory;
-import com.melanie.support.MelanieOperationCallBack;
+import com.melanie.support.BusinessFactory;
+import com.melanie.support.OperationCallBack;
 import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieBusinessException;
 
@@ -58,7 +58,7 @@ public class PaymentActivity extends AppCompatActivity {
 		try {
 			List<Customer> tempCustomers = null;
 			tempCustomers = customersController
-					.getAllCustomers(new MelanieOperationCallBack<Customer>() {
+					.getAllCustomers(new OperationCallBack<Customer>() {
 
 						@Override
 						public void onCollectionOperationSuccessful(
@@ -123,7 +123,7 @@ public class PaymentActivity extends AppCompatActivity {
 		try {
 			sales.clear();
 			List<Sale> tempSales = salesController.findSalesByCustomer(
-					selectedCustomer, new MelanieOperationCallBack<Sale>() {
+					selectedCustomer, new OperationCallBack<Sale>() {
 
 						@Override
 						public void onCollectionOperationSuccessful(
@@ -156,11 +156,11 @@ public class PaymentActivity extends AppCompatActivity {
 
 	private void initializeFields() {
 		handler = new Handler(getMainLooper());
-		salesController = MelanieBusinessFactory.makeSalesController();
+		salesController = BusinessFactory.makeSalesController();
 		sales = new ArrayList<Sale>();
 		salesListAdapter = new ProductsAndSalesListViewAdapter<Sale>(this,
 				sales, false);
-		customersController = MelanieBusinessFactory.makeCustomersController();
+		customersController = BusinessFactory.makeCustomersController();
 	}
 
 	private void updateTotalField() {

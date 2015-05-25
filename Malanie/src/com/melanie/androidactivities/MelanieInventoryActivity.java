@@ -18,8 +18,8 @@ import com.melanie.androidactivities.support.Utils;
 import com.melanie.business.ProductEntryController;
 import com.melanie.entities.Category;
 import com.melanie.entities.Product;
-import com.melanie.support.MelanieBusinessFactory;
-import com.melanie.support.MelanieOperationCallBack;
+import com.melanie.support.BusinessFactory;
+import com.melanie.support.OperationCallBack;
 import com.melanie.support.exceptions.MelanieBusinessException;
 
 public class MelanieInventoryActivity extends AppCompatActivity {
@@ -46,7 +46,7 @@ public class MelanieInventoryActivity extends AppCompatActivity {
 
 	private void initializeFields() {
 		handler = new Handler(getMainLooper());
-		productController = MelanieBusinessFactory.makeProductEntryController();
+		productController = BusinessFactory.makeProductEntryController();
 		getAllCategories();
 		categoriesAdapter = new ArrayAdapter<Category>(this,
 				android.R.layout.simple_spinner_dropdown_item, categories);
@@ -96,7 +96,7 @@ public class MelanieInventoryActivity extends AppCompatActivity {
 		try {
 			List<Category> tempCategories = null;
 			tempCategories = productController
-					.getAllCategories(new MelanieOperationCallBack<Category>() {
+					.getAllCategories(new OperationCallBack<Category>() {
 						@Override
 						public void onCollectionOperationSuccessful(
 								List<Category> results) {
@@ -117,7 +117,7 @@ public class MelanieInventoryActivity extends AppCompatActivity {
 		if (productController != null)
 			try {
 				products = productController
-						.findAllProducts(new MelanieOperationCallBack<Product>() {
+						.findAllProducts(new OperationCallBack<Product>() {
 							@Override
 							public void onCollectionOperationSuccessful(
 									List<Product> results) {

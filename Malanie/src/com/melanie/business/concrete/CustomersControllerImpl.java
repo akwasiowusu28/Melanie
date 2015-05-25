@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.melanie.business.CustomersController;
-import com.melanie.dataaccesslayer.MelanieDataAccessLayer;
+import com.melanie.business.MelanieSession;
+import com.melanie.dataaccesslayer.DataAccessLayer;
 import com.melanie.entities.Customer;
-import com.melanie.support.MelanieDataFactory;
-import com.melanie.support.MelanieOperationCallBack;
+import com.melanie.support.BusinessFactory;
+import com.melanie.support.DataFactory;
+import com.melanie.support.OperationCallBack;
 import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieBusinessException;
 import com.melanie.support.exceptions.MelanieDataLayerException;
@@ -21,11 +23,13 @@ import com.melanie.support.exceptions.MelanieDataLayerException;
  */
 public class CustomersControllerImpl implements CustomersController {
 
-	private MelanieDataAccessLayer dataAccess;
+	private final DataAccessLayer dataAccess;
 	private Customer customer;
-
+    private final MelanieSession session;
+    
 	public CustomersControllerImpl() {
-		dataAccess = MelanieDataFactory.makeDataAccess();
+		dataAccess = DataFactory.makeDataAccess();
+		session = BusinessFactory.getSession();
 	}
 
 	@Override
@@ -63,6 +67,7 @@ public class CustomersControllerImpl implements CustomersController {
 
 		if (dataAccess != null && customer != null)
 			try {
+				customer.setUser(session.getUser());
 				result = dataAccess.addDataItem(customer, Customer.class, null);
 			} catch (MelanieDataLayerException e) {
 				throw new MelanieBusinessException(e.getMessage(), e);
@@ -77,7 +82,7 @@ public class CustomersControllerImpl implements CustomersController {
 	 */
 	@Override
 	public List<Customer> getAllCustomers(
-			MelanieOperationCallBack<Customer> operationCallBack)
+			OperationCallBack<Customer> operationCallBack)
 			throws MelanieBusinessException {
 
 		List<Customer> customers = new ArrayList<Customer>();
@@ -107,7 +112,7 @@ public class CustomersControllerImpl implements CustomersController {
 
 	@Override
 	public Customer findCustomer(int customerId,
-			MelanieOperationCallBack<Customer> operationCallBack)
+			OperationCallBack<Customer> operationCallBack)
 			throws MelanieBusinessException {
 
 		Customer customer = null;

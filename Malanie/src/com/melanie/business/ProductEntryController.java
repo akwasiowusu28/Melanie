@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.melanie.entities.Category;
 import com.melanie.entities.Product;
-import com.melanie.support.MelanieOperationCallBack;
+import com.melanie.support.OperationCallBack;
 import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieBusinessException;
 
@@ -19,15 +19,15 @@ public interface ProductEntryController {
 	Category addCategory(String categoryName) throws MelanieBusinessException;
 
 	Category findCategory(int id,
-			MelanieOperationCallBack<Category> operationCallBack)
+			OperationCallBack<Category> operationCallBack)
 			throws MelanieBusinessException;
 
 	Category findCategory(String categoryName,
-			MelanieOperationCallBack<Category> operationCallBack)
+			OperationCallBack<Category> operationCallBack)
 			throws MelanieBusinessException;
 
 	List<Category> getAllCategories(
-			MelanieOperationCallBack<Category> operationCallBack)
+			OperationCallBack<Category> operationCallBack)
 			throws MelanieBusinessException;
 
 	OperationResult addProduct(String productName, int quantity, double price,
@@ -37,19 +37,19 @@ public interface ProductEntryController {
 			throws MelanieBusinessException;
 
 	List<Product> findAllProducts(
-			MelanieOperationCallBack<Product> operationCallBack)
+			OperationCallBack<Product> operationCallBack)
 			throws MelanieBusinessException;
 
 	Product findProduct(int productId,
-			MelanieOperationCallBack<Product> operationCallBack)
+			OperationCallBack<Product> operationCallBack)
 			throws MelanieBusinessException;
 
 	Product findProductByBarcode(String barcodDigits,
-			MelanieOperationCallBack<Product> operationCallBack)
+			OperationCallBack<Product> operationCallBack)
 			throws MelanieBusinessException;
 
 	Product findProduct(String productName,
-			MelanieOperationCallBack<Product> operationCallBack)
+			OperationCallBack<Product> operationCallBack)
 			throws MelanieBusinessException;
 
 	OperationResult updateProductQuantity(Product productName,

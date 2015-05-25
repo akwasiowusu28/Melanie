@@ -9,7 +9,7 @@ import java.util.List;
 import com.j256.ormlite.dao.Dao;
 import com.melanie.dataaccesslayer.datasource.DataSourceManager;
 import com.melanie.entities.BaseEntity;
-import com.melanie.support.MelanieOperationCallBack;
+import com.melanie.support.OperationCallBack;
 import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieDataLayerException;
 
@@ -75,11 +75,11 @@ final class DataUtil {
 		return OperationResult.SUCCESSFUL;
 	}
 	
-	public static class DataCallBack<T> extends MelanieOperationCallBack<T> {
+	public static class DataCallBack<T> extends OperationCallBack<T> {
 
-		private final MelanieOperationCallBack<T> businessCallBack;
+		private final OperationCallBack<T> businessCallBack;
 
-		public DataCallBack(MelanieOperationCallBack<T> businessCallback) {
+		public DataCallBack(OperationCallBack<T> businessCallback) {
 			super();
 			businessCallBack = businessCallback;
 		}

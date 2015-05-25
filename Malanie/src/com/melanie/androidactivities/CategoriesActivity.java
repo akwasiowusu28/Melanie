@@ -17,8 +17,8 @@ import com.melanie.androidactivities.support.MelanieSingleTextListAdapter;
 import com.melanie.androidactivities.support.Utils;
 import com.melanie.business.ProductEntryController;
 import com.melanie.entities.Category;
-import com.melanie.support.MelanieBusinessFactory;
-import com.melanie.support.MelanieOperationCallBack;
+import com.melanie.support.BusinessFactory;
+import com.melanie.support.OperationCallBack;
 import com.melanie.support.exceptions.MelanieBusinessException;
 
 public class CategoriesActivity extends AppCompatActivity {
@@ -30,7 +30,7 @@ public class CategoriesActivity extends AppCompatActivity {
 
 	public CategoriesActivity() {
 		super();
-		productController = MelanieBusinessFactory.makeProductEntryController();
+		productController = BusinessFactory.makeProductEntryController();
 	}
 
 	@Override
@@ -49,7 +49,7 @@ public class CategoriesActivity extends AppCompatActivity {
 		try {
 			List<Category> tempCategories = null;
 			tempCategories = productController
-					.getAllCategories(new MelanieOperationCallBack<Category>() {
+					.getAllCategories(new OperationCallBack<Category>() {
 						@Override
 						public void onCollectionOperationSuccessful(
 								List<Category> results) {

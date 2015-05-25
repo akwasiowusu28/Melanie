@@ -13,8 +13,8 @@ import com.melanie.androidactivities.support.CustomersListViewAdapter;
 import com.melanie.androidactivities.support.Utils;
 import com.melanie.business.CustomersController;
 import com.melanie.entities.Customer;
-import com.melanie.support.MelanieBusinessFactory;
-import com.melanie.support.MelanieOperationCallBack;
+import com.melanie.support.BusinessFactory;
+import com.melanie.support.OperationCallBack;
 import com.melanie.support.exceptions.MelanieBusinessException;
 
 public class CustomerListActivity extends AppCompatActivity {
@@ -35,7 +35,7 @@ public class CustomerListActivity extends AppCompatActivity {
 
 	private void initializeFields() {
 		handler = new Handler(getMainLooper());
-		customersController = MelanieBusinessFactory.makeCustomersController();
+		customersController = BusinessFactory.makeCustomersController();
 	}
 
 	private void setupCustomersListView() {
@@ -53,7 +53,7 @@ public class CustomerListActivity extends AppCompatActivity {
 		try {
 			List<Customer> tempCustomers = null;
 			tempCustomers = customersController
-					.getAllCustomers(new MelanieOperationCallBack<Customer>() {
+					.getAllCustomers(new OperationCallBack<Customer>() {
 
 						@Override
 						public void onCollectionOperationSuccessful(
