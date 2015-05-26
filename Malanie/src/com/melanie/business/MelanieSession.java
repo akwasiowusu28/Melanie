@@ -18,6 +18,10 @@ public interface MelanieSession {
 	 
 	 boolean isUserRegisteredOnDevice();
 	 
+	 boolean canConnectToCloud();
+	 
+	 void setCanConnectToCloud(boolean isInternetServiceAvailable);
+	 
 	 void clearResources();
 	 
 }

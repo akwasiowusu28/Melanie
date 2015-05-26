@@ -133,25 +133,27 @@ public class SalesControllerImpl implements SalesController {
 						discount, balance);
 				payment.setOwnerId(session.getUser().getObjectId());
 
-				dataAccess.addDataItem(payment, Payment.class,
-						new OperationCallBack<Payment>() {
-							@Override
-							public void onOperationSuccessful(Payment payment) {
-								for (Sale sale : sales) {
-									SalePayment salePayment = new SalePayment(
-											sale, payment);
-									try {
-										dataAccess.addDataItem(salePayment,
-												SalePayment.class, null);
-									} catch (MelanieDataLayerException e) {
-										onOperationFailed(e);
+				if(session.canConnectToCloud() && dataAccess !=null){
+					dataAccess.addDataItem(payment, Payment.class,
+							new OperationCallBack<Payment>() {
+								@Override
+								public void onOperationSuccessful(Payment payment) {
+									for (Sale sale : sales) {
+										SalePayment salePayment = new SalePayment(
+												sale, payment);
+										try {
+											dataAccess.addDataItem(salePayment,
+													SalePayment.class, null);
+										} catch (MelanieDataLayerException e) {
+											onOperationFailed(e);
+										}
 									}
+									sales.clear();
+
 								}
-								sales.clear();
-
-							}
-						});
-
+							}); 
+				}
+				
 			} catch (MelanieDataLayerException e) {
 				throw new MelanieBusinessException(e.getMessage(), e);
 			}
@@ -171,7 +173,7 @@ public class SalesControllerImpl implements SalesController {
 			throws MelanieBusinessException {
 
 		List<Sale> customerSales = new ArrayList<Sale>();
-		if (dataAccess != null)
+		if (session.canConnectToCloud() && dataAccess != null)
 			try {
 				customerSales = dataAccess.findItemsByFieldName(
 						CUSTOMEROBJECTID,
@@ -207,7 +209,7 @@ public class SalesControllerImpl implements SalesController {
 			throws MelanieBusinessException {
 		List<Sale> sales = new ArrayList<Sale>();
 		try {
-			if (dataAccess != null)
+			if (session.canConnectToCloud() && dataAccess != null)
 				sales.addAll(dataAccess.findItemsBetween("SaleDate", fromDate,
 						toDate, Sale.class, operationCallBack));
 			// refreshSales(sales);

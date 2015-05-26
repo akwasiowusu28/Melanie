@@ -71,7 +71,7 @@ public class MelanieBarcodeDataProvider implements LWPrintDataProvider {
 
 	@Override
 	public int getNumberOfPages() {
-		return numberOfPages;
+		return 1;//numberOfPages;
 	}
 
 	@Override

@@ -35,6 +35,9 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 
 		session = BusinessFactory.getSession();
+		
+		Utils.registerConnectivityReceiver(getApplicationContext());
+		
         isRedirectingForFirstUseAction = false;
         
 		if (!session.isInitialized()) {
@@ -151,6 +154,7 @@ public class MainActivity extends Activity {
 		super.onDestroy();
 		if (!isFinishing() && !isRedirectingForFirstUseAction && session != null) {
 			session.clearResources();
+			Utils.unregisterConnectivityReceiver(getApplicationContext());
 			session = null;
 		}
 

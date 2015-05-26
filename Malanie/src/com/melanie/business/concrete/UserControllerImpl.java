@@ -1,12 +1,13 @@
 package com.melanie.business.concrete;
 
 import com.backendless.BackendlessUser;
+import com.melanie.business.MelanieSession;
 import com.melanie.business.UserController;
 import com.melanie.dataaccesslayer.CloudAccess;
 import com.melanie.dataaccesslayer.DataAccessLayer;
 import com.melanie.entities.User;
-import com.melanie.support.CodeStrings;
 import com.melanie.support.BusinessFactory;
+import com.melanie.support.CodeStrings;
 import com.melanie.support.DataFactory;
 import com.melanie.support.OperationCallBack;
 import com.melanie.support.OperationResult;
@@ -17,8 +18,10 @@ public class UserControllerImpl implements UserController {
 
 	private final DataAccessLayer dataAccess;
 	private final CloudAccess cloudAccess;
-
+    private final MelanieSession session;
+    
 	public UserControllerImpl() {
+		session = BusinessFactory.getSession();
 		dataAccess = DataFactory.makeDataAccess();
 		cloudAccess = DataFactory.makeCloudAccess();
 	}
@@ -27,7 +30,7 @@ public class UserControllerImpl implements UserController {
 	public void createUser(String name, String phone, String password, String deviceId,
 			final OperationCallBack<User> operationCallBack) throws MelanieBusinessException {
 		User user = new User(name, password, phone, deviceId, false);
-		if (dataAccess != null) {
+		if (session.canConnectToCloud() && dataAccess != null) {
 			try {
 				dataAccess.addDataItem(user, User.class, operationCallBack);
 			} catch (MelanieDataLayerException e) {
@@ -41,7 +44,7 @@ public class UserControllerImpl implements UserController {
 	public void loginSavedUser(final OperationCallBack<User> operationCallBack) throws MelanieBusinessException {
 		// Since there's should be only one user on this device, find the user
 		// with id 1 from cache
-		if (dataAccess != null) {
+		if (session.canConnectToCloud() && dataAccess != null) {
 			try {
 				final User user = dataAccess.findItemById(1, User.class, null);
 				if (user != null && cloudAccess != null) {
@@ -65,7 +68,7 @@ public class UserControllerImpl implements UserController {
 	public void updateUser(User user, String field, Object value,
 			final OperationCallBack<OperationResult> operationCallBack) throws MelanieBusinessException {
 
-		if (dataAccess != null) {
+		if (session.canConnectToCloud() && dataAccess != null) {
 			try {
 				if (user == null) {
 					user = getLocalUser();
@@ -95,7 +98,7 @@ public class UserControllerImpl implements UserController {
 
 	private void performUpdate(final User user, OperationCallBack<BackendlessUser> operationCallBack)
 			throws MelanieDataLayerException {
-		if (user != null && cloudAccess != null) {
+		if (session.canConnectToCloud() &&  user != null && cloudAccess != null) {
 			addUserToLocalDataStore(user);
 			cloudAccess.updateUser(user, operationCallBack);
 		}
@@ -114,7 +117,7 @@ public class UserControllerImpl implements UserController {
 	public User getLocalUser() throws MelanieBusinessException {
 		User user = null;
 		try {
-			if (dataAccess != null) {
+			if (session.canConnectToCloud() && dataAccess != null) {
 				user = dataAccess.findItemById(1, User.class, null);
 			}
 		} catch (MelanieDataLayerException e) {
@@ -125,7 +128,7 @@ public class UserControllerImpl implements UserController {
 
 	@Override
 	public void login(final User user, final OperationCallBack<OperationResult> operationCallBack) {
-		if (cloudAccess != null) {
+		if (session.canConnectToCloud() && cloudAccess != null) {
 			cloudAccess.login(user, new OperationCallBack<BackendlessUser>() {
 
 				@Override
@@ -158,7 +161,7 @@ public class UserControllerImpl implements UserController {
 	@Override
 	public void checkPhoneExistOnCloud(String phone, final OperationCallBack<User> operationCallBack)
 			throws MelanieBusinessException {
-		if (cloudAccess != null) {
+		if (session.canConnectToCloud() && cloudAccess != null) {
 			try {
 				cloudAccess.findItemByFieldName(CodeStrings.PHONE, phone, BackendlessUser.class,
 						new OperationCallBack<BackendlessUser>() {

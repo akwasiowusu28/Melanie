@@ -15,7 +15,8 @@ public class MelanieSessionImpl implements MelanieSession {
 	private static DataAccessLayer dataAccess;
 	private static boolean isCacheInitialized;
 	private User user;
-
+    private boolean isInternetServiceAvailable;
+    
 	private MelanieSessionImpl() {
 		initializeMelanieSession();
 	}
@@ -23,6 +24,7 @@ public class MelanieSessionImpl implements MelanieSession {
 	private void initializeMelanieSession() {
 		dataAccess = DataFactory.makeDataAccess();
 		isCacheInitialized = false;
+		isInternetServiceAvailable = true;
 		user = null;
 	}
 
@@ -86,6 +88,16 @@ public class MelanieSessionImpl implements MelanieSession {
 		if (isCacheInitialized && dataAccess != null) {
 			dataAccess.clearResources();
 		}
+	}
+
+	@Override
+	public boolean canConnectToCloud() {
+		return isInternetServiceAvailable;
+	}
+
+	@Override
+	public void setCanConnectToCloud(boolean isInternetServiceAvailable) {
+		this.isInternetServiceAvailable = isInternetServiceAvailable;
 	}
 
 }

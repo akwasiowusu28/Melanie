@@ -57,6 +57,8 @@ public class AddProductActivity extends AppCompatActivity {
 	private int currentProductQuantity = 1;
 	private boolean isPrinterFound = false;
 
+	private boolean bluetoothEnableRefused = false;
+
 	private ProgressDialog progressDialog = null;
 	private Handler handler;
 	private ScheduledExecutorService executorService;
@@ -64,6 +66,7 @@ public class AddProductActivity extends AppCompatActivity {
 	private int printPhaseMessage;
 	private ArrayAdapter<Category> categoriesAdapter;
 	private List<Category> categories;
+	private MelaniePrinterDiscoverer printerDiscoverer;
 
 	@SuppressLint("NewApi")
 	@Override
@@ -75,6 +78,10 @@ public class AddProductActivity extends AppCompatActivity {
 
 		Spinner categorySpinner = (Spinner) findViewById(R.id.categoriesSpinner);
 		categorySpinner.setAdapter(categoriesAdapter);
+
+		if (savedInstanceState != null) {
+			bluetoothEnableRefused = savedInstanceState.getBoolean(Utils.Constants.BLUETOOTH_REFUSED);
+		}
 
 		initializePrinter();
 		setupAddProductListener();
@@ -203,8 +210,8 @@ public class AddProductActivity extends AppCompatActivity {
 	}
 
 	private void initializePrinter() {
-		if (printer == null && printerInfo == null) {
-			new MelaniePrinterDiscoverer(this, new OperationCallBack<Map<String, String>>() {
+		if (!bluetoothEnableRefused && printer == null && printerInfo == null) {
+			printerDiscoverer = new MelaniePrinterDiscoverer(this, new OperationCallBack<Map<String, String>>() {
 
 				@Override
 				public void onOperationSuccessful(Map<String, String> result) {
@@ -212,7 +219,9 @@ public class AddProductActivity extends AppCompatActivity {
 					isPrinterFound = true;
 				}
 
-			}, PrinterType.Barcode).discoverBarcodePrinter();
+			}, PrinterType.Barcode);
+
+			printerDiscoverer.discoverBarcodePrinter();
 			printer = new LWPrint(this);
 			printer.setCallback(new PrintCallBack());
 		}
@@ -369,17 +378,36 @@ public class AddProductActivity extends AppCompatActivity {
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent intentData) {
 		if (resultCode == RESULT_OK && requestCode == PRINTER_SELECT_REQUEST_CODE) {
+
 			Bundle bundle = intentData.getExtras();
 			printerInfo = (Map<String, String>) bundle.get(Utils.Constants.PRINTER_INFO);
 			if (printerInfo != null)
 				performPrint();
 		}
+		else if(requestCode == Utils.Constants.BLUETOOTH_REQUEST_CODE){
+			bluetoothEnableRefused = resultCode == RESULT_CANCELED;
+		}
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle bundle) {
+
+		bundle.putBoolean(Utils.Constants.BLUETOOTH_REFUSED, bluetoothEnableRefused);
+
+		super.onSaveInstanceState(bundle);
 	}
 
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		if (executorService != null)
+		if (executorService != null) {
 			executorService.shutdown();
+			executorService = null;
+		}
+
+		if (printerDiscoverer != null) {
+			printerDiscoverer.clearResources();
+			printerDiscoverer = null;
+		}
 	}
 }

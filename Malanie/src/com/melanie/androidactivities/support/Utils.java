@@ -10,8 +10,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.widget.BaseAdapter;
@@ -21,6 +26,7 @@ import android.widget.Toast;
 
 import com.melanie.androidactivities.MainActivity;
 import com.melanie.androidactivities.R;
+import com.melanie.support.BusinessFactory;
 import com.melanie.support.OperationResult;
 
 /**
@@ -37,10 +43,12 @@ public final class Utils {
 		public static final String DATEFORMAT = "MMM dd, yyyy";
 		public static final String PRINTER_TYPE = "printerType";
 		public static final String PRINTER_INFO = "printerInfo";
-		public static final String CONFIRM_SMS_MESSAGE= "Your Melanie confirmation code is: ";
-		public static final String PHONE_NUMBER ="phoneNumber";
-		public static final String CONFIRM_CODE ="confirmCode";
+		public static final String CONFIRM_SMS_MESSAGE = "Your Melanie confirmation code is: ";
+		public static final String PHONE_NUMBER = "phoneNumber";
+		public static final String CONFIRM_CODE = "confirmCode";
 		public static final String PREF_FILE = "melaniepref";
+		public static final String BLUETOOTH_REFUSED ="BluetoothRefused";
+		public static final int BLUETOOTH_REQUEST_CODE = 208;
 	}
 
 	/**
@@ -51,8 +59,7 @@ public final class Utils {
 	 * @param handler
 	 *            the handler associated with the UI thread invoking this method
 	 */
-	public static void notifyListUpdate(final BaseAdapter adapter,
-			Handler handler) {
+	public static void notifyListUpdate(final BaseAdapter adapter, Handler handler) {
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
@@ -106,11 +113,10 @@ public final class Utils {
 	 * @param failureStringId
 	 *            The string to display on toast when OperationResult is FAILED
 	 */
-	public static void makeToastBasedOnOperationResult(Context context,
-			OperationResult result, int successStringId, int failureStringId) {
+	public static void makeToastBasedOnOperationResult(Context context, OperationResult result, int successStringId,
+			int failureStringId) {
 
-		int toastString = result.equals(OperationResult.FAILED) ? failureStringId
-				: successStringId;
+		int toastString = result.equals(OperationResult.FAILED) ? failureStringId : successStringId;
 
 		Toast.makeText(context, toastString, Toast.LENGTH_LONG).show();
 	}
@@ -166,38 +172,53 @@ public final class Utils {
 	}
 
 	public static Date getDateToStartOfDay(Calendar calendar) {
-		calendar.set(Calendar.HOUR_OF_DAY,
-				calendar.getMinimum(Calendar.HOUR_OF_DAY));
+		calendar.set(Calendar.HOUR_OF_DAY, calendar.getMinimum(Calendar.HOUR_OF_DAY));
 		calendar.set(Calendar.MINUTE, calendar.getMinimum(Calendar.MINUTE));
 		calendar.set(Calendar.SECOND, calendar.getMinimum(Calendar.SECOND));
-		calendar.set(Calendar.MILLISECOND,
-				calendar.getMinimum(Calendar.MILLISECOND));
+		calendar.set(Calendar.MILLISECOND, calendar.getMinimum(Calendar.MILLISECOND));
 		return calendar.getTime();
 	}
 
 	public static Date getDateToEndOfDay(Calendar calendar) {
-		calendar.set(Calendar.HOUR_OF_DAY,
-				calendar.getMaximum(Calendar.HOUR_OF_DAY));
+		calendar.set(Calendar.HOUR_OF_DAY, calendar.getMaximum(Calendar.HOUR_OF_DAY));
 		calendar.set(Calendar.MINUTE, calendar.getMaximum(Calendar.MINUTE));
 		calendar.set(Calendar.SECOND, calendar.getMaximum(Calendar.SECOND));
-		calendar.set(Calendar.MILLISECOND,
-				calendar.getMaximum(Calendar.MILLISECOND));
+		calendar.set(Calendar.MILLISECOND, calendar.getMaximum(Calendar.MILLISECOND));
 		return calendar.getTime();
 	}
 
 	public static Date getDateForFirstMonthDay(Date date) {
 		Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
 		calendar.setTime(date);
-		calendar.set(Calendar.DAY_OF_MONTH,
-				calendar.getMinimum(Calendar.DAY_OF_MONTH));
+		calendar.set(Calendar.DAY_OF_MONTH, calendar.getMinimum(Calendar.DAY_OF_MONTH));
 		return calendar.getTime();
 	}
 
 	public static Date getDateForLastMonthDay(Date date) {
 		Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
 		calendar.setTime(date);
-		calendar.set(Calendar.DAY_OF_MONTH,
-				calendar.getMaximum(Calendar.DAY_OF_MONTH));
+		calendar.set(Calendar.DAY_OF_MONTH, calendar.getMaximum(Calendar.DAY_OF_MONTH));
 		return calendar.getTime();
+	}
+
+	public static void registerConnectivityReceiver(Context context) {
+		context.registerReceiver(connectivityReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+	}
+
+	private static BroadcastReceiver connectivityReceiver = new BroadcastReceiver() {
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+            Bundle extras = intent.getExtras();
+            
+            boolean connectionUnavailable = extras.getBoolean(ConnectivityManager.EXTRA_NO_CONNECTIVITY);
+            
+            BusinessFactory.getSession().setCanConnectToCloud(!connectionUnavailable);
+		}
+	};
+	
+	public static void unregisterConnectivityReceiver(Context context){
+		context.unregisterReceiver(connectivityReceiver);
+		connectivityReceiver = null;
 	}
 }

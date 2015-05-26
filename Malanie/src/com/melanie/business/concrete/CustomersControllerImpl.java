@@ -65,7 +65,7 @@ public class CustomersControllerImpl implements CustomersController {
 
 		OperationResult result = OperationResult.FAILED;
 
-		if (dataAccess != null && customer != null)
+		if (session.canConnectToCloud() && dataAccess != null && customer != null)
 			try {
 				  customer.setOwnerId(session.getUser().getObjectId());
 				result = dataAccess.addDataItem(customer, Customer.class, null);
@@ -101,7 +101,7 @@ public class CustomersControllerImpl implements CustomersController {
 			throws MelanieBusinessException {
 		OperationResult result = OperationResult.FAILED;
 
-		if (dataAccess != null)
+		if (session.canConnectToCloud() && dataAccess != null)
 			try {
 				result = dataAccess.updateDataItem(customer, Customer.class);
 			} catch (MelanieDataLayerException e) {
@@ -118,7 +118,7 @@ public class CustomersControllerImpl implements CustomersController {
 		Customer customer = null;
 
 		try {
-			if (dataAccess != null)
+			if (session.canConnectToCloud() && dataAccess != null)
 				customer = dataAccess.findItemById(customerId, Customer.class,
 						operationCallBack);
 		} catch (MelanieDataLayerException e) {
@@ -131,7 +131,7 @@ public class CustomersControllerImpl implements CustomersController {
 	@Override
 	public int getLastInsertedCustomerId() throws MelanieBusinessException {
 		int customerId = -1;
-		if (dataAccess != null)
+		if (session.canConnectToCloud() && dataAccess != null)
 			try {
 				customerId = dataAccess.getLastInsertedId(Customer.class);
 			} catch (MelanieDataLayerException e) {

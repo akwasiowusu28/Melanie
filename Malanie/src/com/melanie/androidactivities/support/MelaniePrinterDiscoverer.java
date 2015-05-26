@@ -20,10 +20,7 @@ import com.melanie.androidactivities.R;
 import com.melanie.support.OperationCallBack;
 import com.zj.btsdk.BluetoothService;
 
-@SuppressWarnings("unchecked")
 public class MelaniePrinterDiscoverer {
-
-	private final int BLUETOOTH_REQUEST_CODE = 208;
 
 	private final OperationCallBack<Map<String, String>> operationCallBack;
 	private LWPrintDiscoverPrinter printerDiscoverHelper;
@@ -31,65 +28,62 @@ public class MelaniePrinterDiscoverer {
 	private BluetoothService receiptPrinterService;
 	private final PrinterType printerType;
 	private final Context context;
+	private final boolean bluetoothRefused = false;
 
-	public MelaniePrinterDiscoverer(Context context,
-			OperationCallBack<Map<String, String>> operationCallBack,
+	public MelaniePrinterDiscoverer(Context context, OperationCallBack<Map<String, String>> operationCallBack,
 			PrinterType printerType) {
 
 		this.operationCallBack = operationCallBack;
 		this.context = context;
 		this.printerType = printerType;
-
 		setupBluetooth();
 	}
 
 	private void setupBluetooth() {
 		if (canConnectBluetooth()) {
 			enableBluetooth();
-			context.registerReceiver(bluetoothBroadcastReceiver,
-					new IntentFilter(BluetoothDevice.ACTION_FOUND));
+			context.registerReceiver(bluetoothBroadcastReceiver, new IntentFilter(BluetoothDevice.ACTION_FOUND));
 		}
 	}
 
 	boolean canConnectBluetooth() {
 		boolean canConnect = true;
-		bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-		if (bluetoothAdapter == null) {
-			Utils.makeToast(context, R.string.bluetoothNotSupported);
-			canConnect = false;
+		if (!bluetoothRefused) {
+			bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+			if (bluetoothAdapter == null) {
+				Utils.makeToast(context, R.string.bluetoothNotSupported);
+				canConnect = false;
+			}
 		}
-		return canConnect;
+		return canConnect && !bluetoothRefused;
 	}
 
 	private void enableBluetooth() {
-		Intent enableBluetoothIntent = new Intent(
-				BluetoothAdapter.ACTION_REQUEST_ENABLE);
-		((Activity) context).startActivityForResult(enableBluetoothIntent,
-				BLUETOOTH_REQUEST_CODE);
+		Intent enableBluetoothIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+		((Activity) context).startActivityForResult(enableBluetoothIntent, Utils.Constants.BLUETOOTH_REQUEST_CODE);
 	}
 
 	public void discoverBarcodePrinter() {
-
-		EnumSet<LWPrintDiscoverConnectionType> flag = EnumSet
-				.of(LWPrintDiscoverConnectionType.ConnectionTypeBluetooth);
-		printerDiscoverHelper = new LWPrintDiscoverPrinter(null, null, flag);
-		printerDiscoverHelper.setCallback(discoverBarcodePrinterCallBack);
-		printerDiscoverHelper.startDiscover(context);
+		if (!bluetoothRefused) {
+			EnumSet<LWPrintDiscoverConnectionType> flag = EnumSet
+					.of(LWPrintDiscoverConnectionType.ConnectionTypeBluetooth);
+			printerDiscoverHelper = new LWPrintDiscoverPrinter(null, null, flag);
+			printerDiscoverHelper.setCallback(discoverBarcodePrinterCallBack);
+			printerDiscoverHelper.startDiscover(context);
+		}
 	}
 
 	private final LWPrintDiscoverPrinterCallback discoverBarcodePrinterCallBack = new LWPrintDiscoverPrinterCallback() {
 		@Override
-		public void onFindPrinter(LWPrintDiscoverPrinter arg0,
-				Map<String, String> printerInfo) {
+		public void onFindPrinter(LWPrintDiscoverPrinter arg0, Map<String, String> printerInfo) {
 			if (printerDiscoverHelper != null)
 				printerDiscoverHelper.stopDiscover();
 
 			operationCallBack.onOperationSuccessful(printerInfo);
 		}
-		
+
 		@Override
-		public void onRemovePrinter(LWPrintDiscoverPrinter arg0,
-				Map<String, String> arg1) {
+		public void onRemovePrinter(LWPrintDiscoverPrinter arg0, Map<String, String> arg1) {
 		}
 	};
 
@@ -103,8 +97,7 @@ public class MelaniePrinterDiscoverer {
 				switch (action) {
 				case BluetoothDevice.ACTION_FOUND:
 
-					BluetoothDevice device = intent
-							.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+					BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
 					String deviceName = device.getName();
 					if (deviceName.contains("Printer")) {
 						Map<String, String> deviceInfo = new HashMap<String, String>();
@@ -120,15 +113,24 @@ public class MelaniePrinterDiscoverer {
 	};
 
 	public void discoverReceiptPrinter() {
-		receiptPrinterService = new BluetoothService(context, new Handler());
-		receiptPrinterService.startDiscovery();
+		if (!bluetoothRefused) {
+			receiptPrinterService = new BluetoothService(context, new Handler());
+			receiptPrinterService.startDiscovery();
+		}
 	}
 
 	public void clearResources() {
-		if (receiptPrinterService.isDiscovering())
+		if (printerType.equals(PrinterType.Receipt) && receiptPrinterService != null
+				&& receiptPrinterService.isDiscovering()) {
 			receiptPrinterService.cancelDiscovery();
 
-		receiptPrinterService.stop();
-		receiptPrinterService = null;
+			receiptPrinterService.stop();
+			receiptPrinterService = null;
+		}
+
+		if (printerType.equals(PrinterType.Barcode) && printerDiscoverHelper != null) {
+			printerDiscoverHelper.stopDiscover();
+			printerDiscoverHelper = null;
+		}
 	}
 }
