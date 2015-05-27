@@ -42,7 +42,10 @@ public class SelectPrinterActivity extends Activity {
 		printerType = PrinterType.valueOf(callerActivityIntent.getStringExtra(Utils.Constants.PRINTER_TYPE));
 		setupListView();
 		setupPrinterDiscoverer();
-		discoverPrinter();
+
+		if(printerDiscoverer.isReadyForDiscovery()){
+			discoverPrinter();
+		}
 	}
 
 	private void initializeFields() {
@@ -58,11 +61,12 @@ public class SelectPrinterActivity extends Activity {
 			@Override
 			public void onOperationSuccessful(Map<String, String> result) {
 				printerInfo.putAll(result);
-				
-				if (printerType.equals(PrinterType.Barcode))
+
+				if (printerType.equals(PrinterType.Barcode)) {
 					printers.add(printerInfo.get(CodeStrings.NAME));
-				else
+				} else {
 					printers.add(printerInfo.keySet().iterator().next());
+				}
 
 				Utils.notifyListUpdate(printersAdapter, handler);
 			}
@@ -72,10 +76,11 @@ public class SelectPrinterActivity extends Activity {
 	}
 
 	private void discoverPrinter() {
-		if (printerType.equals(PrinterType.Barcode))
+		if (printerType.equals(PrinterType.Barcode)) {
 			printerDiscoverer.discoverBarcodePrinter();
-		else if (printerType.equals(PrinterType.Receipt))
+		} else if (printerType.equals(PrinterType.Receipt)) {
 			printerDiscoverer.discoverReceiptPrinter();
+		}
 	}
 
 	private void setupListView() {
@@ -93,11 +98,31 @@ public class SelectPrinterActivity extends Activity {
 				Bundle bundle = new Bundle();
 				bundle.putSerializable(Utils.Constants.PRINTER_INFO, printerInfo);
 				callerActivityIntent.putExtras(bundle);
-			} else
+			} else {
 				callerActivityIntent.putExtra(Utils.Constants.PRINTER_INFO, printerInfo.get(printers.get(position)));
+			}
 
 			setResult(RESULT_OK, callerActivityIntent);
 			finish();
 		}
 	};
+
+
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if(requestCode == Utils.Constants.BLUETOOTH_REQUEST_CODE){
+			discoverPrinter();
+		}
+	}
+
+	@Override
+	protected void onDestroy() {
+		if (printerDiscoverer != null) {
+			printerDiscoverer.clearResources();
+			printerDiscoverer = null;
+		}
+		super.onDestroy();
+	}
+
 }

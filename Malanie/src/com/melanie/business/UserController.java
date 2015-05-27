@@ -10,7 +10,7 @@ public interface UserController {
 	void createUser(String name, String phone, String password, String deviceId,
 			OperationCallBack<User> operationCallBack) throws MelanieBusinessException;
 	
-	void checkPhoneExistOnCloud(String deviceId, OperationCallBack<User>operationCallBack) throws MelanieBusinessException;
+	void checkPhoneExistOnCloud(String phone, OperationCallBack<User>operationCallBack) throws MelanieBusinessException;
 	
     void login(User user,OperationCallBack<OperationResult> operationCallBack);
 	

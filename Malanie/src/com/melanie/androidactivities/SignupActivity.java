@@ -57,20 +57,37 @@ public class SignupActivity extends AppCompatActivity {
 
 	private void createAccount() {
 
-		String password = passwordField.getText().toString();
-		String confirmPassword = confirmPasswordField.getText().toString();
-		String name = nameField.getText().toString();
+		final String password = passwordField.getText().toString();
+		final String confirmPassword = confirmPasswordField.getText().toString();
+		final String name = nameField.getText().toString();
 	    phoneNumber = phoneField.getText().toString();
+	    
+	    if(userController != null){
+	    	try {
+				userController.checkPhoneExistOnCloud(phoneNumber, new OperationCallBack<User>(){
 
-		if (passwordsMatch(password, confirmPassword))
-			createUser(name, phoneNumber, password);
-		else {
-			switchPasswordFieldsBackColor(false);
-			Utils.makeToast(this, R.string.passwordsNotMatch);
-		}
-
+					@Override
+					public void onOperationSuccessful(User result) {
+						if(result == null){
+							if (passwordsMatch(password, confirmPassword))
+								createUser(name, phoneNumber, password);
+							else {
+								switchPasswordFieldsBackColor(false);
+								Utils.makeToast(SignupActivity.this, R.string.passwordsNotMatch);
+							}
+						}
+						else{
+							Utils.makeToast(SignupActivity.this, R.string.accountExistForPhone);
+						}
+					}
+				});
+			} catch (MelanieBusinessException e) {
+				// TODO log it
+				e.printStackTrace();
+			}
+	    }
 	}
-
+	
 	private void createUser(String name, String phone, String password) {
 		try {
 			userController.createUser(name, phone, password, getDeviceId(),

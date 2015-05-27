@@ -25,21 +25,20 @@ public class MainActivity extends Activity {
 
 	private static final boolean VISIBLE = true;
 	private static final boolean GONE = false;
-	
+
 	private MelanieSession session;
 	private boolean isRedirectingForFirstUseAction;
 	ProgressBar progressBar;
+	private boolean isLoggingIn;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		session = BusinessFactory.getSession();
-		
 		Utils.registerConnectivityReceiver(getApplicationContext());
-		
-        isRedirectingForFirstUseAction = false;
-        
+
+		initializeFields();
+
 		if (!session.isInitialized()) {
 			initializeSession();
 		}
@@ -50,13 +49,20 @@ public class MainActivity extends Activity {
 			setContentView(R.layout.activity_main);
 
 			progressBar = (ProgressBar)findViewById(R.id.loginProgress);
-			
+
 			setupMainListView();
-			if (!session.isUserLoggedIn())
+			if (!session.isUserLoggedIn()) {
 				loginUser(userOperationCallBack);
+			}
 		}
 	}
-	
+
+	private void initializeFields(){
+		session = BusinessFactory.getSession();
+		isRedirectingForFirstUseAction = false;
+		isLoggingIn = false;
+	}
+
 	private void initializeSession() {
 		// would be nice to push this data initialization down to lower
 		// layers
@@ -86,7 +92,9 @@ public class MainActivity extends Activity {
 					startActivity(intent);
 				} else {
 					Utils.makeToast(MainActivity.this, R.string.mustbeLoggedIn);
-					loginUser(userOperationCallBack);
+					if(!isLoggingIn) {
+						loginUser(userOperationCallBack);
+					}
 				}
 			}
 		});
@@ -97,15 +105,17 @@ public class MainActivity extends Activity {
 		@Override
 		public void onOperationSuccessful(User user) {
 			switchProgressBarVisisbilityTo(GONE);
+			isLoggingIn = false;
 		}
 
 	};
 
 	private void switchProgressBarVisisbilityTo(boolean visible){
-	    	progressBar.setVisibility(visible ? View.VISIBLE : View.GONE);
+		progressBar.setVisibility(visible ? View.VISIBLE : View.GONE);
 	}
-	
+
 	private void loginUser(OperationCallBack<User> operationCallBack) {
+		isLoggingIn = true;
 		switchProgressBarVisisbilityTo(VISIBLE);
 		UserController userController = BusinessFactory.makeUserController();
 		try {

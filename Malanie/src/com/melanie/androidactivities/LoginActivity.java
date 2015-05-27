@@ -21,8 +21,8 @@ import com.melanie.business.MelanieSession;
 import com.melanie.business.UserController;
 import com.melanie.dataaccesslayer.datasource.DataSource;
 import com.melanie.entities.User;
-import com.melanie.support.CodeStrings;
 import com.melanie.support.BusinessFactory;
+import com.melanie.support.CodeStrings;
 import com.melanie.support.OperationCallBack;
 import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieBusinessException;
@@ -47,10 +47,11 @@ public class LoginActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
 		initializeFields();
-		
-		if(!session.isInitialized())
-		   initializeSession();
-		
+
+		if(!session.isInitialized()) {
+			initializeSession();
+		}
+
 		setupSignupButton();
 		setupLoginButton();
 		setupDifferntDeviceAlertDialog();
@@ -171,23 +172,23 @@ public class LoginActivity extends Activity {
 		return new MelanieAlertDialog(this, MelanieAlertDialogButtonModes.YES_NO,
 				new MelanieAlertDialog.ButtonMethods() {
 
-					@Override
-					public void yesButtonOperation() {
-						updateUserDeviceId(new OperationCallBack<OperationResult>() {
-
-							@Override
-							public void onOperationSuccessful(OperationResult result) {
-								performLogin();
-							}
-						});
-					}
+			@Override
+			public void yesButtonOperation() {
+				updateUserDeviceId(new OperationCallBack<OperationResult>() {
 
 					@Override
-					public void noButtonOperation() {
-						postToastToUIThread(R.string.accessDenied);
-						this.cancelButtonOperation();
+					public void onOperationSuccessful(OperationResult result) {
+						performLogin();
 					}
 				});
+			}
+
+			@Override
+			public void noButtonOperation() {
+				postToastToUIThread(R.string.accessDenied);
+				this.cancelButtonOperation();
+			}
+		});
 	}
 
 	private void performLogin() {
@@ -198,8 +199,9 @@ public class LoginActivity extends Activity {
 			public void onOperationSuccessful(OperationResult result) {
 				if (result.equals(OperationResult.SUCCESSFUL)) {
 					launchMainActivity();
-				} else
+				} else {
 					postToastToUIThread(R.string.loginFailed);
+				}
 			}
 		});
 	}
@@ -211,13 +213,14 @@ public class LoginActivity extends Activity {
 	}
 
 	private void updateUserDeviceId(OperationCallBack<OperationResult> operationCallBack) {
-		if (userController != null)
+		if (userController != null) {
 			try {
 				userController.updateUser(user, CodeStrings.DEVICEID, currentDeviceId,operationCallBack);
 			} catch (MelanieBusinessException e) {
 				// TODO log it
 				e.printStackTrace();
 			}
+		}
 	}
 
 	private String getCurrentDeviceId() {
@@ -233,8 +236,9 @@ public class LoginActivity extends Activity {
 			@Override
 			protected void onPreExecute() {
 				setupProgressDialog();
-				if (progressDialog != null)
+				if (progressDialog != null) {
 					progressDialog.show();
+				}
 			}
 
 			@Override
@@ -244,4 +248,14 @@ public class LoginActivity extends Activity {
 			}
 		};
 	}
+
+	@Override
+	protected void onDestroy() {
+		if(progressDialog != null){
+			progressDialog.dismiss();
+			progressDialog = null;
+		}
+		super.onDestroy();
+	}
+
 }

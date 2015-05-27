@@ -12,6 +12,7 @@ import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.res.AssetManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -107,8 +108,9 @@ public class AddProductActivity extends AppCompatActivity {
 					Utils.notifyListUpdate(categoriesAdapter, handler);
 				}
 			});
-			if (tempCategories != null && !tempCategories.isEmpty())
+			if (tempCategories != null && !tempCategories.isEmpty()) {
 				categories.addAll(tempCategories);
+			}
 
 		} catch (MelanieBusinessException e) {
 			e.printStackTrace(); // TODO: log it
@@ -129,13 +131,13 @@ public class AddProductActivity extends AppCompatActivity {
 	private void setProgressBarHandlers() {
 		progressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getText(R.string.cancel),
 				new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						progressDialog.setProgress(0);
-						progressDialog.cancel();
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				progressDialog.setProgress(0);
+				progressDialog.cancel();
 
-					}
-				});
+			}
+		});
 		progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
 			@Override
 			public void onCancel(DialogInterface dialog) {
@@ -179,7 +181,7 @@ public class AddProductActivity extends AppCompatActivity {
 
 	private OperationResult addProductAndReturnResult(Category category, String productName, double price, int quantity) {
 		OperationResult result = OperationResult.FAILED;
-		if (category != null)
+		if (category != null) {
 			try {
 				int lastProductId = productController.getLastInsertedProductId();
 				currentBarcode = generateBarcodeString(lastProductId);
@@ -188,6 +190,7 @@ public class AddProductActivity extends AppCompatActivity {
 			} catch (MelanieBusinessException e) {
 				e.printStackTrace(); // log it
 			}
+		}
 		return result;
 	}
 
@@ -222,17 +225,17 @@ public class AddProductActivity extends AppCompatActivity {
 			}, PrinterType.Barcode);
 
 			printerDiscoverer.discoverBarcodePrinter();
-			printer = new LWPrint(this);
-			printer.setCallback(new PrintCallBack());
 		}
+		printer = new LWPrint(this);
+		printer.setCallback(new PrintCallBack());
 	}
 
 	private void printBarcode() {
 
 		if (userWantsToPrintBarcode()) {
-			if (isPrinterFound)
+			if (isPrinterFound) {
 				performPrint();
-			else {
+			} else {
 				Intent intent = new Intent(this, SelectPrinterActivity.class);
 				intent.putExtra(Utils.Constants.PRINTER_TYPE, PrinterType.Barcode.toString());
 				startActivityForResult(intent, PRINTER_SELECT_REQUEST_CODE);
@@ -262,8 +265,9 @@ public class AddProductActivity extends AppCompatActivity {
 
 			@Override
 			public void run() {
-				if (progressDialog != null)
+				if (progressDialog != null) {
 					progressDialog.show();
+				}
 			}
 		}, 2);
 
@@ -327,14 +331,16 @@ public class AddProductActivity extends AppCompatActivity {
 					printPhaseMessage = phaseMessage.get(p);
 				}
 			});
-			if (phase == LWPrintPrintingPhase.Complete)
+			if (phase == LWPrintPrintingPhase.Complete) {
 				handler.postDelayed(new Runnable() {
 					@Override
 					public void run() {
 						progressDialog.dismiss();
 						progressDialog.setProgress(0);
+						setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
 					}
 				}, 1200);
+			}
 		}
 
 		@Override
@@ -381,8 +387,10 @@ public class AddProductActivity extends AppCompatActivity {
 
 			Bundle bundle = intentData.getExtras();
 			printerInfo = (Map<String, String>) bundle.get(Utils.Constants.PRINTER_INFO);
-			if (printerInfo != null)
+			if (printerInfo != null) {
+				setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
 				performPrint();
+			}
 		}
 		else if(requestCode == Utils.Constants.BLUETOOTH_REQUEST_CODE){
 			bluetoothEnableRefused = resultCode == RESULT_CANCELED;
@@ -408,6 +416,11 @@ public class AddProductActivity extends AppCompatActivity {
 		if (printerDiscoverer != null) {
 			printerDiscoverer.clearResources();
 			printerDiscoverer = null;
+		}
+
+		if(progressDialog != null){
+			progressDialog.dismiss();
+			progressDialog = null;
 		}
 	}
 }

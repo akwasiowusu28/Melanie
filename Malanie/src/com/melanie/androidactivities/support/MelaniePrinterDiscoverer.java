@@ -48,14 +48,13 @@ public class MelaniePrinterDiscoverer {
 
 	boolean canConnectBluetooth() {
 		boolean canConnect = true;
-		if (!bluetoothRefused) {
-			bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-			if (bluetoothAdapter == null) {
-				Utils.makeToast(context, R.string.bluetoothNotSupported);
-				canConnect = false;
-			}
+
+		bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+		if (bluetoothAdapter == null) {
+			Utils.makeToast(context, R.string.bluetoothNotSupported);
+			canConnect = false;
 		}
-		return canConnect && !bluetoothRefused;
+		return canConnect;
 	}
 
 	private void enableBluetooth() {
@@ -76,8 +75,9 @@ public class MelaniePrinterDiscoverer {
 	private final LWPrintDiscoverPrinterCallback discoverBarcodePrinterCallBack = new LWPrintDiscoverPrinterCallback() {
 		@Override
 		public void onFindPrinter(LWPrintDiscoverPrinter arg0, Map<String, String> printerInfo) {
-			if (printerDiscoverHelper != null)
+			if (printerDiscoverHelper != null) {
 				printerDiscoverHelper.stopDiscover();
+			}
 
 			operationCallBack.onOperationSuccessful(printerInfo);
 		}
@@ -85,18 +85,20 @@ public class MelaniePrinterDiscoverer {
 		@Override
 		public void onRemovePrinter(LWPrintDiscoverPrinter arg0, Map<String, String> arg1) {
 		}
+
+
 	};
 
 	private final BroadcastReceiver bluetoothBroadcastReceiver = new BroadcastReceiver() {
 
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			if (printerType.equals(PrinterType.Receipt)) {
-				String action = intent.getAction();
 
-				switch (action) {
-				case BluetoothDevice.ACTION_FOUND:
+			String action = intent.getAction();
 
+			switch (action) {
+			case BluetoothDevice.ACTION_FOUND:
+				if (printerType.equals(PrinterType.Receipt)) {
 					BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
 					String deviceName = device.getName();
 					if (deviceName.contains("Printer")) {
@@ -111,6 +113,10 @@ public class MelaniePrinterDiscoverer {
 			}
 		}
 	};
+
+	public boolean isReadyForDiscovery(){
+		return bluetoothAdapter != null && bluetoothAdapter.isEnabled();
+	}
 
 	public void discoverReceiptPrinter() {
 		if (!bluetoothRefused) {
@@ -132,5 +138,7 @@ public class MelaniePrinterDiscoverer {
 			printerDiscoverHelper.stopDiscover();
 			printerDiscoverHelper = null;
 		}
+
+		context.unregisterReceiver(bluetoothBroadcastReceiver);
 	}
 }

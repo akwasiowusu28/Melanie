@@ -130,4 +130,5 @@
     <string name ="accessDenied">Cannot have multiple devices per account. Use existing device or update to current</string>
     <string name ="dontHaveAccount">Don&#8217;t have an account?</string>
     <string name="printBarcodeCheck">Print barcodes</string>
+    <string name="accountExistForPhone">An account already exists for this phone number. Please enter a different phone number</string>
 </resources>
