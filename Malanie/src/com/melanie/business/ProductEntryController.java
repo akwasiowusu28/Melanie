@@ -20,15 +20,15 @@ public interface ProductEntryController {
 
 	Category findCategory(int id,
 			OperationCallBack<Category> operationCallBack)
-			throws MelanieBusinessException;
+					throws MelanieBusinessException;
 
 	Category findCategory(String categoryName,
 			OperationCallBack<Category> operationCallBack)
-			throws MelanieBusinessException;
+					throws MelanieBusinessException;
 
 	List<Category> getAllCategories(
 			OperationCallBack<Category> operationCallBack)
-			throws MelanieBusinessException;
+					throws MelanieBusinessException;
 
 	OperationResult addProduct(String productName, int quantity, double price,
 			Category category, String barcode) throws MelanieBusinessException;
@@ -38,22 +38,22 @@ public interface ProductEntryController {
 
 	List<Product> findAllProducts(
 			OperationCallBack<Product> operationCallBack)
-			throws MelanieBusinessException;
+					throws MelanieBusinessException;
 
 	Product findProduct(int productId,
 			OperationCallBack<Product> operationCallBack)
-			throws MelanieBusinessException;
+					throws MelanieBusinessException;
 
 	Product findProductByBarcode(String barcodDigits,
 			OperationCallBack<Product> operationCallBack)
-			throws MelanieBusinessException;
+					throws MelanieBusinessException;
 
 	Product findProduct(String productName,
 			OperationCallBack<Product> operationCallBack)
-			throws MelanieBusinessException;
+					throws MelanieBusinessException;
 
 	OperationResult updateProductQuantity(Product productName,
 			int updateQuantity) throws MelanieBusinessException;
 
-	int getLastInsertedProductId() throws MelanieBusinessException;
+	void getLastInsertedProductId(OperationCallBack<Integer> operationCallBack) throws MelanieBusinessException;
 }

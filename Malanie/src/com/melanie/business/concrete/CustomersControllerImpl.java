@@ -25,8 +25,8 @@ public class CustomersControllerImpl implements CustomersController {
 
 	private final DataAccessLayer dataAccess;
 	private Customer customer;
-    private final MelanieSession session;
-    
+	private final MelanieSession session;
+
 	public CustomersControllerImpl() {
 		dataAccess = DataFactory.makeDataAccess();
 		session = BusinessFactory.getSession();
@@ -42,13 +42,14 @@ public class CustomersControllerImpl implements CustomersController {
 	@Override
 	public void cacheCustomerInLocalDataStore(Customer customer)
 			throws MelanieBusinessException {
-		if (dataAccess != null)
+		if (dataAccess != null) {
 			try {
 				dataAccess.addOrUpdateDataItemInLocalDataStoreOnly(customer,
 						Customer.class);
 			} catch (MelanieDataLayerException e) {
 				throw new MelanieBusinessException(e.getMessage(), e);
 			}
+		}
 	}
 
 	/**
@@ -65,13 +66,14 @@ public class CustomersControllerImpl implements CustomersController {
 
 		OperationResult result = OperationResult.FAILED;
 
-		if (session.canConnectToCloud() && dataAccess != null && customer != null)
+		if (session.canConnectToCloud() && dataAccess != null && customer != null) {
 			try {
-				  customer.setOwnerId(session.getUser().getObjectId());
+				customer.setOwnerId(session.getUser().getObjectId());
 				result = dataAccess.addDataItem(customer, Customer.class, null);
 			} catch (MelanieDataLayerException e) {
 				throw new MelanieBusinessException(e.getMessage(), e);
 			}
+		}
 		return result;
 	}
 
@@ -83,13 +85,14 @@ public class CustomersControllerImpl implements CustomersController {
 	@Override
 	public List<Customer> getAllCustomers(
 			OperationCallBack<Customer> operationCallBack)
-			throws MelanieBusinessException {
+					throws MelanieBusinessException {
 
 		List<Customer> customers = new ArrayList<Customer>();
 		try {
-			if (dataAccess != null)
+			if (dataAccess != null) {
 				customers = dataAccess.findAllItems(Customer.class,
 						operationCallBack);
+			}
 		} catch (MelanieDataLayerException e) {
 			throw new MelanieBusinessException(e.getMessage(), e);
 		}
@@ -101,26 +104,28 @@ public class CustomersControllerImpl implements CustomersController {
 			throws MelanieBusinessException {
 		OperationResult result = OperationResult.FAILED;
 
-		if (session.canConnectToCloud() && dataAccess != null)
+		if (session.canConnectToCloud() && dataAccess != null) {
 			try {
 				result = dataAccess.updateDataItem(customer, Customer.class);
 			} catch (MelanieDataLayerException e) {
 				throw new MelanieBusinessException(e.getMessage(), e);
 			}
+		}
 		return result;
 	}
 
 	@Override
 	public Customer findCustomer(int customerId,
 			OperationCallBack<Customer> operationCallBack)
-			throws MelanieBusinessException {
+					throws MelanieBusinessException {
 
 		Customer customer = null;
 
 		try {
-			if (session.canConnectToCloud() && dataAccess != null)
+			if (session.canConnectToCloud() && dataAccess != null) {
 				customer = dataAccess.findItemById(customerId, Customer.class,
 						operationCallBack);
+			}
 		} catch (MelanieDataLayerException e) {
 			throw new MelanieBusinessException(e.getMessage(), e);
 		}
@@ -129,15 +134,15 @@ public class CustomersControllerImpl implements CustomersController {
 	}
 
 	@Override
-	public int getLastInsertedCustomerId() throws MelanieBusinessException {
-		int customerId = -1;
-		if (session.canConnectToCloud() && dataAccess != null)
+	public void getLastInsertedCustomerId(OperationCallBack<Integer> operationCallBack) throws MelanieBusinessException {
+
+		if (session.canConnectToCloud() && dataAccess != null) {
 			try {
-				customerId = dataAccess.getLastInsertedId(Customer.class);
+				dataAccess.getLastInsertedId(Customer.class, operationCallBack);
 			} catch (MelanieDataLayerException e) {
 				throw new MelanieBusinessException(e.getMessage(), e);
 			}
-		return customerId;
+		}
 	}
 
 }

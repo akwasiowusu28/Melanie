@@ -23,7 +23,7 @@ public interface CustomersController {
 
 	List<Customer> getAllCustomers(
 			OperationCallBack<Customer> operationCallBack)
-			throws MelanieBusinessException;
+					throws MelanieBusinessException;
 
 	OperationResult updateCustomer(Customer customer)
 			throws MelanieBusinessException;
@@ -33,7 +33,7 @@ public interface CustomersController {
 
 	Customer findCustomer(int customerId,
 			OperationCallBack<Customer> operationCallBack)
-			throws MelanieBusinessException;
+					throws MelanieBusinessException;
 
-	int getLastInsertedCustomerId() throws MelanieBusinessException;
+	void getLastInsertedCustomerId(OperationCallBack<Integer> operationCallBack) throws MelanieBusinessException;
 }

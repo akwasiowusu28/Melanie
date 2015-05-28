@@ -20,14 +20,13 @@ final class DataUtil {
 		((BaseEntity) dataItem).setRecentUse(new Date());
 	}
 
-	public static <T> List<T> findAllItemsFromCache(Class<T> itemClass)
-			throws MelanieDataLayerException {
+	public static <T> List<T> findAllItemsFromCache(Class<T> itemClass) throws MelanieDataLayerException {
 		List<T> items = new ArrayList<T>();
 		try {
-			Dao<Object, Integer> dao = DataSourceManager
-					.getCachedDaoFor(itemClass);
-			if (dao != null)
+			Dao<Object, Integer> dao = DataSourceManager.getCachedDaoFor(itemClass);
+			if (dao != null) {
 				items.addAll((List<T>) dao.queryForAll());
+			}
 
 		} catch (SQLException e) {
 			throw new MelanieDataLayerException(e.getMessage(), e);
@@ -35,8 +34,7 @@ final class DataUtil {
 		return items;
 	}
 
-	private static <T> void removeLeastRecentlyUsedItem(
-			Dao<Object, Integer> dao, Class<T> itemClass)
+	private static <T> void removeLeastRecentlyUsedItem(Dao<Object, Integer> dao, Class<T> itemClass)
 			throws MelanieDataLayerException {
 		List<BaseEntity> items = (List<BaseEntity>) findAllItemsFromCache(itemClass);
 		int size = items.size();
@@ -50,19 +48,18 @@ final class DataUtil {
 		}
 	}
 
-	public static <T> OperationResult updateDataCache(T dataItem)
-			throws MelanieDataLayerException {
+	public static <T> OperationResult updateDataCache(T dataItem) throws MelanieDataLayerException {
 		OperationResult result = OperationResult.FAILED;
 		try {
 			if (dataItem != null) {
 				Class<?> itemClass = dataItem.getClass();
-				Dao<Object, Integer> dao = DataSourceManager
-						.getCachedDaoFor(itemClass);
-				if (dao != null && dao.countOf() >= 3)
+				Dao<Object, Integer> dao = DataSourceManager.getCachedDaoFor(itemClass);
+				if (dao != null && dao.countOf() >= 3) {
 					DataUtil.removeLeastRecentlyUsedItem(dao, itemClass);
-				  updateItemRecentUse(dataItem);
-	
-					result = addOrUpdateItem(dao,dataItem);
+				}
+				updateItemRecentUse(dataItem);
+
+				result = addOrUpdateItem(dao, dataItem);
 			}
 		} catch (SQLException e) {
 			throw new MelanieDataLayerException(e.getMessage(), e);
@@ -70,11 +67,18 @@ final class DataUtil {
 		return result;
 	}
 
-	public static <T> OperationResult addOrUpdateItem(Dao<Object, Integer> dao, T dataItem) throws SQLException{
-		 dao.createOrUpdate(dataItem);
-		return OperationResult.SUCCESSFUL;
+	public static <T> OperationResult addOrUpdateItem(Dao<Object, Integer> dao, T dataItem) throws SQLException {
+
+		OperationResult result = OperationResult.FAILED;
+
+		if (dao != null) {
+			dao.createOrUpdate(dataItem);
+			result = OperationResult.SUCCESSFUL;
+		}
+
+		return result;
 	}
-	
+
 	public static class DataCallBack<T> extends OperationCallBack<T> {
 
 		private final OperationCallBack<T> businessCallBack;
@@ -88,13 +92,15 @@ final class DataUtil {
 		public void onCollectionOperationSuccessful(List<T> results) {
 
 			try {
-				for (T result : results)
+				for (T result : results) {
 					updateDataCache(result);
+				}
 			} catch (MelanieDataLayerException e) {
 				e.printStackTrace(); // TODO: log it
 			}
-			if (businessCallBack != null)
+			if (businessCallBack != null) {
 				businessCallBack.onCollectionOperationSuccessful(results);
+			}
 		}
 
 		@Override
@@ -106,8 +112,9 @@ final class DataUtil {
 				e.printStackTrace(); // TODO: log it
 			}
 
-			if (businessCallBack != null)
+			if (businessCallBack != null) {
 				businessCallBack.onOperationSuccessful(result);
+			}
 		}
 	}
 }

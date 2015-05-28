@@ -39,7 +39,6 @@ import com.melanie.business.ProductEntryController;
 import com.melanie.entities.Category;
 import com.melanie.support.BusinessFactory;
 import com.melanie.support.OperationCallBack;
-import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieBusinessException;
 
 @SuppressWarnings("unchecked")
@@ -171,27 +170,37 @@ public class AddProductActivity extends AppCompatActivity {
 		String priceStr = ((EditText) findViewById(R.id.price)).getText().toString();
 		double price = Double.parseDouble(priceStr);
 		currentProductQuantity = Integer.parseInt(((EditText) findViewById(R.id.quantity)).getText().toString());
-		OperationResult result = addProductAndReturnResult(category, productName, price, currentProductQuantity);
-		if (result == OperationResult.SUCCESSFUL) {
-			printBarcode();
-			clearTextFields();
-		}
-		Utils.makeToastBasedOnOperationResult(this, result, R.string.productAddSuccessful, R.string.productAddFailed);
+		addProduct(category, productName, price, currentProductQuantity);
 	}
 
-	private OperationResult addProductAndReturnResult(Category category, String productName, double price, int quantity) {
-		OperationResult result = OperationResult.FAILED;
-		if (category != null) {
-			try {
-				int lastProductId = productController.getLastInsertedProductId();
-				currentBarcode = generateBarcodeString(lastProductId);
-				result = productController.addProduct(productName, currentProductQuantity, price, category,
-						currentBarcode);
-			} catch (MelanieBusinessException e) {
-				e.printStackTrace(); // log it
-			}
+	private void addProduct(final Category category,
+			final String productName, final double price, int quantity) {
+
+		try {
+			productController.getLastInsertedProductId(new OperationCallBack<Integer>(){
+
+				@Override
+				public void onOperationSuccessful(Integer result) {
+
+					currentBarcode = generateBarcodeString(result);
+					try {
+						productController.addProduct(productName, currentProductQuantity, price, category,
+								currentBarcode);
+						printBarcode();
+						Utils.makeToast(AddProductActivity.this, R.string.productAddSuccessful);
+						clearTextFields();
+					} catch (MelanieBusinessException e) {
+						Utils.makeToast(AddProductActivity.this, R.string.productAddFailed);
+						// TODO log it
+						e.printStackTrace();
+					}
+				}
+			});
+		} catch (MelanieBusinessException e) {
+			Utils.makeToast(this, R.string.productAddFailed);
+			// TODO Log it
+			e.printStackTrace();
 		}
-		return result;
 	}
 
 	private String generateBarcodeString(int lastItemId) {
@@ -391,8 +400,7 @@ public class AddProductActivity extends AppCompatActivity {
 				setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
 				performPrint();
 			}
-		}
-		else if(requestCode == Utils.Constants.BLUETOOTH_REQUEST_CODE){
+		} else if (requestCode == Utils.Constants.BLUETOOTH_REQUEST_CODE) {
 			bluetoothEnableRefused = resultCode == RESULT_CANCELED;
 		}
 	}
@@ -418,9 +426,10 @@ public class AddProductActivity extends AppCompatActivity {
 			printerDiscoverer = null;
 		}
 
-		if(progressDialog != null){
+		if (progressDialog != null) {
 			progressDialog.dismiss();
 			progressDialog = null;
 		}
 	}
+
 }

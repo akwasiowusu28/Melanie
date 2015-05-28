@@ -30,7 +30,6 @@ import com.melanie.support.exceptions.MelanieDataLayerException;
 public class SalesControllerImpl implements SalesController {
 
 	private static final String CUSTOMEROBJECTID = "Customer.ObjectId";
-	private static final String ADDNEWSALE = "addNewSale";
 
 	private final ProductEntryController productController;
 	private final DataAccessLayer dataAccess;
@@ -50,50 +49,53 @@ public class SalesControllerImpl implements SalesController {
 	@Override
 	public List<Sale> generateSaleItems(List<String> barcodes,
 			OperationCallBack<Sale> uiCallBack)
-			throws MelanieBusinessException {
+					throws MelanieBusinessException {
 		operationCount = 0;
 		Map<String, Integer> itemGroup = Utils.groupItems(barcodes);
 		Set<String> groupedBarcodeSet = itemGroup.keySet();
 		int totalItems = groupedBarcodeSet.size();
 
-		for (String barcode : groupedBarcodeSet)
+		for (String barcode : groupedBarcodeSet) {
 			try {
 				String parsedBarcode = parseBarcodeNoChecksum(barcode);
 				int quantity = itemGroup.get(barcode);
 				Sale sale = getExistingSale(parsedBarcode);
-				if (sale != null)
+				if (sale != null) {
 					sale.setQuantitySold(sale.getQuantitySold() + quantity);
-				else if (!notFoundProducts.contains(parsedBarcode))
+				} else if (!notFoundProducts.contains(parsedBarcode)) {
 					addNewSale(parsedBarcode, quantity, totalItems, uiCallBack);
+				}
 			} catch (MelanieBusinessException e) {
 				throw new MelanieBusinessException(e.getMessage(), e); // TODO:
-																		// log
-																		// it
+				// log
+				// it
 			}
+		}
 		return sales;
 
 	}
 
 	private void addNewSale(final String barcode, final int count,
 			final int total, final OperationCallBack<Sale> uiCallBack)
-			throws MelanieBusinessException {
+					throws MelanieBusinessException {
 		Product product;
 
 		product = productController.findProductByBarcode(barcode,
 				new OperationCallBack<Product>() {
 
-					@Override
-					public void onOperationSuccessful(Product result) {
-						if (result == null)
-							addBarcodeToNotFoundList(barcode);
-						operationCount++;
-						addProductToSale(result, count);
-						if (uiCallBack != null && operationCount == total) {
-							uiCallBack.onCollectionOperationSuccessful(sales);
-							operationCount = 0;
-						}
-					}
-				});
+			@Override
+			public void onOperationSuccessful(Product result) {
+				if (result == null) {
+					addBarcodeToNotFoundList(barcode);
+				}
+				operationCount++;
+				addProductToSale(result, count);
+				if (uiCallBack != null && operationCount == total) {
+					uiCallBack.onCollectionOperationSuccessful(sales);
+					operationCount = 0;
+				}
+			}
+		});
 
 		addProductToSale(product, count);
 	}
@@ -123,7 +125,7 @@ public class SalesControllerImpl implements SalesController {
 	@Override
 	public OperationResult saveCurrentSales(Customer customer,
 			double amountReceived, double discount, double balance)
-			throws MelanieBusinessException {
+					throws MelanieBusinessException {
 		OperationResult result = OperationResult.FAILED;
 		if (dataAccess != null) {
 			try {
@@ -136,24 +138,24 @@ public class SalesControllerImpl implements SalesController {
 				if(session.canConnectToCloud() && dataAccess !=null){
 					dataAccess.addDataItem(payment, Payment.class,
 							new OperationCallBack<Payment>() {
-								@Override
-								public void onOperationSuccessful(Payment payment) {
-									for (Sale sale : sales) {
-										SalePayment salePayment = new SalePayment(
-												sale, payment);
-										try {
-											dataAccess.addDataItem(salePayment,
-													SalePayment.class, null);
-										} catch (MelanieDataLayerException e) {
-											onOperationFailed(e);
-										}
-									}
-									sales.clear();
-
+						@Override
+						public void onOperationSuccessful(Payment payment) {
+							for (Sale sale : sales) {
+								SalePayment salePayment = new SalePayment(
+										sale, payment);
+								try {
+									dataAccess.addDataItem(salePayment,
+											SalePayment.class, null);
+								} catch (MelanieDataLayerException e) {
+									onOperationFailed(e);
 								}
-							}); 
+							}
+							sales.clear();
+
+						}
+					});
 				}
-				
+
 			} catch (MelanieDataLayerException e) {
 				throw new MelanieBusinessException(e.getMessage(), e);
 			}
@@ -170,10 +172,10 @@ public class SalesControllerImpl implements SalesController {
 	@Override
 	public List<Sale> findSalesByCustomer(Customer customer,
 			OperationCallBack<Sale> operationCallBack)
-			throws MelanieBusinessException {
+					throws MelanieBusinessException {
 
 		List<Sale> customerSales = new ArrayList<Sale>();
-		if (session.canConnectToCloud() && dataAccess != null)
+		if (session.canConnectToCloud() && dataAccess != null) {
 			try {
 				customerSales = dataAccess.findItemsByFieldName(
 						CUSTOMEROBJECTID,
@@ -186,33 +188,37 @@ public class SalesControllerImpl implements SalesController {
 			} catch (MelanieDataLayerException e) {
 				throw new MelanieBusinessException(e.getMessage(), e);
 			}
+		}
 		return customerSales;
 	}
 
 	@Override
 	public OperationResult recordPayment(Customer customer, List<Sale> sales,
 			double amountReceived, double discount, double balance)
-			throws MelanieBusinessException {
+					throws MelanieBusinessException {
 		this.sales = new ArrayList<Sale>(sales);
 		return saveCurrentSales(customer, amountReceived, discount, balance);
 	}
 
 	private void addBarcodeToNotFoundList(String barcode) {
-		if (notFoundProducts.size() >= 20)
+		if (notFoundProducts.size() >= 20) {
 			notFoundProducts.remove();
+		}
 		notFoundProducts.add(barcode);
 	}
 
 	@Override
 	public List<Sale> getSalesBetween(Date fromDate, Date toDate,
 			final OperationCallBack<Sale> operationCallBack)
-			throws MelanieBusinessException {
+					throws MelanieBusinessException {
 		List<Sale> sales = new ArrayList<Sale>();
 		try {
 			if (session.canConnectToCloud() && dataAccess != null)
+			{
 				sales.addAll(dataAccess.findItemsBetween("SaleDate", fromDate,
 						toDate, Sale.class, operationCallBack));
-			// refreshSales(sales);
+				// refreshSales(sales);
+			}
 		} catch (MelanieDataLayerException e) {
 			throw new MelanieBusinessException(e.getMessage(), e);
 		}

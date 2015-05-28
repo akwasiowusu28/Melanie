@@ -92,8 +92,9 @@ public class CustomersActivity extends AppCompatActivity {
 							Utils.notifyListUpdate(customersAdapter, handler);
 						}
 					});
-			if (tempCustomers != null && !tempCustomers.isEmpty())
+			if (tempCustomers != null && !tempCustomers.isEmpty()) {
 				customers.addAll(tempCustomers);
+			}
 
 		} catch (MelanieBusinessException e) {
 			e.printStackTrace(); // TODO: log it
@@ -116,8 +117,9 @@ public class CustomersActivity extends AppCompatActivity {
 				long id) {
 			customer = customers.get(position);
 			EditText phoneNumberView = (EditText) findViewById(R.id.phoneNumber);
-			if (customer != null)
+			if (customer != null) {
 				phoneNumberView.setText(customer.getPhoneNumber());
+			}
 			isEdit = true;
 			updateButtonText();
 		}
@@ -132,9 +134,10 @@ public class CustomersActivity extends AppCompatActivity {
 		OperationResult result = saveCustomerAndReturnResult(customerName,
 				phoneNumber);
 
-		if (!wasLaunchedFromSales)
+		if (!wasLaunchedFromSales) {
 			Utils.makeToastBasedOnOperationResult(this, result,
 					R.string.addCustomerSuccess, R.string.addCustomerFailed);
+		}
 		Utils.clearInputTextFields(customerNameView, phoneNumberView);
 		finishIfLaunchedFromSales();
 		updateButtonText();
@@ -152,17 +155,19 @@ public class CustomersActivity extends AppCompatActivity {
 						customerName, phoneNumber);
 
 				if (!wasLaunchedFromSales) {
-					if (isEdit)
+					if (isEdit) {
 						result = customersController.updateCustomer(customer);
-					else
+					} else {
 						result = customersController.addCachedCustomer();
+					}
 
 					List<Customer> customersFromLocalDataStore = customersController
 							.getAllCustomers(null);
 					Utils.mergeItems(customersFromLocalDataStore, customers);
 					Utils.notifyListUpdate(customersAdapter, handler);
-				} else
+				} else {
 					customersController.cacheCustomerInLocalDataStore(customer);
+				}
 			}
 		} catch (MelanieBusinessException e) {
 			e.printStackTrace(); // Log it
@@ -180,15 +185,20 @@ public class CustomersActivity extends AppCompatActivity {
 
 	private void finishIfLaunchedFromSales() {
 		if (wasLaunchedFromSales) {
-			Intent intent = getIntent();
+
 			try {
-				intent.putExtra(Utils.Constants.CustomerId,
-						customersController.getLastInsertedCustomerId());
+				customersController.getLastInsertedCustomerId(new OperationCallBack<Integer>(){
+					@Override
+					public void onOperationSuccessful(Integer customerId) {
+						Intent intent = getIntent();
+						intent.putExtra(Utils.Constants.CustomerId, customerId);
+						setResult(RESULT_OK, intent);
+						finish();
+					}
+				});
 			} catch (MelanieBusinessException e) {
 				e.printStackTrace(); // TODO: log it
 			}
-			setResult(RESULT_OK, intent);
-			finish();
 		}
 	}
 }
