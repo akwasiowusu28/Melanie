@@ -21,6 +21,7 @@ import com.melanie.androidactivities.support.Utils;
 import com.melanie.business.CustomersController;
 import com.melanie.entities.Customer;
 import com.melanie.support.BusinessFactory;
+import com.melanie.support.CodeStrings;
 import com.melanie.support.OperationCallBack;
 import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieBusinessException;
@@ -88,7 +89,7 @@ public class CustomersActivity extends AppCompatActivity {
 						public void onCollectionOperationSuccessful(
 								List<Customer> results) {
 
-							Utils.mergeItems(results, customers);
+							Utils.mergeItems(results, customers, false);
 							Utils.notifyListUpdate(customersAdapter, handler);
 						}
 					});
@@ -163,7 +164,7 @@ public class CustomersActivity extends AppCompatActivity {
 
 					List<Customer> customersFromLocalDataStore = customersController
 							.getAllCustomers(null);
-					Utils.mergeItems(customersFromLocalDataStore, customers);
+					Utils.mergeItems(customersFromLocalDataStore, customers, false);
 					Utils.notifyListUpdate(customersAdapter, handler);
 				} else {
 					customersController.cacheCustomerInLocalDataStore(customer);
@@ -191,7 +192,7 @@ public class CustomersActivity extends AppCompatActivity {
 					@Override
 					public void onOperationSuccessful(Integer customerId) {
 						Intent intent = getIntent();
-						intent.putExtra(Utils.Constants.CustomerId, customerId);
+						intent.putExtra(CodeStrings.CustomerId, customerId);
 						setResult(RESULT_OK, intent);
 						finish();
 					}

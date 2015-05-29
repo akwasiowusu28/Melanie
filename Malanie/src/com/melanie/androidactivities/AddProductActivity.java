@@ -38,6 +38,7 @@ import com.melanie.androidactivities.support.Utils;
 import com.melanie.business.ProductEntryController;
 import com.melanie.entities.Category;
 import com.melanie.support.BusinessFactory;
+import com.melanie.support.CodeStrings;
 import com.melanie.support.OperationCallBack;
 import com.melanie.support.exceptions.MelanieBusinessException;
 
@@ -59,14 +60,18 @@ public class AddProductActivity extends AppCompatActivity {
 
 	private boolean bluetoothEnableRefused = false;
 
+	private static boolean bluetoothRequestMade;
+
 	private ProgressDialog progressDialog = null;
 	private Handler handler;
 	private ScheduledExecutorService executorService;
 
 	private int printPhaseMessage;
 	private ArrayAdapter<Category> categoriesAdapter;
-	private List<Category> categories;
+	private ArrayList<Category> categories;
 	private MelaniePrinterDiscoverer printerDiscoverer;
+
+	private boolean instanceWasSaved = false;
 
 	@SuppressLint("NewApi")
 	@Override
@@ -74,16 +79,21 @@ public class AddProductActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_add_product);
 
+		if (savedInstanceState != null) {
+			restoreInstanceState(savedInstanceState);
+			instanceWasSaved = true;
+		}
+
 		initializeFields();
 
 		Spinner categorySpinner = (Spinner) findViewById(R.id.categoriesSpinner);
 		categorySpinner.setAdapter(categoriesAdapter);
 
-		if (savedInstanceState != null) {
-			bluetoothEnableRefused = savedInstanceState.getBoolean(Utils.Constants.BLUETOOTH_REFUSED);
-		}
 
-		initializePrinter();
+		if(!bluetoothRequestMade) {
+			initializePrinter();
+			bluetoothRequestMade = true;
+		}
 		setupAddProductListener();
 
 	}
@@ -91,7 +101,9 @@ public class AddProductActivity extends AppCompatActivity {
 	private void initializeFields() {
 		productController = BusinessFactory.makeProductEntryController();
 		handler = new Handler(getMainLooper());
-		getAllCategories();
+		if(!instanceWasSaved) {
+			getAllCategories();
+		}
 		categoriesAdapter = new ArrayAdapter<Category>(this, android.R.layout.simple_spinner_dropdown_item, categories);
 		createPrintProgressDialog();
 	}
@@ -103,7 +115,7 @@ public class AddProductActivity extends AppCompatActivity {
 			tempCategories = productController.getAllCategories(new OperationCallBack<Category>() {
 				@Override
 				public void onCollectionOperationSuccessful(List<Category> results) {
-					Utils.mergeItems(results, categories);
+					Utils.mergeItems(results, categories, false);
 					Utils.notifyListUpdate(categoriesAdapter, handler);
 				}
 			});
@@ -165,15 +177,40 @@ public class AddProductActivity extends AppCompatActivity {
 	public void addProduct() {
 
 		Category category = getSelectedCategory();
-		String productName = ((EditText) findViewById(R.id.productName)).getText().toString();
 
-		String priceStr = ((EditText) findViewById(R.id.price)).getText().toString();
-		double price = Double.parseDouble(priceStr);
-		currentProductQuantity = Integer.parseInt(((EditText) findViewById(R.id.quantity)).getText().toString());
-		addProduct(category, productName, price, currentProductQuantity);
+		EditText productNameField = (EditText) findViewById(R.id.productName);
+		EditText priceField = (EditText) findViewById(R.id.price);
+		EditText quantityField = (EditText) findViewById(R.id.quantity);
+
+		if(!isAnyFieldInvalid(priceField,productNameField, quantityField)){
+
+			String productName = productNameField.getText().toString();
+			String priceStr = priceField.getText().toString();
+			String quantity = quantityField.getText().toString();
+
+			double price = Double.parseDouble(priceStr);
+			currentProductQuantity = Integer.parseInt(quantity);
+			performAddProduct(category, productName, price, currentProductQuantity);
+		}
 	}
 
-	private void addProduct(final Category category,
+	private boolean isAnyFieldInvalid(EditText... fields){
+		boolean isAnyInValid = false;
+		for(EditText field: fields)
+		{
+			if(field != null && field.getText().toString().equals(CodeStrings.EMPTY_STRING)) {
+				Utils.switchInvalidFieldsBackColor(false, field);
+				if(!isAnyInValid) {
+					isAnyInValid = true;
+				}
+			} else {
+				Utils.switchInvalidFieldsBackColor(true, field);
+			}
+		}
+		return isAnyInValid;
+	}
+
+	private void performAddProduct(final Category category,
 			final String productName, final double price, int quantity) {
 
 		try {
@@ -246,7 +283,7 @@ public class AddProductActivity extends AppCompatActivity {
 				performPrint();
 			} else {
 				Intent intent = new Intent(this, SelectPrinterActivity.class);
-				intent.putExtra(Utils.Constants.PRINTER_TYPE, PrinterType.Barcode.toString());
+				intent.putExtra(CodeStrings.PRINTER_TYPE, PrinterType.Barcode.toString());
 				startActivityForResult(intent, PRINTER_SELECT_REQUEST_CODE);
 			}
 		}
@@ -395,7 +432,7 @@ public class AddProductActivity extends AppCompatActivity {
 		if (resultCode == RESULT_OK && requestCode == PRINTER_SELECT_REQUEST_CODE) {
 
 			Bundle bundle = intentData.getExtras();
-			printerInfo = (Map<String, String>) bundle.get(Utils.Constants.PRINTER_INFO);
+			printerInfo = (Map<String, String>) bundle.get(CodeStrings.PRINTER_INFO);
 			if (printerInfo != null) {
 				setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
 				performPrint();
@@ -408,11 +445,18 @@ public class AddProductActivity extends AppCompatActivity {
 	@Override
 	protected void onSaveInstanceState(Bundle bundle) {
 
-		bundle.putBoolean(Utils.Constants.BLUETOOTH_REFUSED, bluetoothEnableRefused);
+		bundle.putSerializable(CodeStrings.CATEGORIES, categories);
+		bundle.putBoolean(CodeStrings.BLUETOOTH_REFUSED, bluetoothEnableRefused);
 
 		super.onSaveInstanceState(bundle);
 	}
 
+	private void restoreInstanceState(Bundle bundle){
+		if(bundle != null){
+			bluetoothEnableRefused = bundle.getBoolean(CodeStrings.BLUETOOTH_REFUSED);
+			categories = (ArrayList<Category>) bundle.get(CodeStrings.CATEGORIES);
+		}
+	}
 	@Override
 	public void onDestroy() {
 		super.onDestroy();

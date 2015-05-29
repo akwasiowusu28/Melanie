@@ -39,7 +39,7 @@ public class SelectPrinterActivity extends Activity {
 		initializeFields();
 
 		callerActivityIntent = getIntent();
-		printerType = PrinterType.valueOf(callerActivityIntent.getStringExtra(Utils.Constants.PRINTER_TYPE));
+		printerType = PrinterType.valueOf(callerActivityIntent.getStringExtra(CodeStrings.PRINTER_TYPE));
 		setupListView();
 		setupPrinterDiscoverer();
 
@@ -96,10 +96,10 @@ public class SelectPrinterActivity extends Activity {
 
 			if (printerType.equals(PrinterType.Barcode)) {
 				Bundle bundle = new Bundle();
-				bundle.putSerializable(Utils.Constants.PRINTER_INFO, printerInfo);
+				bundle.putSerializable(CodeStrings.PRINTER_INFO, printerInfo);
 				callerActivityIntent.putExtras(bundle);
 			} else {
-				callerActivityIntent.putExtra(Utils.Constants.PRINTER_INFO, printerInfo.get(printers.get(position)));
+				callerActivityIntent.putExtra(CodeStrings.PRINTER_INFO, printerInfo.get(printers.get(position)));
 			}
 
 			setResult(RESULT_OK, callerActivityIntent);
@@ -112,7 +112,11 @@ public class SelectPrinterActivity extends Activity {
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if(requestCode == Utils.Constants.BLUETOOTH_REQUEST_CODE){
-			discoverPrinter();
+			if(resultCode == RESULT_OK) {
+				discoverPrinter();
+			} else {
+				finish();
+			}
 		}
 	}
 

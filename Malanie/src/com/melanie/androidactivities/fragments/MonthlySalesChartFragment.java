@@ -34,9 +34,10 @@ import com.melanie.androidactivities.support.MelanieDatePicker;
 import com.melanie.androidactivities.support.ObservablePropertyChangedListener;
 import com.melanie.androidactivities.support.ReportSession;
 import com.melanie.androidactivities.support.Utils;
+import com.melanie.support.CodeStrings;
 
 public class MonthlySalesChartFragment extends Fragment implements
-		ObservablePropertyChangedListener {
+ObservablePropertyChangedListener {
 
 	private static final String DAILY_SALES = "Daily Sales";
 
@@ -70,7 +71,7 @@ public class MonthlySalesChartFragment extends Fragment implements
 		reportSession = ReportSession.getInstance(this);
 		displayItems = new ArrayList<Map.Entry<String, Integer>>();
 		displayItems.addAll(reportSession.getDisplayItems(isDaily));
-		dateformater = new SimpleDateFormat(Utils.Constants.DATEFORMAT,
+		dateformater = new SimpleDateFormat(CodeStrings.DATEFORMAT,
 				Locale.getDefault());
 		initializeDates();
 		chartEntries = new ArrayList<>();
@@ -100,7 +101,7 @@ public class MonthlySalesChartFragment extends Fragment implements
 	private void setUpLineChart() {
 		salesChart = (LineChart) getView().findViewById(R.id.salesChart);
 		configureAxis();
-		salesChart.setDescription(Utils.Constants.EMPTY_STRING);
+		salesChart.setDescription(CodeStrings.EMPTY_STRING);
 	}
 
 	private void configureAxis() {
@@ -173,10 +174,11 @@ public class MonthlySalesChartFragment extends Fragment implements
 					pickerButton.setText(dateformater.format(newDate));
 					reportSession.getGroupedSales(isDaily);
 					refreshChart();
-				} else
+				} else {
 					Utils.makeToast(getActivity(),
 							isStartDate ? R.string.startDateError
 									: R.string.endDateError);
+				}
 			}
 		});
 	}
@@ -184,10 +186,11 @@ public class MonthlySalesChartFragment extends Fragment implements
 	private boolean isValidDate(Date date, int buttonId) {
 		boolean isValid = false;
 
-		if (buttonId == R.id.startDate)
+		if (buttonId == R.id.startDate) {
 			isValid = endDate != null && endDate.compareTo(date) >= 0;
-		else
+		} else {
 			isValid = startDate != null && startDate.compareTo(date) <= 0;
+		}
 
 		return isValid;
 	}
@@ -222,8 +225,9 @@ public class MonthlySalesChartFragment extends Fragment implements
 
 	private void refreshChart() {
 		if (salesChart != null) {
-			if (!salesChart.isEmpty())
+			if (!salesChart.isEmpty()) {
 				salesChart.clearValues();
+			}
 			refreshLineChartEntries();
 			refreshDataSet();
 			LineData lineData = new LineData(chartLabels, dataSet);

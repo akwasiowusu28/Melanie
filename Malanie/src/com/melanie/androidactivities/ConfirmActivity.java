@@ -14,12 +14,11 @@ import android.widget.TextView;
 
 import com.melanie.androidactivities.support.MelanieAlertDialog;
 import com.melanie.androidactivities.support.MelanieAlertDialog.MelanieAlertDialogButtonModes;
-import com.melanie.androidactivities.support.Utils;
 import com.melanie.business.MelanieSession;
 import com.melanie.business.UserController;
 import com.melanie.entities.User;
-import com.melanie.support.CodeStrings;
 import com.melanie.support.BusinessFactory;
+import com.melanie.support.CodeStrings;
 import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieBusinessException;
 
@@ -39,7 +38,7 @@ public class ConfirmActivity extends AppCompatActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_confirm);
-		
+
 		initializeFields();
 		setupConfirmButton();
 		showConfirmAlertDialog();
@@ -49,7 +48,7 @@ public class ConfirmActivity extends AppCompatActivity {
 	private void initializeFields() {
 		userController = BusinessFactory.makeUserController();
 		Intent intent = getIntent();
-		phoneNumber = intent.getStringExtra(Utils.Constants.PHONE_NUMBER);
+		phoneNumber = intent.getStringExtra(CodeStrings.PHONE_NUMBER);
 		confirmFieldsDisabled = false;
 		confirmTextField = (EditText) findViewById(R.id.confirmTextField);
 		confirmLabel = (TextView) findViewById(R.id.confirmLabel);
@@ -85,7 +84,7 @@ public class ConfirmActivity extends AppCompatActivity {
 		confirmAlertDialog = makeAlertDialog();
 		confirmAlertDialog.setTitle(getString(R.string.confirmNumber));
 		confirmAlertDialog
-				.setMessage(getString(R.string.confirmNumberQuestion));
+		.setMessage(getString(R.string.confirmNumberQuestion));
 		confirmAlertDialog.show();
 	}
 
@@ -94,24 +93,24 @@ public class ConfirmActivity extends AppCompatActivity {
 				MelanieAlertDialogButtonModes.YES_NO,
 				new MelanieAlertDialog.ButtonMethods() {
 
-					@Override
-					public void yesButtonOperation() {
-						sendConfirmSMS();
-						if (confirmFieldsDisabled) {
-							changeConfirmFieldsVisibility(true);
-							sendCodeButton.setVisibility(View.GONE);
+			@Override
+			public void yesButtonOperation() {
+				sendConfirmSMS();
+				if (confirmFieldsDisabled) {
+					changeConfirmFieldsVisibility(true);
+					sendCodeButton.setVisibility(View.GONE);
 
-						}
-					}
+				}
+			}
 
-					@Override
-					public void noButtonOperation() {
-						confirmFieldsDisabled = true;
-						changeConfirmFieldsVisibility(false);
-						sendCodeButton.setVisibility(View.VISIBLE);
-						this.cancelButtonOperation();
-					}
-				});
+			@Override
+			public void noButtonOperation() {
+				confirmFieldsDisabled = true;
+				changeConfirmFieldsVisibility(false);
+				sendCodeButton.setVisibility(View.VISIBLE);
+				this.cancelButtonOperation();
+			}
+		});
 	}
 
 	private void changeConfirmFieldsVisibility(boolean makeVisible) {
@@ -154,7 +153,7 @@ public class ConfirmActivity extends AppCompatActivity {
 	}
 
 	private String getConfirmMessage() {
-		return Utils.Constants.CONFIRM_SMS_MESSAGE + confirmCode;
+		return CodeStrings.CONFIRM_SMS_MESSAGE + confirmCode;
 	}
 
 	private void generateConfirmCode() {

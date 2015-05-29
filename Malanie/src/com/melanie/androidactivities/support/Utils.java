@@ -10,12 +10,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import android.annotation.TargetApi;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -35,19 +38,9 @@ import com.melanie.support.OperationResult;
  *         functions used across multiple activities
  */
 public final class Utils {
+	private static Drawable defaultEditTextBackground = null;
 
 	public static class Constants {
-		public static final String CustomerId = "CustomerId";
-		public static final String BARCODES = "barcodes";
-		public static final String EMPTY_STRING = "";
-		public static final String DATEFORMAT = "MMM dd, yyyy";
-		public static final String PRINTER_TYPE = "printerType";
-		public static final String PRINTER_INFO = "printerInfo";
-		public static final String CONFIRM_SMS_MESSAGE = "Your Melanie confirmation code is: ";
-		public static final String PHONE_NUMBER = "phoneNumber";
-		public static final String CONFIRM_CODE = "confirmCode";
-		public static final String PREF_FILE = "melaniepref";
-		public static final String BLUETOOTH_REFUSED ="BluetoothRefused";
 		public static final int BLUETOOTH_REQUEST_CODE = 208;
 	}
 
@@ -63,8 +56,9 @@ public final class Utils {
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
-				if (adapter != null)
+				if (adapter != null) {
 					adapter.notifyDataSetChanged();
+				}
 			}
 		});
 	}
@@ -80,8 +74,9 @@ public final class Utils {
 	 */
 	public static void clearInputTextFields(View... views) {
 		for (View view : views)
-			if (view instanceof EditText)
+			if (view instanceof EditText) {
 				((EditText) view).setText("");
+			}
 
 	}
 
@@ -93,10 +88,11 @@ public final class Utils {
 	 */
 	public static void resetTextFieldsToZeros(View... views) {
 		for (View view : views)
-			if (view instanceof EditText)
+			if (view instanceof EditText) {
 				((EditText) view).setText(R.string.amountZeroes);
-			else if (view instanceof TextView)
+			} else if (view instanceof TextView) {
 				((TextView) view).setText(R.string.amountZeroes);
+			}
 	}
 
 	/**
@@ -139,16 +135,23 @@ public final class Utils {
 		return tempItems;
 	}
 
-	public static <T> void mergeItems(List<T> sourceItems, List<T> targetItems) {
+	public static <T> void mergeItems(List<T> sourceItems, List<T> targetItems, boolean keepTargetFirstItem) {
 		for (T item : sourceItems)
-			if (!targetItems.contains(item))
+			if (!targetItems.contains(item)) {
 				targetItems.add(item);
+			}
 
 		Iterator<T> iterator = targetItems.iterator();
+
+		if(keepTargetFirstItem) {
+			iterator.next();
+		}
+
 		while (iterator.hasNext()) {
 			T item = iterator.next();
-			if (!sourceItems.contains(item))
+			if (!sourceItems.contains(item)) {
 				iterator.remove();
+			}
 		}
 	}
 
@@ -160,9 +163,9 @@ public final class Utils {
 		Map<T, Integer> itemGroup = new HashMap<T, Integer>();
 
 		for (T item : items)
-			if (!itemGroup.containsKey(item))
+			if (!itemGroup.containsKey(item)) {
 				itemGroup.put(item, 1);
-			else {
+			} else {
 				Integer itemCount = itemGroup.get(item);
 				itemCount++;
 				itemGroup.put(item, itemCount);
@@ -209,16 +212,36 @@ public final class Utils {
 
 		@Override
 		public void onReceive(Context context, Intent intent) {
-            Bundle extras = intent.getExtras();
-            
-            boolean connectionUnavailable = extras.getBoolean(ConnectivityManager.EXTRA_NO_CONNECTIVITY);
-            
-            BusinessFactory.getSession().setCanConnectToCloud(!connectionUnavailable);
+			Bundle extras = intent.getExtras();
+
+			boolean connectionUnavailable = extras.getBoolean(ConnectivityManager.EXTRA_NO_CONNECTIVITY);
+
+			BusinessFactory.getSession().setCanConnectToCloud(!connectionUnavailable);
 		}
 	};
-	
-	public static void unregisterConnectivityReceiver(Context context){
+
+	public static void unregisterConnectivityReceiver(Context context) {
 		context.unregisterReceiver(connectivityReceiver);
 		connectivityReceiver = null;
+	}
+
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+	public static void switchInvalidFieldsBackColor(boolean isValid, EditText... fields) {
+		if (defaultEditTextBackground == null && fields.length > 0) {
+			defaultEditTextBackground = fields[0].getBackground();
+		}
+		if (isValid) {
+			for (EditText field : fields) {
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+					field.setBackground(defaultEditTextBackground);
+				} else {
+					field.setBackgroundResource(android.R.drawable.edit_text);
+				}
+			}
+		} else {
+			for (EditText field : fields) {
+				field.setBackgroundColor(Color.rgb(250, 213, 182));
+			}
+		}
 	}
 }

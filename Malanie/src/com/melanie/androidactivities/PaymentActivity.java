@@ -26,6 +26,7 @@ import com.melanie.business.SalesController;
 import com.melanie.entities.Customer;
 import com.melanie.entities.Sale;
 import com.melanie.support.BusinessFactory;
+import com.melanie.support.CodeStrings;
 import com.melanie.support.OperationCallBack;
 import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieBusinessException;
@@ -64,12 +65,13 @@ public class PaymentActivity extends AppCompatActivity {
 						public void onCollectionOperationSuccessful(
 								List<Customer> results) {
 
-							Utils.mergeItems(results, customers);
+							Utils.mergeItems(results, customers, false);
 							Utils.notifyListUpdate(customersAdapter, handler);
 						}
 					});
-			if (tempCustomers != null && !tempCustomers.isEmpty())
+			if (tempCustomers != null && !tempCustomers.isEmpty()) {
 				customers.addAll(tempCustomers);
+			}
 
 		} catch (MelanieBusinessException e) {
 			e.printStackTrace(); // TODO: log it
@@ -128,7 +130,7 @@ public class PaymentActivity extends AppCompatActivity {
 						@Override
 						public void onCollectionOperationSuccessful(
 								List<Sale> results) {
-							Utils.mergeItems(results, sales);
+							Utils.mergeItems(results, sales, false);
 							Utils.notifyListUpdate(salesListAdapter, handler);
 						}
 					});
@@ -166,8 +168,9 @@ public class PaymentActivity extends AppCompatActivity {
 	private void updateTotalField() {
 		if (!sales.isEmpty()) {
 			double total = 0;
-			for (Sale sale : sales)
-				total += (sale.getQuantitySold() * sale.getProduct().getPrice());
+			for (Sale sale : sales) {
+				total += sale.getQuantitySold() * sale.getProduct().getPrice();
+			}
 			TextView totalView = (TextView) findViewById(R.id.totalValue);
 			totalView.setText(String.valueOf(total));
 		}
@@ -181,11 +184,13 @@ public class PaymentActivity extends AppCompatActivity {
 
 		double balance = 0, amountReceived = 0;
 
-		if (!amountReceivedString.equals(Utils.Constants.EMPTY_STRING))
+		if (!amountReceivedString.equals(CodeStrings.EMPTY_STRING)) {
 			amountReceived = Double.parseDouble(amountReceivedString);
+		}
 
-		if (!balanceString.equals(Utils.Constants.EMPTY_STRING))
+		if (!balanceString.equals(CodeStrings.EMPTY_STRING)) {
 			balance = Double.parseDouble(balanceString);
+		}
 
 		OperationResult result = savePayment(amountReceived, balance);
 
@@ -240,17 +245,18 @@ public class PaymentActivity extends AppCompatActivity {
 			double total = Double.parseDouble(totalTextView.getText()
 					.toString());
 			double amountReceived = 0;
-			if (!s.toString().equals(""))
+			if (!s.toString().equals("")) {
 				amountReceived = Double.parseDouble(s.toString());
+			}
 			calculateBalance(amountReceived, total);
 		}
 
 		private void calculateBalance(double amountReceived, double total) {
 			double balance = amountReceived - total;
 			TextView balanceTextView = (TextView) findViewById(R.id.balanceDue);
-			if (amountReceived != 0)
+			if (amountReceived != 0) {
 				balanceTextView.setText(String.valueOf(balance));
-			else {
+			} else {
 				Utils.resetTextFieldsToZeros(balanceTextView);
 				updateTotalField();
 			}

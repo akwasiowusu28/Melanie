@@ -35,9 +35,10 @@ import com.melanie.androidactivities.support.MelanieGroupAdapter;
 import com.melanie.androidactivities.support.ObservablePropertyChangedListener;
 import com.melanie.androidactivities.support.ReportSession;
 import com.melanie.androidactivities.support.Utils;
+import com.melanie.support.CodeStrings;
 
 public class DailySalesTableFragment extends Fragment implements
-		ObservablePropertyChangedListener {
+ObservablePropertyChangedListener {
 
 	private MelanieGroupAdapter<String> displayItemsAdapter;
 	private List<Entry<String, Integer>> displayItems;
@@ -72,7 +73,7 @@ public class DailySalesTableFragment extends Fragment implements
 		reportSession = ReportSession.getInstance(this);
 		displayItems = new ArrayList<Map.Entry<String, Integer>>();
 		displayItems.addAll(reportSession.getDisplayItems(isDaily));
-		dateformater = new SimpleDateFormat(Utils.Constants.DATEFORMAT,
+		dateformater = new SimpleDateFormat(CodeStrings.DATEFORMAT,
 				Locale.getDefault());
 		initializeDates();
 		displayItemsAdapter = new MelanieGroupAdapter<String>(getActivity(),
@@ -159,19 +160,21 @@ public class DailySalesTableFragment extends Fragment implements
 				Date newDate = calendar.getTime();
 
 				if (isValidDate(newDate, buttonId)) {
-					if (isStartDate)
+					if (isStartDate) {
 						reportSession.setStartDate(Utils
 								.getDateToStartOfDay(calendar));
-					else
+					} else {
 						reportSession.setEndDate(Utils
 								.getDateToEndOfDay(calendar));
+					}
 
 					pickerButton.setText(dateformater.format(newDate));
 					reportSession.getGroupedSales(isDaily);
-				} else
+				} else {
 					Utils.makeToast(getActivity(),
 							isStartDate ? R.string.startDateError
 									: R.string.endDateError);
+				}
 			}
 		});
 	}
@@ -179,10 +182,11 @@ public class DailySalesTableFragment extends Fragment implements
 	private boolean isValidDate(Date date, int buttonId) {
 		boolean isValid = false;
 
-		if (buttonId == R.id.startDate)
+		if (buttonId == R.id.startDate) {
 			isValid = endDate != null && endDate.compareTo(date) >= 0;
-		else
+		} else {
 			isValid = startDate != null && startDate.compareTo(date) <= 0;
+		}
 
 		return isValid;
 	}

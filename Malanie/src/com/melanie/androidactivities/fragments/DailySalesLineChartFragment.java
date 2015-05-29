@@ -34,9 +34,10 @@ import com.melanie.androidactivities.support.MelanieDatePicker;
 import com.melanie.androidactivities.support.ObservablePropertyChangedListener;
 import com.melanie.androidactivities.support.ReportSession;
 import com.melanie.androidactivities.support.Utils;
+import com.melanie.support.CodeStrings;
 
 public class DailySalesLineChartFragment extends Fragment implements
-		ObservablePropertyChangedListener {
+ObservablePropertyChangedListener {
 
 	private static final String DAILY_SALES = "Daily Sales";
 
@@ -70,7 +71,7 @@ public class DailySalesLineChartFragment extends Fragment implements
 		reportSession = ReportSession.getInstance(this);
 		displayItems = new ArrayList<Map.Entry<String, Integer>>();
 		displayItems.addAll(reportSession.getDisplayItems(isDaily));
-		dateformater = new SimpleDateFormat(Utils.Constants.DATEFORMAT,
+		dateformater = new SimpleDateFormat(CodeStrings.DATEFORMAT,
 				Locale.getDefault());
 		initializeDates();
 		chartEntries = new ArrayList<>();
@@ -101,7 +102,7 @@ public class DailySalesLineChartFragment extends Fragment implements
 	private void setUpLineChart() {
 		salesChart = (LineChart) getView().findViewById(R.id.salesChart);
 		configureAxis();
-		salesChart.setDescription(Utils.Constants.EMPTY_STRING);
+		salesChart.setDescription(CodeStrings.EMPTY_STRING);
 	}
 
 	private void configureAxis() {
@@ -161,20 +162,22 @@ public class DailySalesLineChartFragment extends Fragment implements
 				Date newDate = calendar.getTime();
 
 				if (isValidDate(newDate, buttonId)) {
-					if (isStartDate)
+					if (isStartDate) {
 						reportSession.setStartDate(Utils
 								.getDateToStartOfDay(calendar));
-					else
+					} else {
 						reportSession.setEndDate(Utils
 								.getDateToEndOfDay(calendar));
+					}
 
 					pickerButton.setText(dateformater.format(newDate));
 					reportSession.getGroupedSales(isDaily);
 					refreshChart();
-				} else
+				} else {
 					Utils.makeToast(getActivity(),
 							isStartDate ? R.string.startDateError
 									: R.string.endDateError);
+				}
 			}
 		});
 	}
@@ -182,10 +185,11 @@ public class DailySalesLineChartFragment extends Fragment implements
 	private boolean isValidDate(Date date, int buttonId) {
 		boolean isValid = false;
 
-		if (buttonId == R.id.startDate)
+		if (buttonId == R.id.startDate) {
 			isValid = endDate != null && endDate.compareTo(date) >= 0;
-		else
+		} else {
 			isValid = startDate != null && startDate.compareTo(date) <= 0;
+		}
 
 		return isValid;
 	}
@@ -220,8 +224,9 @@ public class DailySalesLineChartFragment extends Fragment implements
 
 	private void refreshChart() {
 		if (salesChart != null) {
-			if (!salesChart.isEmpty())
+			if (!salesChart.isEmpty()) {
 				salesChart.clearValues();
+			}
 			refreshLineChartEntries();
 			refreshDataSet();
 			LineData lineData = new LineData(chartLabels, dataSet);

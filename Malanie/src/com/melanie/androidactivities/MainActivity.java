@@ -18,6 +18,7 @@ import com.melanie.business.UserController;
 import com.melanie.dataaccesslayer.datasource.DataSource;
 import com.melanie.entities.User;
 import com.melanie.support.BusinessFactory;
+import com.melanie.support.CodeStrings;
 import com.melanie.support.OperationCallBack;
 import com.melanie.support.exceptions.MelanieBusinessException;
 
@@ -140,7 +141,7 @@ public class MainActivity extends Activity {
 				intent = new Intent(this, LoginActivity.class);
 			} else if (!user.isConfirmed()) {
 				intent = new Intent(this, ConfirmActivity.class);
-				intent.putExtra(Utils.Constants.PHONE_NUMBER, user.getPhone());
+				intent.putExtra(CodeStrings.PHONE_NUMBER, user.getPhone());
 			}
 			startActivity(intent);
 			finish();

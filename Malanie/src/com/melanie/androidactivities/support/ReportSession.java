@@ -88,7 +88,7 @@ public class ReportSession {
 							@Override
 							public void onCollectionOperationSuccessful(
 									List<Sale> results) {
-								Utils.mergeItems(results, sales);
+								Utils.mergeItems(results, sales, false);
 								updateDisplayItems(isDaily);
 							}
 						}));

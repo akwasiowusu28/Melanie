@@ -62,8 +62,8 @@
     <string name="salesSuccess">Sales successfully recorded</string>
     <string name="phoneNumber">Phone number:</string>
     <string name="salesFailed">Sorry, could not save sales. Please try again</string>
-    <string name="phoneHint">111&#8211;111&#8211;1111</string>
-    <string name="customerNameHint">Eg. Countee Cullen</string>
+    <string name="phoneHint">+1 111 111 1111</string>
+    <string name="customerNameHint">Countee Cullen</string>
     <string name="nameWithColon">Name:</string>
     <string name="addCustomerFailed">Sorry. Could not add the customer. Please try again</string>
     <string name="addCustomerSuccess">Customer added successfully!</string>
@@ -131,4 +131,5 @@
     <string name ="dontHaveAccount">Don&#8217;t have an account?</string>
     <string name="printBarcodeCheck">Print barcodes</string>
     <string name="accountExistForPhone">An account already exists for this phone number. Please enter a different phone number</string>
+    <string name="allCategories">All categories</string>
 </resources>

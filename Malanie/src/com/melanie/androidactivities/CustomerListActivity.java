@@ -59,7 +59,7 @@ public class CustomerListActivity extends AppCompatActivity {
 						public void onCollectionOperationSuccessful(
 								List<Customer> results) {
 
-							Utils.mergeItems(results, customers);
+							Utils.mergeItems(results, customers, false);
 							Utils.notifyListUpdate(customersAdapter, handler);
 						}
 					});

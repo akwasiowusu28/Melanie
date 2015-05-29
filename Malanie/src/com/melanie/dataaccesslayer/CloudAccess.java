@@ -26,6 +26,8 @@ public class CloudAccess {
 	private static final String SINGLE_QUOTE = "'";
 	private boolean isCollectionOperation;
 
+	private int collectionRequestsCount = 0;
+
 	public CloudAccess() {
 		isCollectionOperation = false;
 	}
@@ -36,7 +38,7 @@ public class CloudAccess {
 
 	public <T> void addDataItem(T dataItem, Class<T> itemClass,
 			OperationCallBack<T> operationCallBack)
-			throws MelanieDataLayerException {
+					throws MelanieDataLayerException {
 		try {
 			Backendless.Persistence.of(itemClass).save(dataItem,
 					new BackendAsynCallBack<T>(operationCallBack));
@@ -56,17 +58,17 @@ public class CloudAccess {
 
 	public <T> void updateDataItem(T dataItem, Class<T> itemClass,
 			OperationCallBack<T> operationCallBack)
-			throws MelanieDataLayerException {
+					throws MelanieDataLayerException {
 		addDataItem(dataItem, itemClass, operationCallBack);
 	}
 
 	public <T> void deleteDataItem(T dataItem, Class<T> itemClass,
 			OperationCallBack<T> operationCallBack)
-			throws MelanieDataLayerException {
+					throws MelanieDataLayerException {
 		try {
 			Backendless.Persistence.of(itemClass).remove(dataItem,
 					AsyncCallback.class.cast(operationCallBack)); // currently passing in null fromDataAccessLayerImpl.
-																 // Not sure of the behavior yet
+			// Not sure of the behavior yet
 		} catch (Exception e) {
 			throw new MelanieDataLayerException(e.getMessage(), e);
 		}
@@ -75,7 +77,7 @@ public class CloudAccess {
 
 	public <T> void findItemById(int itemId, Class<T> itemClass,
 			OperationCallBack<T> operationCallBack)
-			throws MelanieDataLayerException {
+					throws MelanieDataLayerException {
 		try {
 			findItemByFieldName(ID, String.valueOf(itemId), itemClass,
 					operationCallBack);
@@ -86,15 +88,15 @@ public class CloudAccess {
 
 	public <T> void findItemByFieldName(String fieldName, String searchValue,
 			Class<T> itemClass, OperationCallBack<T> operationCallBack)
-			throws MelanieDataLayerException {
+					throws MelanieDataLayerException {
 		try {
 			String whereClause = fieldName + "='" + searchValue + "'";
 			BackendlessDataQuery query = new BackendlessDataQuery(whereClause);
 			Backendless.Persistence
-					.of(itemClass)
-					.find(query,
-							(AsyncCallback<BackendlessCollection<T>>) new BackendAsynCallBack<T>(
-									operationCallBack));
+			.of(itemClass)
+			.find(query,
+					(AsyncCallback<BackendlessCollection<T>>) new BackendAsynCallBack<T>(
+							operationCallBack));
 		} catch (Exception e) {
 			throw new MelanieDataLayerException(e.getMessage(), e);
 		}
@@ -103,13 +105,14 @@ public class CloudAccess {
 
 	public <T> void findAllItems(Class<T> itemClass,
 			OperationCallBack<T> operationCallBack)
-			throws MelanieDataLayerException {
+					throws MelanieDataLayerException {
 		try {
 			isCollectionOperation = true;
+			collectionRequestsCount ++;
 			Backendless.Persistence
-					.of(itemClass)
-					.find((AsyncCallback<BackendlessCollection<T>>) new BackendAsynCallBack<T>(
-							operationCallBack));
+			.of(itemClass)
+			.find((AsyncCallback<BackendlessCollection<T>>) new BackendAsynCallBack<T>(
+					operationCallBack));
 		} catch (Exception e) {
 			throw new MelanieDataLayerException(e.getMessage(), e);
 		}
@@ -117,7 +120,7 @@ public class CloudAccess {
 
 	public <T> void getLastInsertedItem(Class<T> itemClass,
 			OperationCallBack<T> operationCallBack)
-			throws MelanieDataLayerException {
+					throws MelanieDataLayerException {
 		try {
 			Backendless.Persistence.of(itemClass).findLast(
 					new BackendAsynCallBack<T>(operationCallBack));
@@ -129,17 +132,17 @@ public class CloudAccess {
 
 	public <T> void findItemsByFieldName(String fieldName, String searchValue,
 			Class<T> itemClass, OperationCallBack<T> operationCallBack)
-			throws MelanieDataLayerException {
+					throws MelanieDataLayerException {
 		try {
 			isCollectionOperation = true;
-
+			collectionRequestsCount ++;
 			String whereClause = fieldName + "='" + searchValue + "'";
 			BackendlessDataQuery query = new BackendlessDataQuery(whereClause);
 			Backendless.Persistence
-					.of(itemClass)
-					.find(query,
-							(AsyncCallback<BackendlessCollection<T>>) new BackendAsynCallBack<T>(
-									operationCallBack));
+			.of(itemClass)
+			.find(query,
+					(AsyncCallback<BackendlessCollection<T>>) new BackendAsynCallBack<T>(
+							operationCallBack));
 		} catch (Exception e) {
 			throw new MelanieDataLayerException(e.getMessage(), e);
 		}
@@ -148,9 +151,10 @@ public class CloudAccess {
 	public <T, E> void findItemsBetween(String fieldName, E lowerBound,
 			E upperBound, Class<T> itemClass,
 			OperationCallBack<T> operationCallBack)
-			throws MelanieDataLayerException {
+					throws MelanieDataLayerException {
 		try {
 			isCollectionOperation = true;
+			collectionRequestsCount ++;
 
 			// Find a way to remove the date formatting thingy to a different
 			// method. I'm programming under the influence of a 9.5% Alc double
@@ -171,10 +175,10 @@ public class CloudAccess {
 					+ upperBoundString + SINGLE_QUOTE;
 			BackendlessDataQuery query = new BackendlessDataQuery(whereClause);
 			Backendless.Persistence
-					.of(itemClass)
-					.find(query,
-							(AsyncCallback<BackendlessCollection<T>>) new BackendAsynCallBack<T>(
-									operationCallBack));
+			.of(itemClass)
+			.find(query,
+					(AsyncCallback<BackendlessCollection<T>>) new BackendAsynCallBack<T>(
+							operationCallBack));
 		} catch (Exception e) {
 			throw new MelanieDataLayerException(e.getMessage(), e);
 		}
@@ -190,14 +194,14 @@ public class CloudAccess {
 	public void updateUser(User user, OperationCallBack<BackendlessUser> operationCallBack){
 		Backendless.UserService.update(user, new BackendAsynCallBack<>(operationCallBack));
 	}
-	
+
 	public void login(final User user, OperationCallBack<BackendlessUser> operationCallBack){
-		
+
 		Backendless.UserService.login(user.getDeviceId(), user.getPassword(),
-				                     new BackendAsynCallBack<>(operationCallBack));
-		
+				new BackendAsynCallBack<>(operationCallBack));
+
 	}
-	
+
 	private class BackendAsynCallBack<T> implements AsyncCallback<T> {
 
 		private final OperationCallBack<T> operationCallBack;
@@ -208,9 +212,10 @@ public class CloudAccess {
 
 		@Override
 		public void handleFault(BackendlessFault fault) {
-			if(operationCallBack !=null)
-			   operationCallBack.onOperationFailed(new MelanieDataLayerException(
-					fault.getMessage()));
+			if(operationCallBack !=null) {
+				operationCallBack.onOperationFailed(new MelanieDataLayerException(
+						fault.getMessage()));
+			}
 		}
 
 		@Override
@@ -223,12 +228,15 @@ public class CloudAccess {
 						T item = responseData.size() > 0 ? responseData.get(0)
 								: null;
 						operationCallBack.onOperationSuccessful(item);
-					} else
+					} else {
+						collectionRequestsCount --;
 						operationCallBack
-								.onCollectionOperationSuccessful(responseData);
-				} else
+						.onCollectionOperationSuccessful(responseData);
+					}
+				} else {
 					operationCallBack.onOperationSuccessful(responseObject);
-			isCollectionOperation = false;
+				}
+			isCollectionOperation = collectionRequestsCount > 0 ? isCollectionOperation : false;
 		}
 	}
 }

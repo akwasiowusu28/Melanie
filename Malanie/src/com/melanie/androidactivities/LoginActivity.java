@@ -75,7 +75,7 @@ public class LoginActivity extends Activity {
 		handler = new Handler(getMainLooper());
 		session = BusinessFactory.getSession();
 		currentDeviceId = getCurrentDeviceId();
-		password = Utils.Constants.EMPTY_STRING;
+		password = CodeStrings.EMPTY_STRING;
 	}
 
 	private void setupSignupButton() {

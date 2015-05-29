@@ -19,25 +19,31 @@ import com.melanie.business.ProductEntryController;
 import com.melanie.entities.Category;
 import com.melanie.entities.Product;
 import com.melanie.support.BusinessFactory;
+import com.melanie.support.CodeStrings;
 import com.melanie.support.OperationCallBack;
 import com.melanie.support.exceptions.MelanieBusinessException;
 
 public class MelanieInventoryActivity extends AppCompatActivity {
 
-	private List<Product> allProducts;
+	private ArrayList<Product> allProducts;
 	private ProductsAndSalesListViewAdapter<Product> productsAdapter;
 	private Handler handler;
 	private ProductEntryController productController;
-	private List<Product> currentProducts;
+	private ArrayList<Product> currentProducts;
 
 	private ArrayAdapter<Category> categoriesAdapter;
-	private List<Category> categories;
+	private ArrayList<Category> categories;
+	private boolean instanceWasSaved = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_melanie_inventory);
 
+		if (savedInstanceState != null) {
+			instanceWasSaved = true;
+			restoreInstanceState(savedInstanceState);
+		}
 		initializeFields();
 
 		setupCategoriesSpinner();
@@ -47,13 +53,19 @@ public class MelanieInventoryActivity extends AppCompatActivity {
 	private void initializeFields() {
 		handler = new Handler(getMainLooper());
 		productController = BusinessFactory.makeProductEntryController();
-		getAllCategories();
-		categoriesAdapter = new ArrayAdapter<Category>(this,
-				android.R.layout.simple_spinner_dropdown_item, categories);
-		allProducts = getAllProducts();
-		currentProducts = new ArrayList<Product>(allProducts);
-		productsAdapter = new ProductsAndSalesListViewAdapter<Product>(this,
-				currentProducts, false);
+
+		categories = new ArrayList<>();
+		categories.add(0, new Category(getString(R.string.allCategories)));
+		allProducts = new ArrayList<>();
+		currentProducts = new ArrayList<Product>();
+
+		categoriesAdapter = new ArrayAdapter<Category>(this, android.R.layout.simple_spinner_dropdown_item, categories);
+		productsAdapter = new ProductsAndSalesListViewAdapter<Product>(this, currentProducts, false);
+
+		if (!instanceWasSaved) {
+			getAllCategories();
+			getAllProducts();
+		}
 	}
 
 	private void setupCategoriesSpinner() {
@@ -62,17 +74,8 @@ public class MelanieInventoryActivity extends AppCompatActivity {
 		categorySpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 
 			@Override
-			public void onItemSelected(AdapterView<?> parent, View view,
-					int position, long id) {
-				currentProducts.clear();
-				int categoryId = categories.get(position).getId();
-				for (Product product : allProducts) {
-					Category productCategory = product.getCategory();
-					if (productCategory != null
-							&& productCategory.getId() == categoryId)
-						currentProducts.add(product);
-				}
-				Utils.notifyListUpdate(productsAdapter, handler);
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				setCurrentProducts(position);
 			}
 
 			@Override
@@ -81,10 +84,27 @@ public class MelanieInventoryActivity extends AppCompatActivity {
 		});
 	}
 
+	private void setCurrentProducts(int categoryPosition) {
+
+		currentProducts.clear();
+
+		if (categoryPosition == 0) {
+			currentProducts.addAll(allProducts);
+		} else {
+			int categoryId = categories.get(categoryPosition).getId();
+			for (Product product : allProducts) {
+				Category productCategory = product.getCategory();
+				if (productCategory != null && productCategory.getId() == categoryId) {
+					currentProducts.add(product);
+				}
+			}
+		}
+		Utils.notifyListUpdate(productsAdapter, handler);
+	}
+
 	private void setupProductsListView() {
 		ListView listView = (ListView) findViewById(R.id.productsListView);
-		View headerView = getLayoutInflater().inflate(
-				R.layout.layout_saleitems_header, listView, false);
+		View headerView = getLayoutInflater().inflate(R.layout.layout_saleitems_header, listView, false);
 
 		listView.addHeaderView(headerView);
 		listView.setAdapter(productsAdapter);
@@ -92,44 +112,52 @@ public class MelanieInventoryActivity extends AppCompatActivity {
 	}
 
 	private void getAllCategories() {
-		categories = new ArrayList<Category>();
 		try {
-			List<Category> tempCategories = null;
-			tempCategories = productController
-					.getAllCategories(new OperationCallBack<Category>() {
-						@Override
-						public void onCollectionOperationSuccessful(
-								List<Category> results) {
-							Utils.mergeItems(results, categories);
-							Utils.notifyListUpdate(categoriesAdapter, handler);
-						}
-					});
-			if (tempCategories != null && !tempCategories.isEmpty())
-				categories.addAll(tempCategories);
-
+			categories.addAll(productController.getAllCategories(new OperationCallBack<Category>() {
+				@Override
+				public void onCollectionOperationSuccessful(List<Category> results) {
+					Utils.mergeItems(results, categories, true);
+					Utils.notifyListUpdate(categoriesAdapter, handler);
+				}
+			}));
+			Utils.notifyListUpdate(categoriesAdapter, handler);
 		} catch (MelanieBusinessException e) {
 			e.printStackTrace(); // TODO: log it
 		}
 	}
 
-	private List<Product> getAllProducts() {
-		List<Product> products = new ArrayList<Product>();
-		if (productController != null)
+	private void getAllProducts() {
+		if (productController != null) {
 			try {
-				products = productController
-						.findAllProducts(new OperationCallBack<Product>() {
-							@Override
-							public void onCollectionOperationSuccessful(
-									List<Product> results) {
-								Utils.mergeItems(results, allProducts);
-								Utils.notifyListUpdate(productsAdapter, handler);
-							}
+				allProducts.addAll(productController.findAllProducts(new OperationCallBack<Product>() {
+					@Override
+					public void onCollectionOperationSuccessful(List<Product> results) {
+						Utils.mergeItems(results, allProducts, false);
+						setCurrentProducts(0);
+					}
 
-						});
+				}));
+				Utils.notifyListUpdate(productsAdapter, handler);
 			} catch (MelanieBusinessException e) {
 				e.printStackTrace(); // TODO log it
 			}
-		return products;
+		}
+	}
 
+	@Override
+	protected void onSaveInstanceState(Bundle bundle) {
+		bundle.putSerializable(CodeStrings.ALLPRODUCTS, allProducts);
+		bundle.putSerializable(CodeStrings.CATEGORIES, categories);
+		bundle.putSerializable(CodeStrings.CURRENTPRODUCTS, currentProducts);
+		super.onSaveInstanceState(bundle);
+	}
+
+	@SuppressWarnings("unchecked")
+	private void restoreInstanceState(Bundle bundle) {
+		if (bundle != null) {
+			allProducts = (ArrayList<Product>) bundle.get(CodeStrings.ALLPRODUCTS);
+			categories = (ArrayList<Category>) bundle.get(CodeStrings.CATEGORIES);
+			currentProducts = (ArrayList<Product>) bundle.get(CodeStrings.CURRENTPRODUCTS);
+		}
 	}
 }

@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -18,13 +19,14 @@ import com.melanie.androidactivities.support.Utils;
 import com.melanie.business.ProductEntryController;
 import com.melanie.entities.Category;
 import com.melanie.support.BusinessFactory;
+import com.melanie.support.CodeStrings;
 import com.melanie.support.OperationCallBack;
 import com.melanie.support.exceptions.MelanieBusinessException;
 
 public class CategoriesActivity extends AppCompatActivity {
 
 	private final ProductEntryController productController;
-	private List<Category> categories;
+	private ArrayList<Category> categories;
 	private ArrayAdapter<Category> listAdapter;
 	private Handler handler;
 
@@ -38,10 +40,15 @@ public class CategoriesActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_categories);
 
-		getAllCategories();
-		handler = new Handler(getMainLooper());
-		setupListView();
+		if(savedInstanceState != null){
+			restoreInstanceState(savedInstanceState);
+		}
+		else{
+			getAllCategories();
+		}
 		setupAddCategoryButtonListener();
+		setupListView();
+		handler = new Handler(getMainLooper());
 	}
 
 	private void getAllCategories() {
@@ -53,12 +60,13 @@ public class CategoriesActivity extends AppCompatActivity {
 						@Override
 						public void onCollectionOperationSuccessful(
 								List<Category> results) {
-							Utils.mergeItems(results, categories);
+							Utils.mergeItems(results, categories, false);
 							Utils.notifyListUpdate(listAdapter, handler);
 						}
 					});
-			if (tempCategories != null && !tempCategories.isEmpty())
+			if (tempCategories != null && !tempCategories.isEmpty()) {
 				categories.addAll(tempCategories);
+			}
 
 		} catch (MelanieBusinessException e) {
 			e.printStackTrace(); // TODO: log it
@@ -71,17 +79,26 @@ public class CategoriesActivity extends AppCompatActivity {
 
 			@Override
 			public void onClick(View v) {
-				TextView categoryNameView = (TextView) findViewById(R.id.categoryName);
+				EditText categoryNameView = (EditText) findViewById(R.id.categoryName);
 				String categoryName = categoryNameView.getText().toString();
 
-				Category category;
-				try {
-					category = productController.addCategory(categoryName);
-					categories.add(category);
-					Utils.notifyListUpdate(listAdapter, handler);
-					Utils.clearInputTextFields(categoryNameView);
-				} catch (MelanieBusinessException e) {
-					e.printStackTrace(); // log it
+				if(!categoryName.trim().equals(CodeStrings.EMPTY_STRING)){
+
+					Category category;
+					try {
+						Utils.switchInvalidFieldsBackColor(true, categoryNameView);
+						category = productController.addCategory(categoryName);
+						categories.add(category);
+						Utils.notifyListUpdate(listAdapter, handler);
+						Utils.clearInputTextFields(categoryNameView);
+					} catch (MelanieBusinessException e) {
+						e.printStackTrace(); // log it
+					}
+
+				}
+				else
+				{
+					Utils.switchInvalidFieldsBackColor(false, categoryNameView);
 				}
 			}
 		});
@@ -103,5 +120,18 @@ public class CategoriesActivity extends AppCompatActivity {
 				categories);
 
 		categoriesListView.setAdapter(listAdapter);
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle bundle) {
+		bundle.putSerializable(CodeStrings.CATEGORIES, categories);
+		super.onSaveInstanceState(bundle);
+	}
+
+	@SuppressWarnings("unchecked")
+	private void restoreInstanceState(Bundle bundle){
+		if(bundle != null){
+			categories = (ArrayList<Category>) bundle.get(CodeStrings.CATEGORIES);
+		}
 	}
 }

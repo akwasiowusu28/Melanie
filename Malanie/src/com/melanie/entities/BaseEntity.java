@@ -1,5 +1,6 @@
 package com.melanie.entities;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import com.j256.ormlite.field.DatabaseField;
@@ -10,7 +11,12 @@ import com.j256.ormlite.field.DatabaseField;
  * @author Akwasi Owusu
  * 
  */
-public abstract class BaseEntity implements Comparable<BaseEntity> {
+public abstract class BaseEntity implements Comparable<BaseEntity>, Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 28L;
 
 	public BaseEntity() {
 	}

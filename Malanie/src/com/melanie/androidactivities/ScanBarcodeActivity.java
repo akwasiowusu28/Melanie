@@ -35,6 +35,7 @@ import android.widget.TextView;
 
 import com.melanie.androidactivities.support.CameraPreview;
 import com.melanie.androidactivities.support.Utils;
+import com.melanie.support.CodeStrings;
 
 @SuppressWarnings("deprecation")
 public class ScanBarcodeActivity extends Activity {
@@ -87,17 +88,19 @@ public class ScanBarcodeActivity extends Activity {
 				return null;
 			}
 		};
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB)
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
 			task.execute();
-		else
+		} else {
 			task.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, (Void[]) null);
+		}
 	}
 
 	private void initializeCamera() {
 
 		camera = getCameraInstance();
-		if (camera.getParameters().getSupportedFlashModes() != null)
+		if (camera.getParameters().getSupportedFlashModes() != null) {
 			camera.getParameters().setFlashMode(Parameters.FLASH_MODE_AUTO);
+		}
 	}
 
 	private Camera getCameraInstance() {
@@ -162,7 +165,7 @@ public class ScanBarcodeActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				Intent intent = getIntent();
-				intent.putStringArrayListExtra(Utils.Constants.BARCODES,
+				intent.putStringArrayListExtra(CodeStrings.BARCODES,
 						new ArrayList<String>(scannedBarcodes));
 				setResult(RESULT_OK, intent);
 				finish();
@@ -194,8 +197,9 @@ public class ScanBarcodeActivity extends Activity {
 		}
 
 		private void playBeep() {
-			if (mediaPlayer != null)
+			if (mediaPlayer != null) {
 				mediaPlayer.start();
+			}
 		}
 
 		private void addScannerResultsToScannedBarcodes() {
@@ -227,12 +231,13 @@ public class ScanBarcodeActivity extends Activity {
 
 				int sum = 0;
 				for (int i = chars.length - 2; i >= 0; i--)
-					if ((i & 1) == 1)
+					if ((i & 1) == 1) {
 						sum += num(chars[i]) * 3;
-					else
+					} else {
 						sum += num(chars[i]);
+					}
 				int mod10ofSum = sum % 10;
-				int checksum_digit = mod10ofSum > 0 ? 10 - (sum % 10) : 0;
+				int checksum_digit = mod10ofSum > 0 ? 10 - sum % 10 : 0;
 
 				int lastDigit = num(chars[barcode.length() - 1]);
 				isValid = lastDigit == checksum_digit;
@@ -252,8 +257,9 @@ public class ScanBarcodeActivity extends Activity {
 
 			@Override
 			public void run() {
-				if (!isCameraReleased)
+				if (!isCameraReleased) {
 					cameraPreview.resetPreviewCallBack();
+				}
 			}
 		}, 900);
 	}
@@ -268,16 +274,18 @@ public class ScanBarcodeActivity extends Activity {
 	private Runnable doAutoFocus = new Runnable() {
 		@Override
 		public void run() {
-			if (camera != null)
+			if (camera != null) {
 				camera.autoFocus(autoFocusCallBack);
+			}
 		}
 	};
 
 	private void releaseCamera() {
 		if (camera != null) {
 			SurfaceHolder previewHolder = cameraPreview.getHolder();
-			if (previewHolder != null)
+			if (previewHolder != null) {
 				previewHolder.removeCallback(cameraPreview);
+			}
 			camera.autoFocus(null);
 			camera.setPreviewCallback(null);
 			camera.release();

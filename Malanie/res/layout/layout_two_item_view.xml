@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="60dp"
     android:layout_gravity="center"
+    android:background="@drawable/backroundselector"
     android:weightSum="1" >
 
     <TextView

@@ -2,7 +2,6 @@ package com.melanie.androidactivities;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.TelephonyManager;
@@ -25,8 +24,8 @@ public class SignupActivity extends AppCompatActivity {
 	private EditText confirmPasswordField;
 	private EditText nameField;
 	private EditText phoneField;
-    private String phoneNumber;
-    
+	private String phoneNumber;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -57,26 +56,20 @@ public class SignupActivity extends AppCompatActivity {
 
 	private void createAccount() {
 
-		final String password = passwordField.getText().toString();
-		final String confirmPassword = confirmPasswordField.getText().toString();
-		final String name = nameField.getText().toString();
-	    phoneNumber = phoneField.getText().toString();
-	    
-	    if(userController != null){
-	    	try {
-				userController.checkPhoneExistOnCloud(phoneNumber, new OperationCallBack<User>(){
+		passwordField.getText().toString();
+		confirmPasswordField.getText().toString();
+		nameField.getText().toString();
+		phoneNumber = phoneField.getText().toString();
+
+		if (userController != null) {
+			try {
+				userController.checkPhoneExistOnCloud(phoneNumber, new OperationCallBack<User>() {
 
 					@Override
 					public void onOperationSuccessful(User result) {
-						if(result == null){
-							if (passwordsMatch(password, confirmPassword))
-								createUser(name, phoneNumber, password);
-							else {
-								switchPasswordFieldsBackColor(false);
-								Utils.makeToast(SignupActivity.this, R.string.passwordsNotMatch);
-							}
-						}
-						else{
+						if (result == null) {
+							performCreateAccount();
+						} else {
 							Utils.makeToast(SignupActivity.this, R.string.accountExistForPhone);
 						}
 					}
@@ -85,66 +78,65 @@ public class SignupActivity extends AppCompatActivity {
 				// TODO log it
 				e.printStackTrace();
 			}
-	    }
+		}
 	}
-	
+
+	private void performCreateAccount() {
+		String name = nameField.getText().toString();
+		String password = passwordField.getText().toString();
+		String confirmPassword = confirmPasswordField.getText().toString();
+
+		if (passwordsMatch(password, confirmPassword)) {
+			createUser(name, phoneNumber, password);
+		} else {
+			Utils.switchInvalidFieldsBackColor(false, passwordField, confirmPasswordField);
+			Utils.makeToast(SignupActivity.this, R.string.passwordsNotMatch);
+		}
+	}
+
 	private void createUser(String name, String phone, String password) {
 		try {
-			userController.createUser(name, phone, password, getDeviceId(),
-					new OperationCallBack<User>() {
+			userController.createUser(name, phone, password, getDeviceId(), new OperationCallBack<User>() {
 
-						@Override
-						public void onOperationSuccessful(User user) {
-							switchPasswordFieldsBackColor(true);
-							BusinessFactory.getSession().setUser(user);
-							launchMainActivity();
-						}
+				@Override
+				public void onOperationSuccessful(User user) {
+					Utils.switchInvalidFieldsBackColor(true, passwordField, confirmPasswordField);
+					BusinessFactory.getSession().setUser(user);
+					launchMainActivity();
+				}
 
-						@Override
-						public void onOperationFailed(Throwable e) {
-							Utils.makeToast(SignupActivity.this,
-									R.string.createAccountFailed);
-						}
-					});
+				@Override
+				public void onOperationFailed(Throwable e) {
+					Utils.makeToast(SignupActivity.this, R.string.createAccountFailed);
+				}
+			});
 		} catch (MelanieBusinessException e) {
 			// TODO log it
 			e.printStackTrace();
 		}
 	}
 
-	private String getDeviceId(){
-		TelephonyManager telephonyManager = (TelephonyManager)getBaseContext()
-				                        .getSystemService(Context.TELEPHONY_SERVICE);
+	private String getDeviceId() {
+		TelephonyManager telephonyManager = (TelephonyManager) getBaseContext().getSystemService(
+				Context.TELEPHONY_SERVICE);
 		String deviceId = telephonyManager.getDeviceId();
 		return deviceId;
 	}
-	
+
 	private boolean passwordsMatch(String password, String confirmPassword) {
 		return password.equals(confirmPassword);
 	}
 
-	private void switchPasswordFieldsBackColor(boolean isValid) {
-		if (isValid) {
-			passwordField.setBackgroundResource(android.R.drawable.edit_text);
-			confirmPasswordField.setBackgroundResource(android.R.drawable.edit_text);
-		} else {
-			passwordField.setBackgroundColor(Color.rgb(250, 213, 182));
-			confirmPasswordField.setBackgroundColor(Color.rgb(250, 213, 182));
-		}
-	}
-	
-	
 	private void launchMainActivity() {
 		Intent intent = new Intent(this, MainActivity.class);
 		startActivity(intent);
 		finish();
 	}
-	
 
 	@Override
 	protected void onPause() {
 		super.onPause();
 		finish();
 	}
-	
+
 }
