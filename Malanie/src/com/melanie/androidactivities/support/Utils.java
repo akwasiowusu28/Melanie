@@ -244,4 +244,10 @@ public final class Utils {
 			}
 		}
 	}
+
+	public static void switchViewVisibitlity(boolean visible, View... views){
+		for(View view: views){
+			view.setVisibility(visible ? View.VISIBLE : View.GONE);
+		}
+	}
 }

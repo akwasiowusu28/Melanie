@@ -22,4 +22,5 @@ public class CodeStrings {
 	public static final String CATEGORIES="categories";
 	public static final String CURRENTPRODUCTS="currentProducts";
 	public static final String ALLPRODUCTS = "allProducts";
+	public static final String EMPTY = "empty";
 }

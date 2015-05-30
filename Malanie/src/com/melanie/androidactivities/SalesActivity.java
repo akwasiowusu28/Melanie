@@ -188,8 +188,8 @@ public class SalesActivity extends AppCompatActivity {
 	}
 
 	private void recordTotals() {
-		String totalString = ((TextView) findViewById(R.id.balanceDue))
-				.getText().toString();
+		((TextView) findViewById(R.id.balanceDue))
+		.getText().toString();
 		String discountString = ((EditText) findViewById(R.id.discountValue))
 				.getText().toString();
 		String amountReceivedString = ((EditText) findViewById(R.id.amountReceived))

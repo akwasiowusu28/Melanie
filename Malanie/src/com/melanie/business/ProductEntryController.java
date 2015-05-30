@@ -52,8 +52,7 @@ public interface ProductEntryController {
 			OperationCallBack<Product> operationCallBack)
 					throws MelanieBusinessException;
 
-	OperationResult updateProductQuantity(Product productName,
-			int updateQuantity) throws MelanieBusinessException;
+	OperationResult updateProduct(Product product) throws MelanieBusinessException;
 
 	void getLastInsertedProductId(OperationCallBack<Integer> operationCallBack) throws MelanieBusinessException;
 }

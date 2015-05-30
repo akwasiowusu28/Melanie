@@ -15,8 +15,8 @@ public class MelanieSessionImpl implements MelanieSession {
 	private static DataAccessLayer dataAccess;
 	private static boolean isCacheInitialized;
 	private User user;
-    private boolean isInternetServiceAvailable;
-    
+	private boolean isInternetServiceAvailable;
+
 	private MelanieSessionImpl() {
 		initializeMelanieSession();
 	}
@@ -30,18 +30,21 @@ public class MelanieSessionImpl implements MelanieSession {
 
 	public static MelanieSession getInstance() {
 
-		if (instance == null)
+		if (instance == null) {
 			synchronized (MelanieSessionImpl.class) {
-				if (instance == null)
+				if (instance == null) {
 					instance = new MelanieSessionImpl();
+				}
 			}
+		}
 		return instance;
 	}
 
 	@Override
 	public <T> void initializeLocal(T dataContext) {
-		if (dataAccess != null)
+		if (dataAccess != null) {
 			dataAccess.initialize(dataContext);
+		}
 		isCacheInitialized = true;
 	}
 
@@ -87,6 +90,7 @@ public class MelanieSessionImpl implements MelanieSession {
 	public void clearResources() {
 		if (isCacheInitialized && dataAccess != null) {
 			dataAccess.clearResources();
+			isCacheInitialized = false;
 		}
 	}
 

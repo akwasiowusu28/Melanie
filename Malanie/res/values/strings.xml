@@ -14,7 +14,7 @@
     <string name="title_activity_products">Products</string>
     <string name="products">Products</string>
     <string name="productsDesc">View or add categories and products</string>
-    <string name="productAddSuccessful">Product successfully added</string>
+    <string name="productAddSuccessful">Product successfully added!</string>
     <string name="productAddFailed">Sorry. Could not add the product</string>
     <string name="sales">Sales</string>
     <string name="salesDesc">Record sales</string>
@@ -59,7 +59,7 @@
     <string name="balance">Balance due:</string>
     <string name="save">Save</string>
     <string name="scanBarcode">Scan barcode</string>
-    <string name="salesSuccess">Sales successfully recorded</string>
+    <string name="salesSuccess">Sales successfully recorded!</string>
     <string name="phoneNumber">Phone number:</string>
     <string name="salesFailed">Sorry, could not save sales. Please try again</string>
     <string name="phoneHint">+1 111 111 1111</string>
@@ -132,4 +132,8 @@
     <string name="printBarcodeCheck">Print barcodes</string>
     <string name="accountExistForPhone">An account already exists for this phone number. Please enter a different phone number</string>
     <string name="allCategories">All categories</string>
+    <string name="editProduct">Edit product</string>
+    <string name="printBarcode">Print barcode</string>
+    <string name="shareBarcodeImage">Share barcode image</string>
+    <string name="productUpdateSucessfull">Product successfully updated!</string>
 </resources>

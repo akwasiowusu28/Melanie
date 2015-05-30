@@ -190,7 +190,7 @@ public class AddProductActivity extends AppCompatActivity {
 
 			double price = Double.parseDouble(priceStr);
 			currentProductQuantity = Integer.parseInt(quantity);
-			performAddProduct(category, productName, price, currentProductQuantity);
+			addProduct(category, productName, price);
 		}
 	}
 
@@ -210,8 +210,8 @@ public class AddProductActivity extends AppCompatActivity {
 		return isAnyInValid;
 	}
 
-	private void performAddProduct(final Category category,
-			final String productName, final double price, int quantity) {
+	private void addProduct(final Category category,
+			final String productName, final double price) {
 
 		try {
 			productController.getLastInsertedProductId(new OperationCallBack<Integer>(){
@@ -219,23 +219,29 @@ public class AddProductActivity extends AppCompatActivity {
 				@Override
 				public void onOperationSuccessful(Integer result) {
 
-					currentBarcode = generateBarcodeString(result);
-					try {
-						productController.addProduct(productName, currentProductQuantity, price, category,
-								currentBarcode);
-						printBarcode();
-						Utils.makeToast(AddProductActivity.this, R.string.productAddSuccessful);
-						clearTextFields();
-					} catch (MelanieBusinessException e) {
-						Utils.makeToast(AddProductActivity.this, R.string.productAddFailed);
-						// TODO log it
-						e.printStackTrace();
-					}
+					performAddProduct(category, productName, price, result);
 				}
 			});
 		} catch (MelanieBusinessException e) {
 			Utils.makeToast(this, R.string.productAddFailed);
 			// TODO Log it
+			e.printStackTrace();
+		}
+	}
+
+	private void performAddProduct( Category category,
+			String productName,  double price, int lastProductId){
+
+		currentBarcode = generateBarcodeString(lastProductId);
+		try {
+			productController.addProduct(productName, currentProductQuantity, price, category,
+					currentBarcode);
+			printBarcode();
+			Utils.makeToast(AddProductActivity.this, R.string.productAddSuccessful);
+			clearTextFields();
+		} catch (MelanieBusinessException e) {
+			Utils.makeToast(AddProductActivity.this, R.string.productAddFailed);
+			// TODO log it
 			e.printStackTrace();
 		}
 	}

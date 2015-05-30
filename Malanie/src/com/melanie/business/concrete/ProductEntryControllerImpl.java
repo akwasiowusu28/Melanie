@@ -268,15 +268,12 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 	 * 
 	 * @param productName
 	 *            the name of the product to update
-	 * @param updateQuantity
-	 *            the new quantity of the product
 	 * @throws MelanieBusinessException
 	 */
 	@Override
-	public OperationResult updateProductQuantity(Product product, int updateQuantity) throws MelanieBusinessException {
+	public OperationResult updateProduct(Product product) throws MelanieBusinessException {
 		OperationResult result = OperationResult.FAILED;
 		if (product != null) {
-			product.setQuantity(updateQuantity);
 			if (session.canConnectToCloud() && dataAccess != null) {
 				try {
 					result = dataAccess.updateDataItem(product, Product.class);

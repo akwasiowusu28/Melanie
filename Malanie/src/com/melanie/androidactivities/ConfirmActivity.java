@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.melanie.androidactivities.support.MelanieAlertDialog;
 import com.melanie.androidactivities.support.MelanieAlertDialog.MelanieAlertDialogButtonModes;
+import com.melanie.androidactivities.support.Utils;
 import com.melanie.business.MelanieSession;
 import com.melanie.business.UserController;
 import com.melanie.entities.User;
@@ -114,15 +115,7 @@ public class ConfirmActivity extends AppCompatActivity {
 	}
 
 	private void changeConfirmFieldsVisibility(boolean makeVisible) {
-		if (makeVisible) {
-			confirmButton.setVisibility(View.VISIBLE);
-			confirmTextField.setVisibility(View.VISIBLE);
-			confirmLabel.setVisibility(View.VISIBLE);
-		} else {
-			confirmButton.setVisibility(View.GONE);
-			confirmTextField.setVisibility(View.GONE);
-			confirmLabel.setVisibility(View.GONE);
-		}
+		Utils.switchViewVisibitlity(makeVisible, confirmButton, confirmTextField, confirmLabel);
 	}
 
 	private OperationResult updateUser() {

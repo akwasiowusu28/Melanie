@@ -12,6 +12,7 @@ import com.melanie.dataaccesslayer.datasource.DataSource;
 import com.melanie.dataaccesslayer.datasource.DataSourceManager;
 import com.melanie.entities.BaseEntity;
 import com.melanie.entities.User;
+import com.melanie.support.CodeStrings;
 import com.melanie.support.OperationCallBack;
 import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieDataLayerException;
@@ -281,6 +282,16 @@ public class DataAccessLayerImpl implements DataAccessLayer {
 			@Override
 			public void onOperationSuccessful(T result) {
 				operationCallBack.onOperationSuccessful(((BaseEntity)result).getId());
+			}
+
+			@Override
+			public void onOperationFailed(Throwable e) {
+				if(e.getMessage().contains(CodeStrings.EMPTY)){
+					operationCallBack.onOperationSuccessful(0);
+				}
+				else{
+					operationCallBack.onOperationFailed(e);
+				}
 			}
 		});
 	}
