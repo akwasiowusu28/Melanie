@@ -64,7 +64,7 @@ public final class Utils {
 	}
 
 	public static String getBarcodePrefix() {
-		return "2801989";
+		return "281989";
 	}
 
 	/**

@@ -14,7 +14,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
-import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -44,7 +43,10 @@ public class MelanieInventoryActivity extends AppCompatActivity {
 	private ArrayList<Category> categories;
 	private boolean instanceWasSaved = false;
 
+	private boolean isEditInProcess;
+
 	private ListView listView;
+	private View selectedListViewChild;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -73,21 +75,34 @@ public class MelanieInventoryActivity extends AppCompatActivity {
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-		AdapterView.AdapterContextMenuInfo menuInfo = (AdapterContextMenuInfo) item.getMenuInfo();
 
-		switchSelectedListItemVisibility(true, menuInfo.position);
-		View editView = listView.getChildAt(menuInfo.position).findViewById(R.id.editProductView);
-		setupEditView(editView, menuInfo.position);
+		if(!isEditInProcess){
 
-		unregisterForContextMenu(listView); //To ensure only one edit happens at a time
+			AdapterView.AdapterContextMenuInfo menuInfo =  (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+
+			int listChildPosition = listView.getChildCount() - 1;
+			int position = menuInfo.position >  listChildPosition ? listChildPosition : menuInfo.position;
+
+			selectedListViewChild = listView.getChildAt(position);
+
+			switchSelectedListItemVisibility(true, position);
+			View editView = selectedListViewChild.findViewById(R.id.editProductView);
+			setupEditView(editView, menuInfo.position);
+			isEditInProcess = true;
+		}
 		return true;
 	}
 
 	private void switchSelectedListItemVisibility(boolean showEditView, int position) {
-		View mainView = listView.getChildAt(position).findViewById(R.id.mainDisplayRow);
-		View editView = listView.getChildAt(position).findViewById(R.id.editProductView);
-		Utils.switchViewVisibitlity(showEditView, editView);
-		Utils.switchViewVisibitlity(!showEditView, mainView);
+
+		if(selectedListViewChild != null){
+
+			View mainView = selectedListViewChild.findViewById(R.id.mainDisplayRow);
+			View editView = selectedListViewChild.findViewById(R.id.editProductView);
+
+			Utils.switchViewVisibitlity(showEditView, editView);
+			Utils.switchViewVisibitlity(!showEditView, mainView);
+		}
 	}
 
 	private void initializeFields() {
@@ -131,12 +146,10 @@ public class MelanieInventoryActivity extends AppCompatActivity {
 				product.setQuantity(Integer.parseInt(newQuantityView.getText().toString()));
 				updateProduct(product);
 
-				registerForContextMenu(listView); //hook the context menu back up because at this point it should be removed
-
 				Utils.makeToast(MelanieInventoryActivity.this, R.string.productUpdateSucessfull);
 				switchSelectedListItemVisibility(false, position);
 				Utils.notifyListUpdate(productsAdapter, handler);
-
+				isEditInProcess = false;
 			}
 		});
 	}
@@ -220,7 +233,6 @@ public class MelanieInventoryActivity extends AppCompatActivity {
 						Utils.mergeItems(results, allProducts, false);
 						setCurrentProducts(0);
 					}
-
 				}));
 				Utils.notifyListUpdate(productsAdapter, handler);
 			} catch (MelanieBusinessException e) {

@@ -51,10 +51,11 @@ public class ProductsAndSalesListViewAdapter<T> extends ArrayAdapter<T> {
 
 		T item = items.get(position);
 
-		if (convertView == null)
+		if (convertView == null) {
 			convertView = inflater.inflate(
 					viewType == SECTION ? sectionResource : mainResource,
-					parent, false);
+							parent, false);
+		}
 
 		int quantity = 0;
 		double price = 0;
@@ -75,9 +76,10 @@ public class ProductsAndSalesListViewAdapter<T> extends ArrayAdapter<T> {
 				price = product.getPrice();
 				name = product.getProductName();
 				setValues(convertView, name, quantity, price);
-			} else if (item instanceof SectionHeader)
+			} else if (item instanceof SectionHeader) {
 				setSectionValue(convertView,
 						((SectionHeader) item).getSectiontext());
+			}
 
 		return convertView;
 	}
@@ -97,11 +99,11 @@ public class ProductsAndSalesListViewAdapter<T> extends ArrayAdapter<T> {
 	private void setValues(View rowView, String name, int quantity, double price) {
 
 		((TextView) rowView.findViewById(R.id.productNameTextView))
-				.setText(name);
+		.setText(name);
 		((TextView) rowView.findViewById(R.id.qtyTextView)).setText(String
 				.valueOf(quantity));
 		((TextView) rowView.findViewById(R.id.unitPriceTextView))
-				.setText(String.valueOf(price));
+		.setText(String.valueOf(price));
 		((TextView) rowView.findViewById(R.id.totalTextView)).setText(String
 				.valueOf(quantity * price));
 	}
@@ -109,6 +111,6 @@ public class ProductsAndSalesListViewAdapter<T> extends ArrayAdapter<T> {
 	private void setSectionValue(View rowView, String sectionValue) {
 
 		((TextView) rowView.findViewById(R.id.sectionTextView))
-				.setText(sectionValue);
+		.setText(sectionValue);
 	}
 }

@@ -248,8 +248,7 @@ public class AddProductActivity extends AppCompatActivity {
 
 	private String generateBarcodeString(int lastItemId) {
 		lastItemId++;
-		int trailingZeroes = 6 - String.valueOf(lastItemId).length();
-		String format = "%0" + trailingZeroes + "d";
+		String format = "%06d";
 		String barcodeNumber = Utils.getBarcodePrefix() + String.format(format, lastItemId);
 		return barcodeNumber;
 	}
