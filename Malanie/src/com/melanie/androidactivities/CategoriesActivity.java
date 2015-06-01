@@ -14,7 +14,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.melanie.androidactivities.support.MelanieSingleTextListAdapter;
+import com.melanie.androidactivities.support.SingleTextListAdapter;
 import com.melanie.androidactivities.support.Utils;
 import com.melanie.business.ProductEntryController;
 import com.melanie.entities.Category;
@@ -116,7 +116,7 @@ public class CategoriesActivity extends AppCompatActivity {
 		headerTextView.setText(getText(R.string.categoriesList));
 		categoriesListView.addHeaderView(headerView);
 
-		listAdapter = new MelanieSingleTextListAdapter<Category>(this,
+		listAdapter = new SingleTextListAdapter<Category>(this,
 				categories);
 
 		categoriesListView.setAdapter(listAdapter);

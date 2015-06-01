@@ -15,7 +15,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
 import com.melanie.androidactivities.support.MelaniePrinterDiscoverer;
-import com.melanie.androidactivities.support.MelanieSingleTextListAdapter;
+import com.melanie.androidactivities.support.SingleTextListAdapter;
 import com.melanie.androidactivities.support.PrinterType;
 import com.melanie.androidactivities.support.Utils;
 import com.melanie.support.CodeStrings;
@@ -26,7 +26,7 @@ public class SelectPrinterActivity extends Activity {
 	private List<String> printers;
 	private HashMap<String, String> printerInfo;
 	private Handler handler;
-	private MelanieSingleTextListAdapter<String> printersAdapter;
+	private SingleTextListAdapter<String> printersAdapter;
 	private MelaniePrinterDiscoverer printerDiscoverer;
 	private Intent callerActivityIntent;
 	private PrinterType printerType;
@@ -43,7 +43,7 @@ public class SelectPrinterActivity extends Activity {
 		setupListView();
 		setupPrinterDiscoverer();
 
-		if(printerDiscoverer.isReadyForDiscovery()){
+		if(printerDiscoverer.isBluetoothAvailable()){
 			discoverPrinter();
 		}
 	}
@@ -52,7 +52,7 @@ public class SelectPrinterActivity extends Activity {
 		printerInfo = new HashMap<String, String>();
 		printers = new ArrayList<>();
 		handler = new Handler(getMainLooper());
-		printersAdapter = new MelanieSingleTextListAdapter<>(this, printers);
+		printersAdapter = new SingleTextListAdapter<>(this, printers);
 	}
 
 	private void setupPrinterDiscoverer() {
@@ -119,6 +119,7 @@ public class SelectPrinterActivity extends Activity {
 			}
 		}
 	}
+
 
 	@Override
 	protected void onDestroy() {

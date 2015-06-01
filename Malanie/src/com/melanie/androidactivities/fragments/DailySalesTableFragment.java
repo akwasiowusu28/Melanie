@@ -31,7 +31,7 @@ import android.widget.ListView;
 import com.melanie.androidactivities.R;
 import com.melanie.androidactivities.ViewSalesActivity;
 import com.melanie.androidactivities.support.MelanieDatePicker;
-import com.melanie.androidactivities.support.MelanieGroupAdapter;
+import com.melanie.androidactivities.support.GroupAdapter;
 import com.melanie.androidactivities.support.ObservablePropertyChangedListener;
 import com.melanie.androidactivities.support.ReportSession;
 import com.melanie.androidactivities.support.Utils;
@@ -40,7 +40,7 @@ import com.melanie.support.CodeStrings;
 public class DailySalesTableFragment extends Fragment implements
 ObservablePropertyChangedListener {
 
-	private MelanieGroupAdapter<String> displayItemsAdapter;
+	private GroupAdapter<String> displayItemsAdapter;
 	private List<Entry<String, Integer>> displayItems;
 	private SimpleDateFormat dateformater;
 	private LayoutInflater layoutInflater;
@@ -76,7 +76,7 @@ ObservablePropertyChangedListener {
 		dateformater = new SimpleDateFormat(CodeStrings.DATEFORMAT,
 				Locale.getDefault());
 		initializeDates();
-		displayItemsAdapter = new MelanieGroupAdapter<String>(getActivity(),
+		displayItemsAdapter = new GroupAdapter<String>(getActivity(),
 				displayItems);
 	}
 

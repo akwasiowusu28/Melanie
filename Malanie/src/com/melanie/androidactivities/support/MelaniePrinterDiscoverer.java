@@ -86,7 +86,6 @@ public class MelaniePrinterDiscoverer {
 		public void onRemovePrinter(LWPrintDiscoverPrinter arg0, Map<String, String> arg1) {
 		}
 
-
 	};
 
 	private final BroadcastReceiver bluetoothBroadcastReceiver = new BroadcastReceiver() {
@@ -114,7 +113,7 @@ public class MelaniePrinterDiscoverer {
 		}
 	};
 
-	public boolean isReadyForDiscovery(){
+	public boolean isBluetoothAvailable() {
 		return bluetoothAdapter != null && bluetoothAdapter.isEnabled();
 	}
 
@@ -126,8 +125,7 @@ public class MelaniePrinterDiscoverer {
 	}
 
 	public void clearResources() {
-		if (printerType.equals(PrinterType.Receipt) && receiptPrinterService != null
-				&& receiptPrinterService.isDiscovering()) {
+		if (printerType.equals(PrinterType.Receipt) && receiptPrinterService != null) {
 			receiptPrinterService.cancelDiscovery();
 
 			receiptPrinterService.stop();

@@ -2,8 +2,11 @@ package com.melanie.androidactivities;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -21,6 +24,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
 
+import com.melanie.androidactivities.support.BarcodePrintHelper;
 import com.melanie.androidactivities.support.ProductsAndSalesListViewAdapter;
 import com.melanie.androidactivities.support.Utils;
 import com.melanie.business.ProductEntryController;
@@ -44,6 +48,14 @@ public class MelanieInventoryActivity extends AppCompatActivity {
 	private boolean instanceWasSaved = false;
 
 	private boolean isEditInProcess;
+
+	private Map<String, String> printerInfo = null;
+
+	private String currentBarcode = null;
+
+	private boolean bluetoothEnableRefused = false;
+
+	private BarcodePrintHelper barcodePrintHelper;
 
 	private ListView listView;
 	private View selectedListViewChild;
@@ -76,26 +88,43 @@ public class MelanieInventoryActivity extends AppCompatActivity {
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 
-		if(!isEditInProcess){
+		AdapterView.AdapterContextMenuInfo menuInfo = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
 
-			AdapterView.AdapterContextMenuInfo menuInfo =  (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+		switch (item.getItemId()) {
 
-			int listChildPosition = listView.getChildCount() - 1;
-			int position = menuInfo.position >  listChildPosition ? listChildPosition : menuInfo.position;
-
-			selectedListViewChild = listView.getChildAt(position);
-
-			switchSelectedListItemVisibility(true, position);
-			View editView = selectedListViewChild.findViewById(R.id.editProductView);
-			setupEditView(editView, menuInfo.position);
-			isEditInProcess = true;
+		case R.id.editMenuItem:
+			editProduct(menuInfo.position);
+			break;
+		case R.id.printBarcodeMenuItem:
+			printBarcode(menuInfo.position);
+			break;
 		}
+
 		return true;
 	}
 
-	private void switchSelectedListItemVisibility(boolean showEditView, int position) {
+	private void editProduct(int position) {
+		if (!isEditInProcess) {
 
-		if(selectedListViewChild != null){
+			selectedListViewChild = productsAdapter.getLongClickedView();
+
+			switchSelectedListItemVisibility(true);
+			View editView = selectedListViewChild.findViewById(R.id.editProductView);
+			setupEditView(editView, position);
+			isEditInProcess = true;
+		}
+	}
+
+	private void printBarcode(int position){
+		Product product = currentProducts.get(position - 1); // This is because the listview header takes position 0 so the position coming in is off by one */
+		if(barcodePrintHelper != null){
+			barcodePrintHelper.printBarcode(product.getBarcode(), null);
+		}
+	}
+
+	private void switchSelectedListItemVisibility(boolean showEditView) {
+
+		if (selectedListViewChild != null) {
 
 			View mainView = selectedListViewChild.findViewById(R.id.mainDisplayRow);
 			View editView = selectedListViewChild.findViewById(R.id.editProductView);
@@ -108,7 +137,7 @@ public class MelanieInventoryActivity extends AppCompatActivity {
 	private void initializeFields() {
 		handler = new Handler(getMainLooper());
 		productController = BusinessFactory.makeProductEntryController();
-
+		barcodePrintHelper = new BarcodePrintHelper(this, false);
 		if (!instanceWasSaved) {
 			categories = new ArrayList<>();
 			categories.add(0, new Category(getString(R.string.allCategories)));
@@ -147,7 +176,7 @@ public class MelanieInventoryActivity extends AppCompatActivity {
 				updateProduct(product);
 
 				Utils.makeToast(MelanieInventoryActivity.this, R.string.productUpdateSucessfull);
-				switchSelectedListItemVisibility(false, position);
+				switchSelectedListItemVisibility(false);
 				Utils.notifyListUpdate(productsAdapter, handler);
 				isEditInProcess = false;
 			}
@@ -241,6 +270,23 @@ public class MelanieInventoryActivity extends AppCompatActivity {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent intentData) {
+		if (resultCode == RESULT_OK && requestCode == Utils.Constants.PRINTER_SELECT_REQUEST_CODE) {
+
+			Bundle bundle = intentData.getExtras();
+			printerInfo = (Map<String, String>) bundle.get(CodeStrings.PRINTER_INFO);
+			if (printerInfo != null) {
+				setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
+				if(barcodePrintHelper != null) {
+					barcodePrintHelper.setIsPrinterFound(true);
+					barcodePrintHelper.printBarcode(currentBarcode, printerInfo);
+				}
+			}
+		}
+	}
+
 	@Override
 	protected void onSaveInstanceState(Bundle bundle) {
 		bundle.putSerializable(CodeStrings.ALLPRODUCTS, allProducts);
@@ -256,5 +302,13 @@ public class MelanieInventoryActivity extends AppCompatActivity {
 			categories = (ArrayList<Category>) bundle.get(CodeStrings.CATEGORIES);
 			currentProducts = (ArrayList<Product>) bundle.get(CodeStrings.CURRENTPRODUCTS);
 		}
+	}
+
+	@Override
+	protected void onDestroy() {
+		if(barcodePrintHelper != null) {
+			barcodePrintHelper.clearResources();
+		}
+		super.onDestroy();
 	}
 }

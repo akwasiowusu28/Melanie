@@ -11,13 +11,13 @@ import android.widget.TextView;
 
 import com.melanie.androidactivities.R;
 
-public class MelanieSingleTextListAdapter<T> extends ArrayAdapter<T> {
+public class SingleTextListAdapter<T> extends ArrayAdapter<T> {
 
 	private Context context;
 	private int resource;
 	private List<T> items;
 
-	public MelanieSingleTextListAdapter(Context context, List<T> items) {
+	public SingleTextListAdapter(Context context, List<T> items) {
 		super(context, R.layout.layout_single_textview, items);
 		this.context = context;
 		this.resource = R.layout.layout_single_textview;

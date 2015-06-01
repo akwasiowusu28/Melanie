@@ -5,6 +5,7 @@ import java.util.List;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
@@ -31,6 +32,7 @@ public class ProductsAndSalesListViewAdapter<T> extends ArrayAdapter<T> {
 	private List<T> items;
 	private boolean hasSections;
 	private int sectionResource;
+	private View longClickedView;
 
 	public ProductsAndSalesListViewAdapter(Context context, List<T> items,
 			boolean hasSections) {
@@ -80,7 +82,7 @@ public class ProductsAndSalesListViewAdapter<T> extends ArrayAdapter<T> {
 				setSectionValue(convertView,
 						((SectionHeader) item).getSectiontext());
 			}
-
+		convertView.setOnLongClickListener(longClickListener);
 		return convertView;
 	}
 
@@ -94,6 +96,19 @@ public class ProductsAndSalesListViewAdapter<T> extends ArrayAdapter<T> {
 	@Override
 	public int getViewTypeCount() {
 		return hasSections ? 2 : 1;
+	}
+
+	private OnLongClickListener longClickListener = new OnLongClickListener() {
+
+		@Override
+		public boolean onLongClick(View v) {
+			longClickedView = v;
+			return false;
+		}
+	};
+
+	public View getLongClickedView(){
+		return longClickedView;
 	}
 
 	private void setValues(View rowView, String name, int quantity, double price) {

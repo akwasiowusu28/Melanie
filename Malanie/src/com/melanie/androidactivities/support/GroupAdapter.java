@@ -12,13 +12,13 @@ import android.widget.TextView;
 
 import com.melanie.androidactivities.R;
 
-public class MelanieGroupAdapter<T> extends
+public class GroupAdapter<T> extends
 		ArrayAdapter<Entry<T, Integer>> {
 	private Context context;
 	private int resource;
 	private List<Entry<T, Integer>> items;
 
-	public MelanieGroupAdapter(Context context,
+	public GroupAdapter(Context context,
 			List<Entry<T, Integer>> items) {
 
 		super(context, R.layout.layout_two_item_view, items);

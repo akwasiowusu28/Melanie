@@ -42,6 +42,7 @@ public final class Utils {
 
 	public static class Constants {
 		public static final int BLUETOOTH_REQUEST_CODE = 208;
+		public static final int PRINTER_SELECT_REQUEST_CODE = 28;
 	}
 
 	/**

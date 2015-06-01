@@ -18,7 +18,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.melanie.androidactivities.support.MelanieSingleTextListAdapter;
+import com.melanie.androidactivities.support.SingleTextListAdapter;
 import com.melanie.androidactivities.support.ProductsAndSalesListViewAdapter;
 import com.melanie.androidactivities.support.Utils;
 import com.melanie.business.CustomersController;
@@ -40,7 +40,7 @@ public class PaymentActivity extends AppCompatActivity {
 	private Customer selectedCustomer;
 	private ProductsAndSalesListViewAdapter<Sale> salesListAdapter;
 	private Handler handler;
-	MelanieSingleTextListAdapter<Customer> customersAdapter;
+	SingleTextListAdapter<Customer> customersAdapter;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -79,7 +79,7 @@ public class PaymentActivity extends AppCompatActivity {
 	}
 
 	private void setupAutoCompleteCustomers() {
-		customersAdapter = new MelanieSingleTextListAdapter<Customer>(this,
+		customersAdapter = new SingleTextListAdapter<Customer>(this,
 				customers);
 
 		AutoCompleteTextView customerNameTextView = (AutoCompleteTextView) findViewById(R.id.customerFind);

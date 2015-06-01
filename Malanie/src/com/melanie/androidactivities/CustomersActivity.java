@@ -16,7 +16,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.melanie.androidactivities.support.MelanieSingleTextListAdapter;
+import com.melanie.androidactivities.support.SingleTextListAdapter;
 import com.melanie.androidactivities.support.Utils;
 import com.melanie.business.CustomersController;
 import com.melanie.entities.Customer;
@@ -33,7 +33,7 @@ public class CustomersActivity extends AppCompatActivity {
 	private Customer customer;
 	private boolean isEdit;
 	private boolean wasLaunchedFromSales;
-	private MelanieSingleTextListAdapter<Customer> customersAdapter;
+	private SingleTextListAdapter<Customer> customersAdapter;
 	private Handler handler;
 
 	@Override
@@ -103,7 +103,7 @@ public class CustomersActivity extends AppCompatActivity {
 	}
 
 	private void setupAutoCompleteCustomers() {
-		customersAdapter = new MelanieSingleTextListAdapter<Customer>(this,
+		customersAdapter = new SingleTextListAdapter<Customer>(this,
 				customers);
 
 		AutoCompleteTextView customerNameTextView = (AutoCompleteTextView) findViewById(R.id.customerName);
