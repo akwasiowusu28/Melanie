@@ -1,5 +1,8 @@
 package com.melanie.androidactivities;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -7,6 +10,9 @@ import java.util.Map;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.CompressFormat;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -25,6 +31,7 @@ import android.widget.ListView;
 import android.widget.Spinner;
 
 import com.melanie.androidactivities.support.BarcodePrintHelper;
+import com.melanie.androidactivities.support.MelanieBarcodeEncoder;
 import com.melanie.androidactivities.support.ProductsAndSalesListViewAdapter;
 import com.melanie.androidactivities.support.Utils;
 import com.melanie.business.ProductEntryController;
@@ -34,6 +41,7 @@ import com.melanie.support.BusinessFactory;
 import com.melanie.support.CodeStrings;
 import com.melanie.support.OperationCallBack;
 import com.melanie.support.exceptions.MelanieBusinessException;
+import com.planetarydoom.barcode.core.WriterException;
 
 public class MelanieInventoryActivity extends AppCompatActivity {
 
@@ -98,6 +106,8 @@ public class MelanieInventoryActivity extends AppCompatActivity {
 		case R.id.printBarcodeMenuItem:
 			printBarcode(menuInfo.position);
 			break;
+		case R.id.sharebarcodeMenuItem:
+			shareBarcodeImage(menuInfo.position);
 		}
 
 		return true;
@@ -116,9 +126,34 @@ public class MelanieInventoryActivity extends AppCompatActivity {
 	}
 
 	private void printBarcode(int position){
+		if(barcodePrintHelper == null) { //lazy init
+			barcodePrintHelper = new BarcodePrintHelper(this, false);
+		}
 		Product product = currentProducts.get(position - 1); // This is because the listview header takes position 0 so the position coming in is off by one */
-		if(barcodePrintHelper != null){
-			barcodePrintHelper.printBarcode(product.getBarcode(), null);
+		barcodePrintHelper.printBarcode(product.getBarcode(), null);
+	}
+
+
+	private void shareBarcodeImage(int position){
+		Product product = currentProducts.get(position - 1); // This is because the listview header takes position 0 so the position coming in is off by one */
+
+		try {
+			File file = new File(getFilesDir(),CodeStrings.BARCODE_FILE);
+			FileOutputStream stream = new FileOutputStream(file);
+			String productBarcode = product.getBarcode();
+			String barcodeString = productBarcode + String.valueOf(Utils.getCheckSumDigit(productBarcode));
+			Bitmap barcodeBitmap = new MelanieBarcodeEncoder().generateEAN13Barcode(barcodeString);
+			barcodeBitmap.compress(CompressFormat.PNG, 100, stream);
+
+			Intent intent = new Intent();
+			intent.setAction(Intent.ACTION_SEND);
+			intent.putExtra(Intent.EXTRA_STREAM,Uri.fromFile(file));
+			intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+			intent.setType(CodeStrings.BARCODE_SHARE_TYPE);
+			startActivity(Intent.createChooser(intent, "Share"));
+		} catch (FileNotFoundException | WriterException e) {
+			// TODO log it
+			e.printStackTrace();
 		}
 	}
 
@@ -137,7 +172,6 @@ public class MelanieInventoryActivity extends AppCompatActivity {
 	private void initializeFields() {
 		handler = new Handler(getMainLooper());
 		productController = BusinessFactory.makeProductEntryController();
-		barcodePrintHelper = new BarcodePrintHelper(this, false);
 		if (!instanceWasSaved) {
 			categories = new ArrayList<>();
 			categories.add(0, new Category(getString(R.string.allCategories)));

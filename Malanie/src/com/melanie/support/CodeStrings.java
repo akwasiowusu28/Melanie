@@ -23,4 +23,6 @@ public class CodeStrings {
 	public static final String CURRENTPRODUCTS="currentProducts";
 	public static final String ALLPRODUCTS = "allProducts";
 	public static final String EMPTY = "empty";
+	public static final String BARCODE_FILE = "barcode.png";
+	public static final String BARCODE_SHARE_TYPE = "image/png";
 }

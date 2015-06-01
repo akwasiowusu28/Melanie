@@ -28,10 +28,12 @@ public class MelanieBarcodeEncoder {
 		ImageBitmap = Bitmap.createBitmap(bitmapWidth, bitmapHeight,
 				Config.ARGB_8888);
 
-		for (int i = 0; i < bitmapWidth; i++)
-			for (int j = 0; j < bitmapHeight; j++)
+		for (int i = 0; i < bitmapWidth; i++) {
+			for (int j = 0; j < bitmapHeight; j++) {
 				ImageBitmap.setPixel(i, j, bm.get(i, j) ? Color.BLACK
 						: Color.WHITE);
+			}
+		}
 
 		return ImageBitmap;
 	}

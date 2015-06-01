@@ -251,4 +251,25 @@ public final class Utils {
 			view.setVisibility(visible ? View.VISIBLE : View.GONE);
 		}
 	}
+
+	public static int getCheckSumDigit(String barcode){
+		char[] chars = barcode.toCharArray();
+
+		int sum = 0;
+		for (int i = chars.length - 1; i >= 0; i--)
+			if ((i & 1) == 1) {
+				sum += num(chars[i]) * 3;
+			} else {
+				sum += num(chars[i]);
+			}
+		int mod10ofSum = sum % 10;
+
+		int checkDigit = mod10ofSum > 0 ? 10 - sum % 10 : 0;
+		return  checkDigit;
+
+	}
+
+	public static int num(char charValue) {
+		return Character.getNumericValue(charValue);
+	}
 }

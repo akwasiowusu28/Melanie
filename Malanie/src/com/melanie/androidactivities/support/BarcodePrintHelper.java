@@ -118,9 +118,12 @@ public class BarcodePrintHelper {
 				handler.postDelayed(new Runnable() {
 					@Override
 					public void run() {
-						progressDialog.dismiss();
-						progressDialog.setProgress(0);
+						if(progressDialog != null){
+							progressDialog.dismiss();
+							progressDialog.setProgress(0);
+						}
 						((Activity) context).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+						handler.removeCallbacks(this);
 					}
 				}, 1200);
 			}
@@ -180,9 +183,10 @@ public class BarcodePrintHelper {
 				new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				progressDialog.setProgress(0);
-				progressDialog.cancel();
-
+				if(progressDialog != null){
+					progressDialog.setProgress(0);
+					progressDialog.cancel();
+				}
 			}
 		});
 		progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
@@ -231,10 +235,13 @@ public class BarcodePrintHelper {
 					@Override
 					public void run() {
 
-						progressDialog.setProgress((int) (printer.getProgressOfPrint() * 100));
+						int progress = (int) (printer.getProgressOfPrint() * 100);
+						progressDialog.setProgress(progress);
 						progressDialog.setMessage(context.getText(printPhaseMessage));
+						if(progress == 100) {
+							handler.removeCallbacks(this);
+						}
 					}
-
 				});
 			}
 		}, 2, 2, TimeUnit.SECONDS);

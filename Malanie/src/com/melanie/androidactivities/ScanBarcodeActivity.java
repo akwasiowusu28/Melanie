@@ -227,26 +227,13 @@ public class ScanBarcodeActivity extends Activity {
 			String barcodePrefix = Utils.getBarcodePrefix();
 			if (barcode.substring(0, barcodePrefix.length()).equals(
 					barcodePrefix)) {
-				char[] chars = barcode.toCharArray();
 
-				int sum = 0;
-				for (int i = chars.length - 2; i >= 0; i--)
-					if ((i & 1) == 1) {
-						sum += num(chars[i]) * 3;
-					} else {
-						sum += num(chars[i]);
-					}
-				int mod10ofSum = sum % 10;
-				int checksum_digit = mod10ofSum > 0 ? 10 - sum % 10 : 0;
+				int checksum_digit =Utils.getCheckSumDigit(barcode);
 
-				int lastDigit = num(chars[barcode.length() - 1]);
+				int lastDigit = Integer.parseInt(barcode.substring(barcode.length()-1));
 				isValid = lastDigit == checksum_digit;
 			}
 			return isValid;
-		}
-
-		private int num(char charValue) {
-			return Character.getNumericValue(charValue);
 		}
 
 	};
