@@ -54,7 +54,7 @@ public class MelanieInventoryActivity extends AppCompatActivity {
 
 	private String currentBarcode = null;
 
-	private boolean bluetoothEnableRefused = false;
+	FileShareHelper fileShareHelper;
 
 	private BarcodePrintHelper barcodePrintHelper;
 
@@ -128,13 +128,15 @@ public class MelanieInventoryActivity extends AppCompatActivity {
 
 
 	private void shareBarcodeImage(int position){
-		Product product = currentProducts.get(position - 1); // This is because the listview header takes position 0 so the position coming in is off by one */
 
-		String productName = product.getProductName();
-		String productBarcode = product.getBarcode();
+		if(fileShareHelper != null) {
+			Product product = currentProducts.get(position - 1); // This is because the listview header takes position 0 so the position coming in is off by one */
 
-		FileShareHelper shareHelper = new FileShareHelper(this);
-		shareHelper.shareBarcodeImage(productBarcode, productName);
+			String productName = product.getProductName();
+			String productBarcode = product.getBarcode();
+
+			fileShareHelper.shareBarcodeImage(productBarcode, productName);
+		}
 	}
 
 	private void switchSelectedListItemVisibility(boolean showEditView) {
@@ -161,6 +163,7 @@ public class MelanieInventoryActivity extends AppCompatActivity {
 			getAllProducts();
 		}
 
+		fileShareHelper = new FileShareHelper(this);
 		categoriesAdapter = new ArrayAdapter<Category>(this, android.R.layout.simple_spinner_dropdown_item, categories);
 		productsAdapter = new ProductsAndSalesListViewAdapter<Product>(this, currentProducts, false);
 	}
@@ -322,6 +325,11 @@ public class MelanieInventoryActivity extends AppCompatActivity {
 	protected void onDestroy() {
 		if(barcodePrintHelper != null) {
 			barcodePrintHelper.clearResources();
+			barcodePrintHelper = null;
+		}
+		if(fileShareHelper != null){
+			fileShareHelper.performCleanup();
+			fileShareHelper = null;
 		}
 		super.onDestroy();
 	}

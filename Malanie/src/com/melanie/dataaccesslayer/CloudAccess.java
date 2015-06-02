@@ -12,18 +12,13 @@ import com.backendless.exceptions.BackendlessFault;
 import com.backendless.persistence.BackendlessDataQuery;
 import com.melanie.dataaccesslayer.datasource.DataSourceManager;
 import com.melanie.entities.User;
+import com.melanie.support.CodeStrings;
 import com.melanie.support.OperationCallBack;
 import com.melanie.support.exceptions.MelanieDataLayerException;
 
 @SuppressWarnings("unchecked")
 public class CloudAccess {
 
-	private static final String ID = "Id";
-	private static final String DATEFORMAT = "yyyyMMddHHmmss";
-	private static final String IS_GREATER_OR_EQUAL_TO = ">= '";
-	private static final String AND = "' and ";
-	private static final String IS_LESS_OR_EQUAL_TO = "<='";
-	private static final String SINGLE_QUOTE = "'";
 	private boolean isCollectionOperation;
 
 	private int collectionRequestsCount = 0;
@@ -79,7 +74,7 @@ public class CloudAccess {
 			OperationCallBack<T> operationCallBack)
 					throws MelanieDataLayerException {
 		try {
-			findItemByFieldName(ID, String.valueOf(itemId), itemClass,
+			findItemByFieldName(CodeStrings.ID, String.valueOf(itemId), itemClass,
 					operationCallBack);
 		} catch (Exception e) {
 			throw new MelanieDataLayerException(e.getMessage(), e);
@@ -165,14 +160,14 @@ public class CloudAccess {
 			String upperBoundString = "";
 
 			if (lowerBound instanceof Date && upperBound instanceof Date) {
-				SimpleDateFormat dateFormater = new SimpleDateFormat(DATEFORMAT);
+				SimpleDateFormat dateFormater = new SimpleDateFormat(CodeStrings.CLOUD_DATEFORMAT);
 				lowerBoundString = dateFormater.format((Date) lowerBound);
 				upperBoundString = dateFormater.format((Date) upperBound);
 			}
 
-			String whereClause = fieldName + IS_GREATER_OR_EQUAL_TO
-					+ lowerBoundString + AND + fieldName + IS_LESS_OR_EQUAL_TO
-					+ upperBoundString + SINGLE_QUOTE;
+			String whereClause = fieldName + CodeStrings.IS_GREATER_OR_EQUAL_TO
+					+ lowerBoundString + CodeStrings.AND + fieldName + CodeStrings.IS_LESS_OR_EQUAL_TO
+					+ upperBoundString + CodeStrings.SINGLE_QUOTE;
 			BackendlessDataQuery query = new BackendlessDataQuery(whereClause);
 			Backendless.Persistence
 			.of(itemClass)

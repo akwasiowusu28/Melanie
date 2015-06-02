@@ -26,4 +26,10 @@ public class CodeStrings {
 	public static final String BARCODE_PATH = "barcodes/";
 	public static final String PNG = ".png";
 	public static final String AUTHORITY = "com.melanie.androidactivities.fileprovider";
+	public static final String ID = "Id";
+	public static final String CLOUD_DATEFORMAT = "yyyyMMddHHmmss";
+	public static final String IS_GREATER_OR_EQUAL_TO = ">= '";
+	public static final String AND = "' and ";
+	public static final String IS_LESS_OR_EQUAL_TO = "<='";
+	public static final String SINGLE_QUOTE = "'";
 }

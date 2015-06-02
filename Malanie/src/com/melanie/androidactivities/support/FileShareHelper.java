@@ -18,6 +18,7 @@ import com.planetarydoom.barcode.core.WriterException;
 public class FileShareHelper {
 
 	private Context context;
+	private File barcodeCacheFolder;
 
 	public FileShareHelper(Context context) {
 		this.context = context;
@@ -39,13 +40,15 @@ public class FileShareHelper {
 	private Uri saveBarcodeBitmapAndReturnUri(String imageName, String barcode) {
 		Uri fileUrl = null;
 		try {
-			String fileName = alphabetsOnly(imageName) + CodeStrings.PNG;
+			String fileName = noSpecialChars(imageName) + CodeStrings.PNG;
 			String barcodeString = barcode + String.valueOf(Utils.getCheckSumDigit(barcode));
 			Bitmap barcodeBitmap = new MelanieBarcodeEncoder().generateEAN13Barcode(barcodeString);
 
-			File barcodeCache = new File(context.getCacheDir(), CodeStrings.BARCODE_PATH);
-			barcodeCache.mkdirs();
-			File barcodefilePath = new File(barcodeCache, fileName);
+			if (barcodeCacheFolder == null) {
+				barcodeCacheFolder = new File(context.getCacheDir(), CodeStrings.BARCODE_PATH);
+				barcodeCacheFolder.mkdirs();
+			}
+			File barcodefilePath = new File(barcodeCacheFolder, fileName);
 			FileOutputStream stream = new FileOutputStream(barcodefilePath);
 			barcodeBitmap.compress(CompressFormat.PNG, 100, stream);
 
@@ -57,7 +60,18 @@ public class FileShareHelper {
 		return fileUrl;
 	}
 
-	private String alphabetsOnly(String value) {
+	private String noSpecialChars(String value) {
 		return value.replaceAll("[!@#$%\\^&*\\( \\)\\.\\,'\"\\\\?\\-/\\|_\\[\\+\\+`~]", "");
+	}
+
+	public void performCleanup() {
+		if (barcodeCacheFolder != null) {
+			File[] files = barcodeCacheFolder.listFiles();
+			if (files != null) {
+				for (File file : files) {
+					file.delete();
+				}
+			}
+		}
 	}
 }
