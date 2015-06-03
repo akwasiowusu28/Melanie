@@ -15,7 +15,7 @@ import android.widget.EditText;
 
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.melanie.androidactivities.support.MelanieAlertDialog;
-import com.melanie.androidactivities.support.MelanieAlertDialog.MelanieAlertDialogButtonModes;
+import com.melanie.androidactivities.support.MelanieAlertDialog.ButtonModes;
 import com.melanie.androidactivities.support.Utils;
 import com.melanie.business.MelanieSession;
 import com.melanie.business.UserController;
@@ -169,7 +169,7 @@ public class LoginActivity extends Activity {
 	}
 
 	private MelanieAlertDialog makeAlertDialog() {
-		return new MelanieAlertDialog(this, MelanieAlertDialogButtonModes.YES_NO,
+		return new MelanieAlertDialog(this, ButtonModes.YES_NO,
 				new MelanieAlertDialog.ButtonMethods() {
 
 			@Override

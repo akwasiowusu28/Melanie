@@ -14,6 +14,7 @@ import com.melanie.androidactivities.MonthlySalesReportActivity;
 import com.melanie.androidactivities.PaymentActivity;
 import com.melanie.androidactivities.ProductsMainActivity;
 import com.melanie.androidactivities.R;
+import com.melanie.androidactivities.RecordCostsActivity;
 import com.melanie.androidactivities.SalesActivity;
 import com.melanie.androidactivities.SettingsActivity;
 import com.melanie.androidactivities.fragments.DailySalesLineChartFragment;
@@ -60,7 +61,7 @@ public class NavigationHelper {
 	 */
 	public static Integer[] getProductMainNavigationItems() {
 		return new Integer[] { R.string.categories, R.string.addProducts,
-				R.string.melanie_inventory };
+				R.string.melanie_inventory, R.string.costs };
 	}
 
 	/**
@@ -70,7 +71,7 @@ public class NavigationHelper {
 	 **/
 	public static Integer[] getProductMainIcons() {
 		return new Integer[] { R.drawable.category, R.drawable.product,
-				R.drawable.inventory };
+				R.drawable.inventory, R.drawable.costs };
 	}
 
 	/**
@@ -81,7 +82,7 @@ public class NavigationHelper {
 	 */
 	public static Integer[] getProductMainNavigationDescription() {
 		return new Integer[] { R.string.addcategorydescription,
-				R.string.addproductdescription, R.string.inventoryDescription };
+				R.string.addproductdescription, R.string.inventoryDescription, R.string.costsDescription };
 	}
 
 	/**
@@ -158,17 +159,9 @@ public class NavigationHelper {
 				append(0, CategoriesActivity.class);
 				append(1, AddProductActivity.class);
 				append(2, MelanieInventoryActivity.class);
+				append(3, RecordCostsActivity.class);
 			}
 		};
-	}
-
-	void m() {
-		Class<?> klass = CustomerListActivity.class;
-		try {
-			klass.newInstance();
-		} catch (InstantiationException | IllegalAccessException e) {
-			// log it
-		}
 	}
 
 	/**

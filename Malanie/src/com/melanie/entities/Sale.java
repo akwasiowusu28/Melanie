@@ -14,6 +14,8 @@ import com.j256.ormlite.table.DatabaseTable;
 @DatabaseTable
 public class Sale extends BaseEntity {
 
+	private static final long serialVersionUID = -8612909833588822894L;
+
 	@DatabaseField
 	private Date saleDate;
 
@@ -65,9 +67,9 @@ public class Sale extends BaseEntity {
 	@Override
 	public boolean equals(Object another) {
 		boolean equals = false;
-		if (this == another)
+		if (this == another) {
 			equals = true;
-		else if (another != null && another instanceof Sale) {
+		} else if (another != null && another instanceof Sale) {
 			Sale anotherSale = (Sale) another;
 			boolean checkFieldsNonNull = anotherSale.saleDate != null
 					&& saleDate != null && anotherSale.product != null

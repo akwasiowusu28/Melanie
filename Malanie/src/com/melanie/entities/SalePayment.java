@@ -4,6 +4,8 @@ import com.j256.ormlite.field.DatabaseField;
 
 public class SalePayment extends BaseEntity {
 
+	private static final long serialVersionUID = -2532537384332475209L;
+
 	private static final String SALE_ID = "SaleId";
 	private static final String PAYMENT_ID = "PaymentId";
 

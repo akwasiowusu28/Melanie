@@ -13,6 +13,8 @@ import com.j256.ormlite.table.DatabaseTable;
 @DatabaseTable
 public class Category extends BaseEntity {
 
+	private static final long serialVersionUID = -3981110032326693701L;
+
 	public Category() {
 		super();
 	}
@@ -42,9 +44,9 @@ public class Category extends BaseEntity {
 	public boolean equals(Object another) {
 		boolean equal = false;
 
-		if (this == another)
+		if (this == another) {
 			equal = true;
-		else if (another != null && another instanceof Category) {
+		} else if (another != null && another instanceof Category) {
 			Category anotherCategory = (Category) another;
 			equal = anotherCategory.categoryName.equals(categoryName);
 		}

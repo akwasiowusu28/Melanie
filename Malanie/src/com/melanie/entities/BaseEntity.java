@@ -13,10 +13,7 @@ import com.j256.ormlite.field.DatabaseField;
  */
 public abstract class BaseEntity implements Comparable<BaseEntity>, Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 28L;
+	private static final long serialVersionUID = -8854516413121175277L;
 
 	public BaseEntity() {
 	}

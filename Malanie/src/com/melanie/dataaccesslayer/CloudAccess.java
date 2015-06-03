@@ -104,9 +104,11 @@ public class CloudAccess {
 		try {
 			isCollectionOperation = true;
 			collectionRequestsCount ++;
+			BackendlessDataQuery query = new BackendlessDataQuery();
+			query.setPageSize(100);
 			Backendless.Persistence
 			.of(itemClass)
-			.find((AsyncCallback<BackendlessCollection<T>>) new BackendAsynCallBack<T>(
+			.find(query,(AsyncCallback<BackendlessCollection<T>>) new BackendAsynCallBack<T>(
 					operationCallBack));
 		} catch (Exception e) {
 			throw new MelanieDataLayerException(e.getMessage(), e);

@@ -13,7 +13,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.melanie.androidactivities.support.MelanieAlertDialog;
-import com.melanie.androidactivities.support.MelanieAlertDialog.MelanieAlertDialogButtonModes;
+import com.melanie.androidactivities.support.MelanieAlertDialog.ButtonModes;
 import com.melanie.androidactivities.support.Utils;
 import com.melanie.business.MelanieSession;
 import com.melanie.business.UserController;
@@ -91,7 +91,7 @@ public class ConfirmActivity extends AppCompatActivity {
 
 	private MelanieAlertDialog makeAlertDialog() {
 		return new MelanieAlertDialog(this,
-				MelanieAlertDialogButtonModes.YES_NO,
+				ButtonModes.YES_NO,
 				new MelanieAlertDialog.ButtonMethods() {
 
 			@Override

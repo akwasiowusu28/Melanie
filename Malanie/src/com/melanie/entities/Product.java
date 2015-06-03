@@ -13,6 +13,8 @@ import com.j256.ormlite.table.DatabaseTable;
 @DatabaseTable
 public class Product extends BaseEntity {
 
+	private static final long serialVersionUID = -4874210643819140613L;
+
 	@DatabaseField
 	private String productName;
 
@@ -86,9 +88,9 @@ public class Product extends BaseEntity {
 	public boolean equals(Object another) {
 		boolean equal = false;
 
-		if (this == another)
+		if (this == another) {
 			equal = true;
-		else if (another != null && another instanceof Product) {
+		} else if (another != null && another instanceof Product) {
 			Product anotherProduct = (Product) another;
 			equal = anotherProduct.barcode.equals(barcode);
 		}

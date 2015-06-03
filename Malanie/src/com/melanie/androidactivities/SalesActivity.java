@@ -21,7 +21,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.melanie.androidactivities.support.MelanieAlertDialog;
-import com.melanie.androidactivities.support.MelanieAlertDialog.MelanieAlertDialogButtonModes;
+import com.melanie.androidactivities.support.MelanieAlertDialog.ButtonModes;
 import com.melanie.androidactivities.support.PrinterType;
 import com.melanie.androidactivities.support.ProductsAndSalesListViewAdapter;
 import com.melanie.androidactivities.support.ReceiptPrintingHelper;
@@ -129,7 +129,7 @@ public class SalesActivity extends AppCompatActivity {
 
 	private MelanieAlertDialog makeAlertDialog() {
 		return new MelanieAlertDialog(this,
-				MelanieAlertDialogButtonModes.YES_NO_CANCEL,
+				ButtonModes.YES_NO_CANCEL,
 				new MelanieAlertDialog.ButtonMethods() {
 
 			@Override

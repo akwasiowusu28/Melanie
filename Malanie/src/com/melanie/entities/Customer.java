@@ -13,6 +13,8 @@ import com.j256.ormlite.table.DatabaseTable;
 @DatabaseTable
 public class Customer extends BaseEntity {
 
+	private static final long serialVersionUID = -3116268865194178178L;
+
 	@DatabaseField
 	private String name;
 
@@ -63,9 +65,9 @@ public class Customer extends BaseEntity {
 	public boolean equals(Object another) {
 		boolean equal = false;
 
-		if (this == another)
+		if (this == another) {
 			equal = true;
-		else if (another != null && another instanceof Customer) {
+		} else if (another != null && another instanceof Customer) {
 			Customer anotherCustomer = (Customer) another;
 			equal = anotherCustomer.name.equals(name)
 					&& anotherCustomer.phoneNumber.equals(phoneNumber);
