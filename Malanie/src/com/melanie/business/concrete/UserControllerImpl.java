@@ -18,8 +18,8 @@ public class UserControllerImpl implements UserController {
 
 	private final DataAccessLayer dataAccess;
 	private final CloudAccess cloudAccess;
-    private final MelanieSession session;
-    
+	private final MelanieSession session;
+
 	public UserControllerImpl() {
 		session = BusinessFactory.getSession();
 		dataAccess = DataFactory.makeDataAccess();
@@ -78,8 +78,9 @@ public class UserControllerImpl implements UserController {
 
 					@Override
 					public void onOperationSuccessful(BackendlessUser result) {
-						if(operationCallBack != null)
-						  operationCallBack.onOperationSuccessful(OperationResult.SUCCESSFUL);
+						if (operationCallBack != null) {
+							operationCallBack.onOperationSuccessful(OperationResult.SUCCESSFUL);
+						}
 					}
 
 					@Override
@@ -98,7 +99,7 @@ public class UserControllerImpl implements UserController {
 
 	private void performUpdate(final User user, OperationCallBack<BackendlessUser> operationCallBack)
 			throws MelanieDataLayerException {
-		if (session.canConnectToCloud() &&  user != null && cloudAccess != null) {
+		if (session.canConnectToCloud() && user != null && cloudAccess != null) {
 			addUserToLocalDataStore(user);
 			cloudAccess.updateUser(user, operationCallBack);
 		}
@@ -166,20 +167,20 @@ public class UserControllerImpl implements UserController {
 				cloudAccess.findItemByFieldName(CodeStrings.PHONE, phone, BackendlessUser.class,
 						new OperationCallBack<BackendlessUser>() {
 
-							@Override
-							public void onOperationSuccessful(BackendlessUser result) {
-								User user = constructUserFromBackendless(result);
-								operationCallBack.onOperationSuccessful(user);
-							}
+					@Override
+					public void onOperationSuccessful(BackendlessUser result) {
+						User user = constructUserFromBackendless(result);
+						operationCallBack.onOperationSuccessful(user);
+					}
 
-							@Override
-							public void onOperationFailed(Throwable e) {
-								// for logging purposes
-								operationCallBack.onOperationFailed(e);
-								// return null to caller if error occured
-								operationCallBack.onOperationSuccessful(null);
-							}
-						});
+					@Override
+					public void onOperationFailed(Throwable e) {
+						// for logging purposes
+						operationCallBack.onOperationFailed(e);
+						// return null to caller if error occured
+						operationCallBack.onOperationSuccessful(null);
+					}
+				});
 			} catch (MelanieDataLayerException e) {
 				throw new MelanieBusinessException(e.getMessage(), e);
 			}
@@ -188,21 +189,26 @@ public class UserControllerImpl implements UserController {
 	}
 
 	private void addUserToLocalDataStore(User user) throws MelanieDataLayerException {
-		if (dataAccess != null)
+		if (dataAccess != null) {
 			dataAccess.addOrUpdateDataItemInLocalDataStoreOnly(user, User.class);
+		}
 	}
 
 	private User constructUserFromBackendless(BackendlessUser backendlessUser) {
+		User user = null;
 
-		String objectId = backendlessUser.getProperty(CodeStrings.OBJECTID).toString();
-		String name = backendlessUser.getProperty(CodeStrings.NAME).toString();
-		String phone = backendlessUser.getProperty(CodeStrings.PHONE).toString();
-		String deviceId = backendlessUser.getProperty(CodeStrings.DEVICEID).toString();
-		boolean isConfirmed = Boolean.getBoolean(backendlessUser.getProperty(CodeStrings.ISCONFIRMED).toString());
+		if (backendlessUser != null) {
+			String objectId = backendlessUser.getProperty(CodeStrings.OBJECTID).toString();
+			String name = backendlessUser.getProperty(CodeStrings.NAME).toString();
+			String phone = backendlessUser.getProperty(CodeStrings.PHONE).toString();
+			String deviceId = backendlessUser.getProperty(CodeStrings.DEVICEID).toString();
+			boolean isConfirmed = Boolean.getBoolean(backendlessUser.getProperty(CodeStrings.ISCONFIRMED).toString());
 
-		User user = new User(name, null, phone, deviceId, isConfirmed);
-		user.setObjectId(objectId);
-		user.setProperties(backendlessUser.getProperties());
+			user = new User(name, null, phone, deviceId, isConfirmed);
+			user.setObjectId(objectId);
+			user.setProperties(backendlessUser.getProperties());
+
+		}
 
 		return user;
 	}

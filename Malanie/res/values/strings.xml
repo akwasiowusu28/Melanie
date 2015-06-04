@@ -141,4 +141,6 @@
     <string name="title_activity_record_costs">Record costs</string>
     <string name="addCostItem">Add cost item</string>
     <string name="costHint">Eg. Transportation</string>
+    <string name="costItem">Cost item</string>
+    <string name="value">Value</string>
 </resources>
