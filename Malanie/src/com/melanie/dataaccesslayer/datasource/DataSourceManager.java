@@ -7,6 +7,8 @@ import java.util.List;
 import com.backendless.Backendless;
 import com.j256.ormlite.dao.Dao;
 import com.melanie.entities.Category;
+import com.melanie.entities.CostEntry;
+import com.melanie.entities.CostItem;
 import com.melanie.entities.Customer;
 import com.melanie.entities.Payment;
 import com.melanie.entities.Product;
@@ -38,6 +40,8 @@ public class DataSourceManager {
 			add(Sale.class);
 			add(SalePayment.class);
 			add(User.class);
+			add(CostItem.class);
+			add(CostEntry.class);
 		}
 	};
 
@@ -54,8 +58,9 @@ public class DataSourceManager {
 			throws MelanieDataLayerException {
 		Dao<Object, Integer> dao = null;
 		try {
-			if (dataSource != null)
+			if (dataSource != null) {
 				dao = dataSource.getDao(entityClass);
+			}
 		} catch (SQLException e) {
 			throw new MelanieDataLayerException(e.getMessage());
 		}
@@ -91,7 +96,7 @@ public class DataSourceManager {
 	public static void clearDataSource() {
 		if(dataSource != null){
 			dataSource.close();
-			dataSource = null;	
+			dataSource = null;
 		}
 	}
 

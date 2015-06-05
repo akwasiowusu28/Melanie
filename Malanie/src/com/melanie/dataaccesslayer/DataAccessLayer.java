@@ -53,5 +53,7 @@ public interface DataAccessLayer {
 			OperationCallBack<T> operationCallBack)
 					throws MelanieDataLayerException;
 
+	<T> boolean itemExists(T dataItem, Class<T> itemClass) throws MelanieDataLayerException;
+
 	void clearResources();
 }

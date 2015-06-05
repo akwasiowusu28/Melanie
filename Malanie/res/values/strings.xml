@@ -143,4 +143,6 @@
     <string name="costHint">Eg. Transportation</string>
     <string name="costItem">Cost item</string>
     <string name="value">Value</string>
+    <string name="costsSavedSuccessfully">Costs saved successfully!</string>
+    <string name="saveCostsfailed">save costs failed</string>
 </resources>

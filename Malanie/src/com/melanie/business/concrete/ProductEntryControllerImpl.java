@@ -1,12 +1,15 @@
 package com.melanie.business.concrete;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import com.melanie.business.MelanieSession;
 import com.melanie.business.ProductEntryController;
 import com.melanie.dataaccesslayer.DataAccessLayer;
 import com.melanie.entities.Category;
+import com.melanie.entities.CostEntry;
+import com.melanie.entities.CostItem;
 import com.melanie.entities.Product;
 import com.melanie.support.BusinessFactory;
 import com.melanie.support.DataFactory;
@@ -131,7 +134,7 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 		List<Category> allCategories = new ArrayList<Category>();
 		if (session.canConnectToCloud() && dataAccess != null) {
 			try {
-				allCategories = dataAccess.findAllItems(Category.class, operationCallBack);
+				allCategories.addAll(getAllItemsOf(Category.class, operationCallBack));
 			} catch (MelanieDataLayerException e) {
 				throw new MelanieBusinessException(e.getMessage(), e);
 			}
@@ -163,7 +166,7 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 			Product product = new Product(productName, quantity, price, category, barcode);
 			product.setOwnerId(session.getUser().getObjectId());
 			try {
-				result = dataAccess.addDataItem(product, Product.class, null);
+				result = dataAccess.addDataItem(product, Product.class, null); //fire and forget. No callBack. In the future, this has to change
 			} catch (MelanieDataLayerException e) {
 				throw new MelanieBusinessException(e.getMessage(), e);
 			}
@@ -180,7 +183,7 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 		List<Product> allProducts = new ArrayList<Product>();
 		if (session.canConnectToCloud() && dataAccess != null) {
 			try {
-				allProducts.addAll(dataAccess.findAllItems(Product.class, operationCallBack));
+				allProducts.addAll(getAllItemsOf(Product.class, operationCallBack));
 				for (Product product : allProducts) {
 					dataAccess.refreshItem(product.getCategory(), Category.class);
 				}
@@ -327,5 +330,94 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 			throw new MelanieBusinessException(e.getMessage(), e);
 		}
 		return product;
+	}
+
+	/**
+	 * Save cost entries
+	 * 
+	 * @param costEntries
+	 *            the cost entries to save
+	 * @throws MelanieBusinessException
+	 */
+	@Override
+	public OperationResult saveCostEntries(List<CostEntry> costEntries) throws MelanieBusinessException {
+		OperationResult result = OperationResult.FAILED;
+
+		try {
+			if (session.canConnectToCloud() && dataAccess != null) {
+				for (CostEntry costEntry : costEntries) {
+					if (costEntry.getValue() != 0D) {
+						performSaveCostEntry(costEntry);
+					}
+				}
+				result = OperationResult.SUCCESSFUL;
+			}
+		} catch (MelanieDataLayerException e) {
+
+		}
+		return result;
+	}
+
+	private void performSaveCostEntry(final CostEntry costEntry) throws MelanieDataLayerException {
+		final OperationCallBack<CostEntry> operationCallBack = new OperationCallBack<>(); // this is for logging
+
+		costEntry.setEntryDate(Calendar.getInstance().getTime());
+
+		if (dataAccess != null) {
+			if (dataAccess.itemExists(costEntry.getCostItem(), CostItem.class)) {
+
+				dataAccess.addDataItem(costEntry, CostEntry.class, operationCallBack);
+
+			} else {
+				dataAccess.addDataItem(costEntry.getCostItem(), CostItem.class, new OperationCallBack<CostItem>() {
+
+					@Override
+					public void onOperationSuccessful(CostItem result) {
+						costEntry.setCostItem(result);
+						try {
+							dataAccess.addDataItem(costEntry, CostEntry.class, operationCallBack);
+						} catch (MelanieDataLayerException e) {
+							operationCallBack.onOperationFailed(e);
+						}
+					}
+
+				});
+			}
+		}
+	}
+
+	@Override
+	public List<CostEntry> getAllCostEntries(OperationCallBack<CostEntry> operationCallBack)
+			throws MelanieBusinessException {
+		List<CostEntry> allCostEntries = new ArrayList<CostEntry>();
+		try {
+			allCostEntries.addAll(getAllItemsOf(CostEntry.class, operationCallBack));
+		} catch (MelanieDataLayerException e) {
+			throw new MelanieBusinessException(e.getMessage(), e);
+		}
+		return allCostEntries;
+	}
+
+	@Override
+	public List<CostItem> getAllCostItems(OperationCallBack<CostItem> operationCallBack)
+			throws MelanieBusinessException {
+		List<CostItem> allCostItems = new ArrayList<CostItem>();
+		try {
+			allCostItems.addAll(getAllItemsOf(CostItem.class, operationCallBack));
+		} catch (MelanieDataLayerException e) {
+			throw new MelanieBusinessException(e.getMessage(), e);
+		}
+		return allCostItems;
+	}
+
+	private <T> List<T> getAllItemsOf(Class<T> itemClass, OperationCallBack<T> operationCallBack)
+			throws MelanieDataLayerException {
+		List<T> items = new ArrayList<T>();
+
+		if (session.canConnectToCloud() && dataAccess != null) {
+
+			items.addAll(dataAccess.findAllItems(itemClass, operationCallBack));
+		}
+		return items;
 	}
 }

@@ -441,8 +441,25 @@ public class DataAccessLayerImpl implements DataAccessLayer {
 	}
 
 	@Override
+	public <T> boolean itemExists(T dataItem, Class<T> itemClass) throws MelanieDataLayerException {
+		boolean itemExists = false;
+		try {
+			if (dataItem != null) {
+				Dao<Object, Integer> dao = DataSourceManager
+						.getCachedDaoFor(itemClass);
+				itemExists = dao != null
+						&& dao.idExists(((BaseEntity) dataItem).getId());
+
+			}
+
+		} catch (SQLException e) {
+			throw new MelanieDataLayerException(e.getMessage(), e);
+		}
+		return itemExists;
+	}
+
+	@Override
 	public void clearResources() {
 		DataSourceManager.clearDataSource();
 	}
-
 }

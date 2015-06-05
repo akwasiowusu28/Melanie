@@ -3,6 +3,8 @@ package com.melanie.business;
 import java.util.List;
 
 import com.melanie.entities.Category;
+import com.melanie.entities.CostEntry;
+import com.melanie.entities.CostItem;
 import com.melanie.entities.Product;
 import com.melanie.support.OperationCallBack;
 import com.melanie.support.OperationResult;
@@ -55,4 +57,14 @@ public interface ProductEntryController {
 	OperationResult updateProduct(Product product) throws MelanieBusinessException;
 
 	void getLastInsertedProductId(OperationCallBack<Integer> operationCallBack) throws MelanieBusinessException;
+
+	OperationResult saveCostEntries(List<CostEntry> costEntries) throws MelanieBusinessException;
+
+	List<CostEntry> getAllCostEntries(
+			OperationCallBack<CostEntry> operationCallBack)
+					throws MelanieBusinessException;
+
+	List<CostItem> getAllCostItems(
+			OperationCallBack<CostItem> operationCallBack)
+					throws MelanieBusinessException;
 }

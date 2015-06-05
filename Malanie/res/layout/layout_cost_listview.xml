@@ -21,6 +21,6 @@
     android:textColor="@android:color/black"
     android:hint="@string/amountZeroes"
     android:layout_height="wrap_content"
-    android:inputType="numberDecimal|textNoSuggestions"/>
+    android:inputType="numberDecimal"/>
 
 </LinearLayout>
