@@ -1,7 +1,10 @@
 package com.melanie.androidactivities;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -49,6 +52,8 @@ public class RecordCostsActivity extends AppCompatActivity {
 	private double total = 0D;
 	private ProductEntryController productEntryController;
 
+	private SimpleDateFormat dateformater;
+
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -62,10 +67,13 @@ public class RecordCostsActivity extends AppCompatActivity {
 		}
 
 		initializeFields();
+
 		setupSaveButton();
 		getAllCostItems();
 		setupListView();
 		setupPromptDialog();
+
+		setTitle();
 	}
 
 	@Override
@@ -86,6 +94,15 @@ public class RecordCostsActivity extends AppCompatActivity {
 		}
 
 		productEntryController = BusinessFactory.makeProductEntryController();
+
+		dateformater = new SimpleDateFormat(CodeStrings.DATEFORMAT,
+				Locale.getDefault());
+	}
+
+	private void setTitle(){
+		String currentDate = dateformater.format(Calendar.getInstance().getTime());
+		String title = this.getTitle().toString() + " " + currentDate;
+		this.setTitle(title);
 	}
 
 	private void getAllCostItems() {
