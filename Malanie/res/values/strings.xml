@@ -138,7 +138,7 @@
     <string name="productUpdateSucessfull">Product successfully updated!</string>
     <string name="costs">Costs</string>
     <string name="costsDescription">Record costs</string>
-    <string name="title_activity_record_costs">Record costs</string>
+    <string name="title_activity_record_costs">Costs</string>
     <string name="addCostItem">Add cost item</string>
     <string name="costHint">Eg. Transportation</string>
     <string name="costItem">Cost item</string>

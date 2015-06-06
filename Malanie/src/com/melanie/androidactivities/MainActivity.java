@@ -2,6 +2,7 @@ package com.melanie.androidactivities;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -37,6 +38,8 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 
 		Utils.registerConnectivityReceiver(getApplicationContext());
+
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
 		initializeFields();
 

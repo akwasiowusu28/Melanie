@@ -100,7 +100,7 @@ public class Product extends BaseEntity {
 
 	@Override
 	public int hashCode() {
-		return 31 * barcode.hashCode();
+		return 31 * (barcode != null ? barcode.hashCode() : super.hashCode());
 	}
 
 }

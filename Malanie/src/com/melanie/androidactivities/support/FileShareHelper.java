@@ -1,8 +1,8 @@
 package com.melanie.androidactivities.support;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 
 import android.app.Activity;
 import android.content.Context;
@@ -32,13 +32,15 @@ public class FileShareHelper {
 		intent.setAction(Intent.ACTION_SEND);
 		intent.putExtra(Intent.EXTRA_STREAM, fileUrl);
 		intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-		intent.setDataAndType(fileUrl, context.getContentResolver().getType(fileUrl));
+		intent.setData(fileUrl);
+		//intent.setDataAndType(fileUrl, context.getContentResolver().getType(fileUrl));
+
 		((Activity) context).startActivity(Intent.createChooser(intent, "Share"));
 
 	}
 
 	private Uri saveBarcodeBitmapAndReturnUri(String imageName, String barcode) {
-		Uri fileUrl = null;
+		Uri fileUri = null;
 		try {
 			String fileName = noSpecialChars(imageName) + CodeStrings.PNG;
 			String barcodeString = barcode + String.valueOf(Utils.getCheckSumDigit(barcode));
@@ -51,17 +53,19 @@ public class FileShareHelper {
 			File barcodefilePath = new File(barcodeCacheFolder, fileName);
 			FileOutputStream stream = new FileOutputStream(barcodefilePath);
 			barcodeBitmap.compress(CompressFormat.PNG, 100, stream);
+			stream.flush();
+			stream.close();
 
-			fileUrl = FileProvider.getUriForFile(context, CodeStrings.AUTHORITY, barcodefilePath);
-		} catch (FileNotFoundException | WriterException e) {
+			fileUri = FileProvider.getUriForFile(context, CodeStrings.AUTHORITY, barcodefilePath);
+		} catch (WriterException | IOException e) {
 			// TODO log it
 			e.printStackTrace();
 		}
-		return fileUrl;
+		return fileUri;
 	}
 
 	private String noSpecialChars(String value) {
-		return value.replaceAll("[!@#$%\\^&*\\( \\)\\.\\,'\"\\\\?\\-/\\|_\\[\\+\\+`~]", "");
+		return value.replaceAll(CodeStrings.SPECIAL_CHARS, CodeStrings.EMPTY_STRING);
 	}
 
 	public void performCleanup() {

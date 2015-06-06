@@ -55,7 +55,7 @@ public class Category extends BaseEntity {
 
 	@Override
 	public int hashCode() {
-		return 31 * categoryName.hashCode();
+		return 31 *  (categoryName != null ? categoryName.hashCode() : super.hashCode());
 	}
 
 }

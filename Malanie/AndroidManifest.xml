@@ -157,7 +157,6 @@
         <activity
             android:name=".SelectPrinterActivity"
             android:label="@string/title_activity_select_printer"
-            android:parentActivityName=".MainActivity"
             android:theme="@android:style/Theme.Dialog" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -178,10 +177,7 @@
             android:label="@string/title_activity_login"
             android:noHistory="true" >
         </activity>
-        <activity
-            android:name=".RecordCostsActivity"
-            android:label="@string/title_activity_record_costs"
-            android:parentActivityName=".ProductsMainActivity" >
+        <activity android:name=".RecordCostsActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.melanie.androidactivities.ProductsMainActivity" />

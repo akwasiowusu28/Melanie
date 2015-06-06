@@ -105,7 +105,6 @@ public class MelaniePrinterDiscoverer {
 						deviceInfo.put(device.getName(), device.getAddress());
 						operationCallBack.onOperationSuccessful(deviceInfo);
 						receiptPrinterService.cancelDiscovery();
-						context.unregisterReceiver(bluetoothBroadcastReceiver);
 					}
 					break;
 				}

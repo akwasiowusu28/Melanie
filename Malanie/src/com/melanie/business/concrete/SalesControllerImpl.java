@@ -47,9 +47,8 @@ public class SalesControllerImpl implements SalesController {
 	}
 
 	@Override
-	public List<Sale> generateSaleItems(List<String> barcodes,
-			OperationCallBack<Sale> uiCallBack)
-					throws MelanieBusinessException {
+	public List<Sale> generateSaleItems(List<String> barcodes, OperationCallBack<Sale> uiCallBack)
+			throws MelanieBusinessException {
 		operationCount = 0;
 		Map<String, Integer> itemGroup = Utils.groupItems(barcodes);
 		Set<String> groupedBarcodeSet = itemGroup.keySet();
@@ -57,31 +56,27 @@ public class SalesControllerImpl implements SalesController {
 
 		for (String barcode : groupedBarcodeSet) {
 			try {
-				String parsedBarcode = parseBarcodeNoChecksum(barcode);
+				String barcodeNoChecksum = getBarcodeNoChecksum(barcode);
 				int quantity = itemGroup.get(barcode);
-				Sale sale = getExistingSale(parsedBarcode);
+				Sale sale = getExistingSale(barcodeNoChecksum);
 				if (sale != null) {
 					sale.setQuantitySold(sale.getQuantitySold() + quantity);
-				} else if (!notFoundProducts.contains(parsedBarcode)) {
-					addNewSale(parsedBarcode, quantity, totalItems, uiCallBack);
+				} else if (!notFoundProducts.contains(barcodeNoChecksum)) {
+					addNewSale(barcodeNoChecksum, quantity, totalItems, uiCallBack);
 				}
 			} catch (MelanieBusinessException e) {
-				throw new MelanieBusinessException(e.getMessage(), e); // TODO:
-				// log
-				// it
+				throw new MelanieBusinessException(e.getMessage(), e); // TODO: log it
 			}
 		}
 		return sales;
 
 	}
 
-	private void addNewSale(final String barcode, final int count,
-			final int total, final OperationCallBack<Sale> uiCallBack)
-					throws MelanieBusinessException {
+	private void addNewSale(final String barcode, final int count, final int total,
+			final OperationCallBack<Sale> uiCallBack) throws MelanieBusinessException {
 		Product product;
 
-		product = productController.findProductByBarcode(barcode,
-				new OperationCallBack<Product>() {
+		product = productController.findProductByBarcode(barcode, new OperationCallBack<Product>() {
 
 			@Override
 			public void onOperationSuccessful(Product result) {
@@ -97,15 +92,16 @@ public class SalesControllerImpl implements SalesController {
 			}
 		});
 
-		addProductToSale(product, count);
+		if(product != null) {
+			addProductToSale(product, count);
+		}
 	}
 
 	private void addProductToSale(Product product, int count) {
 		if (product != null) {
 			Sale sale = new Sale();
 			sale.setProduct(product);
-			sale.setSaleDate(Calendar.getInstance(TimeZone.getDefault())
-					.getTime());
+			sale.setSaleDate(Calendar.getInstance(TimeZone.getDefault()).getTime());
 			sale.setQuantitySold(count);
 			sale.setOwnerId(session.getUser().getObjectId());
 			sales.add(sale);
@@ -123,29 +119,24 @@ public class SalesControllerImpl implements SalesController {
 	}
 
 	@Override
-	public OperationResult saveCurrentSales(Customer customer,
-			double amountReceived, double discount, double balance)
-					throws MelanieBusinessException {
+	public OperationResult saveCurrentSales(Customer customer, double amountReceived, double discount, double balance)
+			throws MelanieBusinessException {
 		OperationResult result = OperationResult.FAILED;
 		if (dataAccess != null) {
 			try {
 
 				// TODO: Figure out a way to do this transactionally
-				Payment payment = new Payment(customer, amountReceived,
-						discount, balance);
+				Payment payment = new Payment(customer, amountReceived, discount, balance);
 				payment.setOwnerId(session.getUser().getObjectId());
 
-				if(session.canConnectToCloud() && dataAccess !=null){
-					dataAccess.addDataItem(payment, Payment.class,
-							new OperationCallBack<Payment>() {
+				if (session.canConnectToCloud() && dataAccess != null) {
+					dataAccess.addDataItem(payment, Payment.class, new OperationCallBack<Payment>() {
 						@Override
 						public void onOperationSuccessful(Payment payment) {
 							for (Sale sale : sales) {
-								SalePayment salePayment = new SalePayment(
-										sale, payment);
+								SalePayment salePayment = new SalePayment(sale, payment);
 								try {
-									dataAccess.addDataItem(salePayment,
-											SalePayment.class, null);
+									dataAccess.addDataItem(salePayment, SalePayment.class, null);
 								} catch (MelanieDataLayerException e) {
 									onOperationFailed(e);
 								}
@@ -165,22 +156,19 @@ public class SalesControllerImpl implements SalesController {
 		return result;
 	}
 
-	private String parseBarcodeNoChecksum(String barcode) {
+	private String getBarcodeNoChecksum(String barcode) {
 		return barcode.substring(0, barcode.length() - 1);
 	}
 
 	@Override
-	public List<Sale> findSalesByCustomer(Customer customer,
-			OperationCallBack<Sale> operationCallBack)
-					throws MelanieBusinessException {
+	public List<Sale> findSalesByCustomer(Customer customer, OperationCallBack<Sale> operationCallBack)
+			throws MelanieBusinessException {
 
 		List<Sale> customerSales = new ArrayList<Sale>();
 		if (session.canConnectToCloud() && dataAccess != null) {
 			try {
-				customerSales = dataAccess.findItemsByFieldName(
-						CUSTOMEROBJECTID,
-						String.valueOf(customer.getObjectId()), Sale.class,
-						operationCallBack);
+				customerSales = dataAccess.findItemsByFieldName(CUSTOMEROBJECTID,
+						String.valueOf(customer.getObjectId()), Sale.class, operationCallBack);
 				for (Sale sale : customerSales) {
 					dataAccess.refreshItem(sale.getProduct(), Product.class);
 					dataAccess.refreshItem(sale.getCustomer(), Customer.class);
@@ -193,9 +181,8 @@ public class SalesControllerImpl implements SalesController {
 	}
 
 	@Override
-	public OperationResult recordPayment(Customer customer, List<Sale> sales,
-			double amountReceived, double discount, double balance)
-					throws MelanieBusinessException {
+	public OperationResult recordPayment(Customer customer, List<Sale> sales, double amountReceived, double discount,
+			double balance) throws MelanieBusinessException {
 		this.sales = new ArrayList<Sale>(sales);
 		return saveCurrentSales(customer, amountReceived, discount, balance);
 	}
@@ -208,15 +195,12 @@ public class SalesControllerImpl implements SalesController {
 	}
 
 	@Override
-	public List<Sale> getSalesBetween(Date fromDate, Date toDate,
-			final OperationCallBack<Sale> operationCallBack)
-					throws MelanieBusinessException {
+	public List<Sale> getSalesBetween(Date fromDate, Date toDate, final OperationCallBack<Sale> operationCallBack)
+			throws MelanieBusinessException {
 		List<Sale> sales = new ArrayList<Sale>();
 		try {
-			if (session.canConnectToCloud() && dataAccess != null)
-			{
-				sales.addAll(dataAccess.findItemsBetween("SaleDate", fromDate,
-						toDate, Sale.class, operationCallBack));
+			if (session.canConnectToCloud() && dataAccess != null) {
+				sales.addAll(dataAccess.findItemsBetween("SaleDate", fromDate, toDate, Sale.class, operationCallBack));
 				// refreshSales(sales);
 			}
 		} catch (MelanieDataLayerException e) {

@@ -54,7 +54,7 @@ final class DataUtil {
 			if (dataItem != null) {
 				Class<?> itemClass = dataItem.getClass();
 				Dao<Object, Integer> dao = DataSourceManager.getCachedDaoFor(itemClass);
-				if (dao != null && dao.countOf() >= 3) {
+				if (dao != null && dao.countOf() >= 30) {
 					DataUtil.removeLeastRecentlyUsedItem(dao, itemClass);
 				}
 				updateItemRecentUse(dataItem);

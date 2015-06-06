@@ -71,20 +71,19 @@ public class Sale extends BaseEntity {
 			equals = true;
 		} else if (another != null && another instanceof Sale) {
 			Sale anotherSale = (Sale) another;
-			boolean checkFieldsNonNull = anotherSale.saleDate != null
-					&& saleDate != null && anotherSale.product != null
-					&& product != null;
-			equals = checkFieldsNonNull
-					&& anotherSale.saleDate.equals(saleDate)
-					&& anotherSale.product.getBarcode().equals(
-							product.getBarcode());
+			boolean checkFieldsNonNull = anotherSale.saleDate != null && saleDate != null
+					&& anotherSale.product != null && product != null;
+			equals = checkFieldsNonNull && anotherSale.saleDate.equals(saleDate)
+					&& anotherSale.product.getBarcode().equals(product.getBarcode());
 		}
 		return equals;
 	}
 
 	@Override
 	public int hashCode() {
-		return 31 * saleDate.hashCode() * product.getBarcode().hashCode();
+		int hash = product != null && product.getBarcode() != null ? product.getBarcode().hashCode() : 1;
+		hash *= saleDate != null ? saleDate.hashCode() : 2;
+		return 31 * hash;
 	}
 
 }

@@ -228,7 +228,8 @@ public class ScanBarcodeActivity extends Activity {
 			if (barcode.substring(0, barcodePrefix.length()).equals(
 					barcodePrefix)) {
 
-				int checksum_digit =Utils.getCheckSumDigit(barcode);
+				String firstTwelveDigits = barcode.substring(0, barcode.length() - 1);
+				int checksum_digit =Utils.getCheckSumDigit(firstTwelveDigits);
 
 				int lastDigit = Integer.parseInt(barcode.substring(barcode.length()-1));
 				isValid = lastDigit == checksum_digit;

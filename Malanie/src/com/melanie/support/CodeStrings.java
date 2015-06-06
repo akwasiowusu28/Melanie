@@ -35,4 +35,5 @@ public class CodeStrings {
 	public static final String COST_ITEMS ="costItems";
 	public static final String COST_ENTRIES = "costEntries";
 	public static final String TOTAL = "Total";
+	public static final String SPECIAL_CHARS= "[!@#$%\\^&*\\( \\)\\.\\,'\"\\\\?\\-/\\|_\\[\\+\\+`~]";
 }

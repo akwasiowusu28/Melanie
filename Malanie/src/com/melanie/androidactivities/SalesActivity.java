@@ -50,11 +50,12 @@ public class SalesActivity extends AppCompatActivity {
 	private ProductsAndSalesListViewAdapter<Sale> salesListAdapter;
 	private TextListener discountListener, amountListener;
 	private MelanieAlertDialog alertDialog;
-	private double balance, amountReceived, discount, total;
-	private final boolean isPrinterFound = false;
+	private double balance, amountReceived, discount;
+	private boolean isPrinterFound = false;
 	private ReceiptPrintingHelper receiptPrintingHelper;
 	private ListView listView;
 	private String printerInfo;
+	private OperationResult saveResult;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -72,8 +73,7 @@ public class SalesActivity extends AppCompatActivity {
 	private void setupSalesListView() {
 
 		listView = (ListView) findViewById(R.id.salesListView);
-		View headerView = getLayoutInflater().inflate(
-				R.layout.layout_saleitems_header, listView, false);
+		View headerView = getLayoutInflater().inflate(R.layout.layout_saleitems_header, listView, false);
 
 		listView.addHeaderView(headerView);
 		listView.setAdapter(salesListAdapter);
@@ -84,12 +84,11 @@ public class SalesActivity extends AppCompatActivity {
 		executorService = Executors.newScheduledThreadPool(2);
 		salesController = BusinessFactory.makeSalesController();
 		sales = new ArrayList<Sale>();
-		salesListAdapter = new ProductsAndSalesListViewAdapter<Sale>(this,
-				sales, false);
+		salesListAdapter = new ProductsAndSalesListViewAdapter<Sale>(this, sales, false);
 		discountListener = new TextListener(R.id.discountValue);
 		amountListener = new TextListener(R.id.amountReceived);
 		customersController = BusinessFactory.makeCustomersController();
-		amountReceived = discount = balance = total = 0;
+		amountReceived = discount = balance = 0;
 		receiptPrintingHelper = new ReceiptPrintingHelper(this);
 	}
 
@@ -128,9 +127,7 @@ public class SalesActivity extends AppCompatActivity {
 	}
 
 	private MelanieAlertDialog makeAlertDialog() {
-		return new MelanieAlertDialog(this,
-				ButtonModes.YES_NO_CANCEL,
-				new MelanieAlertDialog.ButtonMethods() {
+		return new MelanieAlertDialog(this, ButtonModes.YES_NO_CANCEL, new MelanieAlertDialog.ButtonMethods() {
 
 			@Override
 			public void yesButtonOperation() {
@@ -154,8 +151,7 @@ public class SalesActivity extends AppCompatActivity {
 			executorService.schedule(new Runnable() {
 				@Override
 				public void run() {
-					Intent intent = new Intent(SalesActivity.this,
-							ScanBarcodeActivity.class);
+					Intent intent = new Intent(SalesActivity.this, ScanBarcodeActivity.class);
 					startActivityForResult(intent, SCAN_REQUEST_CODE);
 				}
 			}, 100, TimeUnit.MILLISECONDS);
@@ -166,10 +162,8 @@ public class SalesActivity extends AppCompatActivity {
 		EditText discountText = (EditText) findViewById(R.id.discountValue);
 		EditText amountText = (EditText) findViewById(R.id.amountReceived);
 
-		discountText
-		.addTextChangedListener(new TextListener(R.id.discountValue));
-		amountText
-		.addTextChangedListener(new TextListener(R.id.amountReceived));
+		discountText.addTextChangedListener(new TextListener(R.id.discountValue));
+		amountText.addTextChangedListener(new TextListener(R.id.amountReceived));
 	}
 
 	public void launchBarcodeScanner() {
@@ -188,14 +182,10 @@ public class SalesActivity extends AppCompatActivity {
 	}
 
 	private void recordTotals() {
-		((TextView) findViewById(R.id.balanceDue))
-		.getText().toString();
-		String discountString = ((EditText) findViewById(R.id.discountValue))
-				.getText().toString();
-		String amountReceivedString = ((EditText) findViewById(R.id.amountReceived))
-				.getText().toString();
-		String balanceString = ((TextView) findViewById(R.id.balanceDue))
-				.getText().toString();
+		((TextView) findViewById(R.id.balanceDue)).getText().toString();
+		String discountString = ((EditText) findViewById(R.id.discountValue)).getText().toString();
+		String amountReceivedString = ((EditText) findViewById(R.id.amountReceived)).getText().toString();
+		String balanceString = ((TextView) findViewById(R.id.balanceDue)).getText().toString();
 
 		if (!discountString.equals(CodeStrings.EMPTY_STRING)) {
 			discount = Double.parseDouble(discountString);
@@ -216,24 +206,23 @@ public class SalesActivity extends AppCompatActivity {
 	}
 
 	private void saveCurrentSales(Customer customer) {
-		// try {
-		// result = salesController.saveCurrentSales(customer, amountReceived,
-		// discount, balance);
-		// } catch (MelanieBusinessException e) {
-		// e.printStackTrace(); // TODO log it
-		// }
+		try {
+			saveResult = salesController.saveCurrentSales(customer, amountReceived, discount, balance);
+		} catch (MelanieBusinessException e) {
+			e.printStackTrace(); // TODO log it
+		}
 		printReceipt();
-		// updateUIAfterSave(result);
+
 
 	}
 
 	private void printReceipt() {
 		if (isPrinterFound) {
 			performPrint();
+			updateUIAfterSave(saveResult);
 		} else {
 			Intent intent = new Intent(this, SelectPrinterActivity.class);
-			intent.putExtra(CodeStrings.PRINTER_TYPE,
-					PrinterType.Receipt.toString());
+			intent.putExtra(CodeStrings.PRINTER_TYPE, PrinterType.Receipt.toString());
 			startActivityForResult(intent, PRINTER_SELECT_REQUEST_CODE);
 		}
 
@@ -242,12 +231,10 @@ public class SalesActivity extends AppCompatActivity {
 	private void performPrint() {
 		receiptPrintingHelper.initializePrinterWithPrinterInfo(printerInfo);
 		receiptPrintingHelper.printReceipt(sales);
-
 	}
 
 	private void updateUIAfterSave(OperationResult result) {
-		Utils.makeToastBasedOnOperationResult(this, result,
-				R.string.salesSuccess, R.string.salesFailed);
+		Utils.makeToastBasedOnOperationResult(this, result, R.string.salesSuccess, R.string.salesFailed);
 		resetAll();
 	}
 
@@ -255,11 +242,10 @@ public class SalesActivity extends AppCompatActivity {
 		sales.clear();
 		removeTextListener();
 		Utils.notifyListUpdate(salesListAdapter, handler);
-		Utils.clearInputTextFields(findViewById(R.id.amountReceived),
-				findViewById(R.id.discountValue));
-		Utils.resetTextFieldsToZeros(findViewById(R.id.totalValue),
-				findViewById(R.id.balanceDue));
+		Utils.clearInputTextFields(findViewById(R.id.amountReceived), findViewById(R.id.discountValue));
+		Utils.resetTextFieldsToZeros(findViewById(R.id.totalValue), findViewById(R.id.balanceDue));
 		addTextListeners();
+		saveResult = OperationResult.FAILED;
 	}
 
 	private void addTextListeners() {
@@ -277,25 +263,22 @@ public class SalesActivity extends AppCompatActivity {
 	}
 
 	@Override
-	protected void onActivityResult(int requestCode, int resultCode,
-			Intent intentData) {
+	protected void onActivityResult(int requestCode, int resultCode, Intent intentData) {
 		int customerId = -1;
 		if (resultCode == RESULT_OK && intentData != null) {
 			switch (requestCode) {
 			case SCAN_REQUEST_CODE:
-				List<String> barcodes = intentData
-				.getStringArrayListExtra(CodeStrings.BARCODES);
+				List<String> barcodes = intentData.getStringArrayListExtra(CodeStrings.BARCODES);
 				recordSalesFromBarcodes(barcodes);
 				break;
 			case CUSTOMER_REQUEST_CODE:
-				customerId = intentData.getIntExtra(CodeStrings.CustomerId,
-						customerId);
+				customerId = intentData.getIntExtra(CodeStrings.CustomerId, customerId);
 				saveCreditSaleWithCustomer(customerId);
 				break;
 			case PRINTER_SELECT_REQUEST_CODE:
-				printerInfo = intentData
-				.getStringExtra(CodeStrings.PRINTER_INFO);
-				performPrint();
+				printerInfo = intentData.getStringExtra(CodeStrings.PRINTER_INFO);
+				isPrinterFound = true;
+				printReceipt();
 				break;
 			}
 		}
@@ -320,12 +303,10 @@ public class SalesActivity extends AppCompatActivity {
 
 		try {
 			sales.clear();
-			sales.addAll(salesController.generateSaleItems(barcodes,
-					new OperationCallBack<Sale>() {
+			sales.addAll(salesController.generateSaleItems(barcodes, new OperationCallBack<Sale>() {
 
 				@Override
-				public void onCollectionOperationSuccessful(
-						List<Sale> results) {
+				public void onCollectionOperationSuccessful(List<Sale> results) {
 					sales.clear();
 					sales.addAll(results);
 					Utils.notifyListUpdate(salesListAdapter, handler);
@@ -368,13 +349,11 @@ public class SalesActivity extends AppCompatActivity {
 		}
 
 		@Override
-		public void onTextChanged(CharSequence s, int start, int before,
-				int count) {
+		public void onTextChanged(CharSequence s, int start, int before, int count) {
 		}
 
 		@Override
-		public void beforeTextChanged(CharSequence s, int start, int count,
-				int after) {
+		public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 		}
 
 		@Override
@@ -388,10 +367,8 @@ public class SalesActivity extends AppCompatActivity {
 
 		private void handleDiscountChanged(Editable s) {
 			TextView totalTextView = (TextView) findViewById(R.id.totalValue);
-			double total = Double.parseDouble(totalTextView.getText()
-					.toString());
-			String discountText = ((EditText) findViewById(R.id.discountValue))
-					.getText().toString();
+			double total = Double.parseDouble(totalTextView.getText().toString());
+			String discountText = ((EditText) findViewById(R.id.discountValue)).getText().toString();
 			if (discountText.equals("")) {
 				updateTotalField();
 				total = Double.parseDouble(totalTextView.getText().toString());
@@ -401,8 +378,7 @@ public class SalesActivity extends AppCompatActivity {
 			evaluateBalanceForDiscountChange(total);
 		}
 
-		private void handleDiscountNormalCase(TextView totalTextView,
-				Editable s, double total) {
+		private void handleDiscountNormalCase(TextView totalTextView, Editable s, double total) {
 			double discount = Double.parseDouble(s.toString());
 			if (!(discount > total)) {
 				total -= discount;
@@ -423,8 +399,7 @@ public class SalesActivity extends AppCompatActivity {
 
 		private void handleAmountReceivedChanged(Editable s) {
 			TextView totalTextView = (TextView) findViewById(R.id.totalValue);
-			double total = Double.parseDouble(totalTextView.getText()
-					.toString());
+			double total = Double.parseDouble(totalTextView.getText().toString());
 			double amountReceived = 0;
 			if (!s.toString().equals("")) {
 				amountReceived = Double.parseDouble(s.toString());
@@ -445,6 +420,7 @@ public class SalesActivity extends AppCompatActivity {
 
 	@Override
 	protected void onDestroy() {
+		super.onDestroy();
 		receiptPrintingHelper.clearResources();
 	}
 }

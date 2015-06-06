@@ -101,7 +101,7 @@ public class RecordCostsActivity extends AppCompatActivity {
 
 	private void setTitle(){
 		String currentDate = dateformater.format(Calendar.getInstance().getTime());
-		String title = this.getTitle().toString() + " " + currentDate;
+		String title = getText(R.string.title_activity_record_costs) + " - " + currentDate;
 		this.setTitle(title);
 	}
 
