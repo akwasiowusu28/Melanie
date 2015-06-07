@@ -12,7 +12,7 @@ public class SalePayment extends BaseEntity {
 	@DatabaseField(columnName = SALE_ID, foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
 	private Sale sale;
 
-	@DatabaseField(columnName = PAYMENT_ID, foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
+	@DatabaseField(columnName = PAYMENT_ID, foreign = true, foreignAutoRefresh = true)
 	private Payment payment;
 
 	public SalePayment() {

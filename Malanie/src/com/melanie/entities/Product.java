@@ -27,7 +27,7 @@ public class Product extends BaseEntity {
 	@DatabaseField
 	private String barcode;
 
-	@DatabaseField(columnName = "CategoryId", foreignAutoCreate = true, canBeNull = true, foreign = true)
+	@DatabaseField(columnName = "CategoryId", foreignAutoRefresh = true, canBeNull = true, foreign = true)
 	private Category category;
 
 	public Product() {

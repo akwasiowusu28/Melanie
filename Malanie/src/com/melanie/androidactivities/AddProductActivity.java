@@ -235,7 +235,8 @@ public class AddProductActivity extends AppCompatActivity {
 					barcodePrintHelper.printBarcode(currentBarcode, printerInfo);
 				}
 			}
-		} else if (requestCode == Utils.Constants.BLUETOOTH_REQUEST_CODE) {
+		}
+		else if (requestCode == Utils.Constants.BLUETOOTH_REQUEST_CODE) {
 			bluetoothEnableRefused = resultCode == RESULT_CANCELED;
 		}
 	}

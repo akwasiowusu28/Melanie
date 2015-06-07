@@ -206,20 +206,18 @@ public class SalesActivity extends AppCompatActivity {
 	}
 
 	private void saveCurrentSales(Customer customer) {
-		try {
-			saveResult = salesController.saveCurrentSales(customer, amountReceived, discount, balance);
-		} catch (MelanieBusinessException e) {
-			e.printStackTrace(); // TODO log it
-		}
+		//		try {
+		//			saveResult = salesController.saveCurrentSales(customer, amountReceived, discount, balance);
+		//		} catch (MelanieBusinessException e) {
+		//			e.printStackTrace(); // TODO log it
+		//		}
 		printReceipt();
-
-
 	}
 
 	private void printReceipt() {
 		if (isPrinterFound) {
 			performPrint();
-			updateUIAfterSave(saveResult);
+			//updateUIAfterSave(saveResult);
 		} else {
 			Intent intent = new Intent(this, SelectPrinterActivity.class);
 			intent.putExtra(CodeStrings.PRINTER_TYPE, PrinterType.Receipt.toString());
@@ -279,6 +277,13 @@ public class SalesActivity extends AppCompatActivity {
 				printerInfo = intentData.getStringExtra(CodeStrings.PRINTER_INFO);
 				isPrinterFound = true;
 				printReceipt();
+				break;
+			}
+		}
+		else if(resultCode == RESULT_CANCELED){
+			switch (requestCode) {
+			case PRINTER_SELECT_REQUEST_CODE:
+				updateUIAfterSave(saveResult);
 				break;
 			}
 		}

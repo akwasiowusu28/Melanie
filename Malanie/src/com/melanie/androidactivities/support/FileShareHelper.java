@@ -32,8 +32,8 @@ public class FileShareHelper {
 		intent.setAction(Intent.ACTION_SEND);
 		intent.putExtra(Intent.EXTRA_STREAM, fileUrl);
 		intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-		intent.setData(fileUrl);
-		//intent.setDataAndType(fileUrl, context.getContentResolver().getType(fileUrl));
+
+		intent.setDataAndType(fileUrl, context.getContentResolver().getType(fileUrl));
 
 		((Activity) context).startActivity(Intent.createChooser(intent, "Share"));
 

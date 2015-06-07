@@ -15,8 +15,8 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
 import com.melanie.androidactivities.support.MelaniePrinterDiscoverer;
-import com.melanie.androidactivities.support.SingleTextListAdapter;
 import com.melanie.androidactivities.support.PrinterType;
+import com.melanie.androidactivities.support.SingleTextListAdapter;
 import com.melanie.androidactivities.support.Utils;
 import com.melanie.support.CodeStrings;
 import com.melanie.support.OperationCallBack;
@@ -115,6 +115,7 @@ public class SelectPrinterActivity extends Activity {
 			if(resultCode == RESULT_OK) {
 				discoverPrinter();
 			} else {
+				setResult(RESULT_CANCELED, callerActivityIntent); //tell caller activity the printing was cancelled by user
 				finish();
 			}
 		}

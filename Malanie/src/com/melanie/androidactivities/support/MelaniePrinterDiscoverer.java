@@ -99,12 +99,15 @@ public class MelaniePrinterDiscoverer {
 			case BluetoothDevice.ACTION_FOUND:
 				if (printerType.equals(PrinterType.Receipt)) {
 					BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-					String deviceName = device.getName();
-					if (deviceName.contains("Printer")) {
-						Map<String, String> deviceInfo = new HashMap<String, String>();
-						deviceInfo.put(device.getName(), device.getAddress());
-						operationCallBack.onOperationSuccessful(deviceInfo);
-						receiptPrinterService.cancelDiscovery();
+
+					if (device != null && device.getName() != null) {
+						String deviceName = device.getName();
+						if (deviceName.contains("Printer")) {
+							Map<String, String> deviceInfo = new HashMap<String, String>();
+							deviceInfo.put(device.getName(), device.getAddress());
+							operationCallBack.onOperationSuccessful(deviceInfo);
+							receiptPrinterService.cancelDiscovery();
+						}
 					}
 					break;
 				}

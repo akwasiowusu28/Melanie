@@ -8,7 +8,7 @@ public class CostEntry extends BaseEntity {
 
 	private static final long serialVersionUID = -7952396841777977852L;
 
-	@DatabaseField(columnName = "CostItemId", foreignAutoCreate = true, canBeNull = true, foreign = true)
+	@DatabaseField(columnName = "CostItemId", foreignAutoRefresh = true, canBeNull = true, foreign = true)
 	private CostItem costItem;
 
 	@DatabaseField
