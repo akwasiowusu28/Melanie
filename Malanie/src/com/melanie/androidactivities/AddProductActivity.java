@@ -30,6 +30,10 @@ import com.melanie.support.exceptions.MelanieBusinessException;
 @SuppressWarnings("unchecked")
 public class AddProductActivity extends AppCompatActivity {
 
+	private class LocalConstants{
+
+	}
+
 	private ProductEntryController productController;
 
 	private Map<String, String> printerInfo = null;

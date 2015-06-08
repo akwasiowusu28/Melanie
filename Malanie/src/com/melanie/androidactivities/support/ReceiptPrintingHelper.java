@@ -74,7 +74,7 @@ public class ReceiptPrintingHelper {
 			int quantity =sale.getQuantitySold();
 			double price = sale.getProduct().getPrice();
 
-			String saleDescription = String.valueOf(quantity) + " " + productName + " @ " + String.valueOf(price);
+			String saleDescription = productName  + " (" + String.valueOf(quantity) + "x" + String.valueOf(price) + ")" ;
 			String productTotalPrice = String.valueOf(quantity * price);
 
 			int len = saleDescription.length();

@@ -145,4 +145,8 @@
     <string name="value">Value</string>
     <string name="costsSavedSuccessfully">Costs saved successfully!</string>
     <string name="saveCostsfailed">save costs failed</string>
+    <string name="increase">+</string>
+    <string name="decrease">-</string>
+    <string name="editSaleQty">Change quantity</string>
+    <string name="delete">Delete</string>
 </resources>

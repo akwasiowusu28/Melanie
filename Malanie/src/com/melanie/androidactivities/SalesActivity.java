@@ -12,8 +12,13 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -43,7 +48,7 @@ public class SalesActivity extends AppCompatActivity {
 	private static final int PRINTER_SELECT_REQUEST_CODE = 2888;
 
 	private Handler handler;
-	private List<Sale> sales;
+	private ArrayList<Sale> sales;
 	private SalesController salesController;
 	private CustomersController customersController;
 	private ScheduledExecutorService executorService;
@@ -56,18 +61,55 @@ public class SalesActivity extends AppCompatActivity {
 	private ListView listView;
 	private String printerInfo;
 	private OperationResult saveResult;
+	private boolean wasInstanceSaved = false;
+	private View selectedSaleView = null;
+	private int currentPosition = 0;
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_sales);
 
+		if(savedInstanceState != null){
+			wasInstanceSaved = true;
+			sales = (ArrayList<Sale>) savedInstanceState.get(CodeStrings.SALES);
+		}
+
 		initializeFields();
 		setupSalesListView();
 		setupButtonsListeners();
-		startBarcodeScanning();
+		if(!wasInstanceSaved) {
+			startBarcodeScanning();
+		}
 		setupTextChangedListeners();
 		setupAlertDialog();
+	}
+
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+		super.onCreateContextMenu(menu, v, menuInfo);
+
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.sales_menu, menu);
+	}
+
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+
+		AdapterView.AdapterContextMenuInfo menuInfo = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+		currentPosition = menuInfo.position;
+
+		switch (item.getItemId()) {
+
+		case R.id.editSaleQtyMenuItem:
+			editSale();
+			break;
+		case R.id.deleteSaleMenuItem:
+			break;
+		}
+
+		return true;
 	}
 
 	private void setupSalesListView() {
@@ -77,13 +119,16 @@ public class SalesActivity extends AppCompatActivity {
 
 		listView.addHeaderView(headerView);
 		listView.setAdapter(salesListAdapter);
+		registerForContextMenu(listView);
 	}
 
 	private void initializeFields() {
 		handler = new Handler(getMainLooper());
 		executorService = Executors.newScheduledThreadPool(2);
 		salesController = BusinessFactory.makeSalesController();
-		sales = new ArrayList<Sale>();
+		if(!wasInstanceSaved) {
+			sales = new ArrayList<Sale>();
+		}
 		salesListAdapter = new ProductsAndSalesListViewAdapter<Sale>(this, sales, false);
 		discountListener = new TextListener(R.id.discountValue);
 		amountListener = new TextListener(R.id.amountReceived);
@@ -307,18 +352,20 @@ public class SalesActivity extends AppCompatActivity {
 	private void recordSalesFromBarcodes(List<String> barcodes) {
 
 		try {
-			sales.clear();
-			sales.addAll(salesController.generateSaleItems(barcodes, new OperationCallBack<Sale>() {
+			if(!barcodes.isEmpty()){
+				sales.clear();
+				sales.addAll(salesController.generateSaleItems(barcodes, new OperationCallBack<Sale>() {
 
-				@Override
-				public void onCollectionOperationSuccessful(List<Sale> results) {
-					sales.clear();
-					sales.addAll(results);
-					Utils.notifyListUpdate(salesListAdapter, handler);
-					updateTotalField();
-				}
-			}));
-			Utils.notifyListUpdate(salesListAdapter, handler);
+					@Override
+					public void onCollectionOperationSuccessful(List<Sale> results) {
+						sales.clear();
+						sales.addAll(results);
+						Utils.notifyListUpdate(salesListAdapter, handler);
+						updateTotalField();
+					}
+				}));
+				Utils.notifyListUpdate(salesListAdapter, handler);
+			}
 			updateTotalField();
 		} catch (MelanieBusinessException e) {
 			e.printStackTrace(); // log it
@@ -374,10 +421,10 @@ public class SalesActivity extends AppCompatActivity {
 			TextView totalTextView = (TextView) findViewById(R.id.totalValue);
 			double total = Double.parseDouble(totalTextView.getText().toString());
 			String discountText = ((EditText) findViewById(R.id.discountValue)).getText().toString();
-			if (discountText.equals("")) {
+			if (discountText.equals(CodeStrings.EMPTY_STRING)) {
 				updateTotalField();
 				total = Double.parseDouble(totalTextView.getText().toString());
-			} else if (!s.toString().equals("")) {
+			} else if (!s.toString().equals(CodeStrings.EMPTY_STRING)) {
 				handleDiscountNormalCase(totalTextView, s, total);
 			}
 			evaluateBalanceForDiscountChange(total);
@@ -397,7 +444,7 @@ public class SalesActivity extends AppCompatActivity {
 		private void evaluateBalanceForDiscountChange(double total) {
 			EditText amountReceivedText = (EditText) findViewById(R.id.amountReceived);
 			String amountTextValue = amountReceivedText.getText().toString();
-			if (!amountTextValue.equals("")) {
+			if (!amountTextValue.equals(CodeStrings.EMPTY_STRING)) {
 				calculateBalance(Double.parseDouble(amountTextValue), total);
 			}
 		}
@@ -406,7 +453,7 @@ public class SalesActivity extends AppCompatActivity {
 			TextView totalTextView = (TextView) findViewById(R.id.totalValue);
 			double total = Double.parseDouble(totalTextView.getText().toString());
 			double amountReceived = 0;
-			if (!s.toString().equals("")) {
+			if (!s.toString().equals(CodeStrings.EMPTY_STRING)) {
 				amountReceived = Double.parseDouble(s.toString());
 			}
 			calculateBalance(amountReceived, total);
@@ -420,6 +467,69 @@ public class SalesActivity extends AppCompatActivity {
 			} else {
 				Utils.resetTextFieldsToZeros(balanceTextView);
 			}
+		}
+	}
+
+
+	@Override
+	protected void onSaveInstanceState(Bundle bundle) {
+
+		bundle.putSerializable(CodeStrings.SALES, sales);
+		super.onSaveInstanceState(bundle);
+	}
+
+
+	private void editSale(){
+		selectedSaleView = salesListAdapter.getLongClickedView();
+		Button increaseButton = (Button)selectedSaleView.findViewById(R.id.increaseButton);
+		Button decreaseButton = (Button)selectedSaleView.findViewById(R.id.decreaseButton);
+		Button saveEditButton = (Button)selectedSaleView.findViewById(R.id.saveSaleQtyButton);
+
+		decreaseButton.setOnClickListener(editButtonsOnclickListener);
+		increaseButton.setOnClickListener(editButtonsOnclickListener);
+		saveEditButton.setOnClickListener(editButtonsOnclickListener);
+
+		switchEditVisibility(true);
+	}
+
+	private OnClickListener editButtonsOnclickListener = new OnClickListener() {
+
+		@Override
+		public void onClick(View v) {
+			TextView qtyTextView = (TextView)selectedSaleView.findViewById(R.id.qtyTextView);
+			int currentValue = Integer.parseInt(qtyTextView.getText().toString());
+			switch (v.getId()) {
+			case R.id.increaseButton:
+				currentValue ++;
+				qtyTextView.setText(String.valueOf(currentValue));
+				break;
+			case R.id.decreaseButton:
+				currentValue --;
+				qtyTextView.setText(String.valueOf(currentValue));
+				break;
+			case R.id.saveSaleQtyButton:
+				Sale sale = sales.get(currentPosition - 1);
+				sale.setQuantitySold(currentValue);
+				Utils.notifyListUpdate(salesListAdapter, handler);
+				switchEditVisibility(false);
+				break;
+			}
+		}
+	};
+
+	private void switchEditVisibility(boolean showEdit){
+		Button increaseButton = (Button)selectedSaleView.findViewById(R.id.increaseButton);
+		Button decreaseButton = (Button)selectedSaleView.findViewById(R.id.decreaseButton);
+		Button saveEditButton = (Button)selectedSaleView.findViewById(R.id.saveSaleQtyButton);
+		TextView totalTextView = (TextView)selectedSaleView.findViewById(R.id.totalTextView);
+
+		if(showEdit) {
+			Utils.switchViewVisibitlity(true, increaseButton,decreaseButton,saveEditButton);
+			Utils.switchViewVisibitlity(false, totalTextView);
+		}
+		else{
+			Utils.switchViewVisibitlity(false, increaseButton,decreaseButton,saveEditButton);
+			Utils.switchViewVisibitlity(true, totalTextView);
 		}
 	}
 
