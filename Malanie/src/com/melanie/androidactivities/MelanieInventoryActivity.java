@@ -48,7 +48,7 @@ public class MelanieInventoryActivity extends AppCompatActivity {
 	private ArrayList<Category> categories;
 	private boolean instanceWasSaved = false;
 
-	private boolean isEditInProcess;
+	private boolean isInEditProcess;
 
 	private Map<String, String> printerInfo = null;
 
@@ -70,6 +70,7 @@ public class MelanieInventoryActivity extends AppCompatActivity {
 
 		if (savedInstanceState != null) {
 			instanceWasSaved = true;
+			isInEditProcess = savedInstanceState.getBoolean(CodeStrings.IS_IN_EDIT_PROCESS);
 			restoreInstanceState(savedInstanceState);
 		}
 		initializeFields();
@@ -107,14 +108,14 @@ public class MelanieInventoryActivity extends AppCompatActivity {
 	}
 
 	private void editProduct(int position) {
-		if (!isEditInProcess) {
+		if (!isInEditProcess) {
 
 			selectedListViewChild = productsAdapter.getLongClickedView();
 
 			switchSelectedListItemVisibility(true);
 			View editView = selectedListViewChild.findViewById(R.id.editProductView);
 			setupEditView(editView, position);
-			isEditInProcess = true;
+			isInEditProcess = true;
 		}
 	}
 
@@ -195,7 +196,7 @@ public class MelanieInventoryActivity extends AppCompatActivity {
 				Utils.makeToast(MelanieInventoryActivity.this, R.string.productUpdateSucessfull);
 				switchSelectedListItemVisibility(false);
 				Utils.notifyListUpdate(productsAdapter, handler);
-				isEditInProcess = false;
+				isInEditProcess = false;
 			}
 		});
 	}
@@ -315,6 +316,7 @@ public class MelanieInventoryActivity extends AppCompatActivity {
 	@SuppressWarnings("unchecked")
 	private void restoreInstanceState(Bundle bundle) {
 		if (bundle != null) {
+			bundle.putBoolean(CodeStrings.IS_IN_EDIT_PROCESS, isInEditProcess);
 			allProducts = (ArrayList<Product>) bundle.get(CodeStrings.ALLPRODUCTS);
 			categories = (ArrayList<Category>) bundle.get(CodeStrings.CATEGORIES);
 			currentProducts = (ArrayList<Product>) bundle.get(CodeStrings.CURRENTPRODUCTS);

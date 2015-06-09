@@ -22,6 +22,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -64,6 +65,7 @@ public class SalesActivity extends AppCompatActivity {
 	private boolean wasInstanceSaved = false;
 	private View selectedSaleView = null;
 	private int currentPosition = 0;
+	private boolean isInEditProcess = false;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -73,6 +75,7 @@ public class SalesActivity extends AppCompatActivity {
 
 		if(savedInstanceState != null){
 			wasInstanceSaved = true;
+			isInEditProcess = savedInstanceState.getBoolean(CodeStrings.IS_IN_EDIT_PROCESS);
 			sales = (ArrayList<Sale>) savedInstanceState.get(CodeStrings.SALES);
 		}
 
@@ -103,7 +106,9 @@ public class SalesActivity extends AppCompatActivity {
 		switch (item.getItemId()) {
 
 		case R.id.editSaleQtyMenuItem:
-			editSale();
+			if(!isInEditProcess) {
+				editSale();
+			}
 			break;
 		case R.id.deleteSaleMenuItem:
 			break;
@@ -156,6 +161,7 @@ public class SalesActivity extends AppCompatActivity {
 				break;
 			case R.id.saveSale:
 				saveSales();
+				isInEditProcess = false;
 				break;
 			case R.id.cancelSale:
 				clearFields();
@@ -475,6 +481,7 @@ public class SalesActivity extends AppCompatActivity {
 	protected void onSaveInstanceState(Bundle bundle) {
 
 		bundle.putSerializable(CodeStrings.SALES, sales);
+		bundle.putBoolean(CodeStrings.IS_IN_EDIT_PROCESS, isInEditProcess);
 		super.onSaveInstanceState(bundle);
 	}
 
@@ -489,7 +496,7 @@ public class SalesActivity extends AppCompatActivity {
 		increaseButton.setOnClickListener(editButtonsOnclickListener);
 		saveEditButton.setOnClickListener(editButtonsOnclickListener);
 
-		switchEditVisibility(true);
+		configureViewLayout(true);
 	}
 
 	private OnClickListener editButtonsOnclickListener = new OnClickListener() {
@@ -504,32 +511,37 @@ public class SalesActivity extends AppCompatActivity {
 				qtyTextView.setText(String.valueOf(currentValue));
 				break;
 			case R.id.decreaseButton:
-				currentValue --;
-				qtyTextView.setText(String.valueOf(currentValue));
+				if(currentValue > 1) {
+					currentValue --;
+					qtyTextView.setText(String.valueOf(currentValue));
+				}
 				break;
 			case R.id.saveSaleQtyButton:
 				Sale sale = sales.get(currentPosition - 1);
 				sale.setQuantitySold(currentValue);
 				Utils.notifyListUpdate(salesListAdapter, handler);
-				switchEditVisibility(false);
+				configureViewLayout(false);
 				break;
 			}
 		}
 	};
 
-	private void switchEditVisibility(boolean showEdit){
+	private void configureViewLayout(boolean isInEditMode){
 		Button increaseButton = (Button)selectedSaleView.findViewById(R.id.increaseButton);
 		Button decreaseButton = (Button)selectedSaleView.findViewById(R.id.decreaseButton);
 		Button saveEditButton = (Button)selectedSaleView.findViewById(R.id.saveSaleQtyButton);
+		TextView qtyTextView = (TextView)selectedSaleView.findViewById(R.id.qtyTextView);
 		TextView totalTextView = (TextView)selectedSaleView.findViewById(R.id.totalTextView);
 
-		if(showEdit) {
+		if(isInEditMode) {
 			Utils.switchViewVisibitlity(true, increaseButton,decreaseButton,saveEditButton);
 			Utils.switchViewVisibitlity(false, totalTextView);
+			qtyTextView.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 		}
 		else{
 			Utils.switchViewVisibitlity(false, increaseButton,decreaseButton,saveEditButton);
 			Utils.switchViewVisibitlity(true, totalTextView);
+			qtyTextView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 		}
 	}
 
