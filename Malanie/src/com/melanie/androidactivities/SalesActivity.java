@@ -35,6 +35,7 @@ import com.melanie.androidactivities.support.Utils;
 import com.melanie.business.CustomersController;
 import com.melanie.business.SalesController;
 import com.melanie.entities.Customer;
+import com.melanie.entities.Product;
 import com.melanie.entities.Sale;
 import com.melanie.support.BusinessFactory;
 import com.melanie.support.CodeStrings;
@@ -257,18 +258,18 @@ public class SalesActivity extends AppCompatActivity {
 	}
 
 	private void saveCurrentSales(Customer customer) {
-		//		try {
-		//			saveResult = salesController.saveCurrentSales(customer, amountReceived, discount, balance);
-		//		} catch (MelanieBusinessException e) {
-		//			e.printStackTrace(); // TODO log it
-		//		}
-		printReceipt();
+		try {
+			saveResult = salesController.saveCurrentSales(customer, amountReceived, discount, balance);
+		} catch (MelanieBusinessException e) {
+			e.printStackTrace(); // TODO log it
+		}
+		//printReceipt();
 	}
 
 	private void printReceipt() {
 		if (isPrinterFound) {
 			performPrint();
-			//updateUIAfterSave(saveResult);
+			updateUIAfterSave(saveResult);
 		} else {
 			Intent intent = new Intent(this, SelectPrinterActivity.class);
 			intent.putExtra(CodeStrings.PRINTER_TYPE, PrinterType.Receipt.toString());
@@ -488,8 +489,8 @@ public class SalesActivity extends AppCompatActivity {
 
 	private void editSale(){
 		selectedSaleView = salesListAdapter.getLongClickedView();
-		Button increaseButton = (Button)selectedSaleView.findViewById(R.id.increaseButton);
-		Button decreaseButton = (Button)selectedSaleView.findViewById(R.id.decreaseButton);
+		ImageButton increaseButton = (ImageButton)selectedSaleView.findViewById(R.id.increaseButton);
+		ImageButton decreaseButton = (ImageButton)selectedSaleView.findViewById(R.id.decreaseButton);
 		Button saveEditButton = (Button)selectedSaleView.findViewById(R.id.saveSaleQtyButton);
 
 		decreaseButton.setOnClickListener(editButtonsOnclickListener);
@@ -518,7 +519,10 @@ public class SalesActivity extends AppCompatActivity {
 				break;
 			case R.id.saveSaleQtyButton:
 				Sale sale = sales.get(currentPosition - 1);
-				sale.setQuantitySold(currentValue);
+				Product product = sale.getProduct();
+				if(product != null && product.getQuantity() - currentValue >= 0) {
+					sale.setQuantitySold(currentValue);
+				}
 				Utils.notifyListUpdate(salesListAdapter, handler);
 				configureViewLayout(false);
 				break;
@@ -527,8 +531,8 @@ public class SalesActivity extends AppCompatActivity {
 	};
 
 	private void configureViewLayout(boolean isInEditMode){
-		Button increaseButton = (Button)selectedSaleView.findViewById(R.id.increaseButton);
-		Button decreaseButton = (Button)selectedSaleView.findViewById(R.id.decreaseButton);
+		ImageButton increaseButton = (ImageButton)selectedSaleView.findViewById(R.id.increaseButton);
+		ImageButton decreaseButton = (ImageButton)selectedSaleView.findViewById(R.id.decreaseButton);
 		Button saveEditButton = (Button)selectedSaleView.findViewById(R.id.saveSaleQtyButton);
 		TextView qtyTextView = (TextView)selectedSaleView.findViewById(R.id.qtyTextView);
 		TextView totalTextView = (TextView)selectedSaleView.findViewById(R.id.totalTextView);
@@ -537,11 +541,13 @@ public class SalesActivity extends AppCompatActivity {
 			Utils.switchViewVisibitlity(true, increaseButton,decreaseButton,saveEditButton);
 			Utils.switchViewVisibitlity(false, totalTextView);
 			qtyTextView.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+			selectedSaleView.setEnabled(false);
 		}
 		else{
 			Utils.switchViewVisibitlity(false, increaseButton,decreaseButton,saveEditButton);
 			Utils.switchViewVisibitlity(true, totalTextView);
 			qtyTextView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+			selectedSaleView.setEnabled(true);
 		}
 	}
 

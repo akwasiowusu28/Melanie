@@ -61,6 +61,7 @@ public class SalesControllerImpl implements SalesController {
 				Sale sale = getExistingSale(barcodeNoChecksum);
 				if (sale != null) {
 					sale.setQuantitySold(sale.getQuantitySold() + quantity);
+					updateProductQuantityOfSale(sale, quantity);
 				} else if (!notFoundProducts.contains(barcodeNoChecksum)) {
 					addNewSale(barcodeNoChecksum, quantity, totalItems, uiCallBack);
 				}
@@ -69,7 +70,6 @@ public class SalesControllerImpl implements SalesController {
 			}
 		}
 		return sales;
-
 	}
 
 	private void addNewSale(final String barcode, final int count, final int total,
@@ -103,8 +103,25 @@ public class SalesControllerImpl implements SalesController {
 			sale.setProduct(product);
 			sale.setSaleDate(Calendar.getInstance(TimeZone.getDefault()).getTime());
 			sale.setQuantitySold(count);
+			updateProductQuantityOfSale(sale, count);
 			sale.setOwnerId(session.getUser().getObjectId());
 			sales.add(sale);
+		}
+	}
+
+	//The whole setup of recording the sales needs to be revisited...This seems messed up but I'm so tired right now to deal with it
+	private void updateProductQuantityOfSale(Sale sale, int justAddedSaleQuantity){
+		Product product = sale.getProduct();
+		if(product != null){
+			int productQuantity = product.getQuantity();
+			int saleQuantity = sale.getQuantitySold();
+
+			if(saleQuantity <= productQuantity){
+				product.setQuantity(productQuantity - saleQuantity);
+			}else{
+				sale.setQuantitySold(saleQuantity - justAddedSaleQuantity);
+			}
+
 		}
 	}
 
@@ -136,6 +153,7 @@ public class SalesControllerImpl implements SalesController {
 							for (Sale sale : sales) {
 								SalePayment salePayment = new SalePayment(sale, payment);
 								try {
+									dataAccess.addOrUpdateDataItemInLocalDataStoreOnly(sale.getProduct(), Product.class);
 									dataAccess.addDataItem(salePayment, SalePayment.class, null);
 								} catch (MelanieDataLayerException e) {
 									onOperationFailed(e);
