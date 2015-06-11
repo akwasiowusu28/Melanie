@@ -19,21 +19,22 @@ public interface SalesController {
 
 	List<Sale> generateSaleItems(List<String> barcodes,
 			OperationCallBack<Sale> salesCallBack)
-			throws MelanieBusinessException;
+					throws MelanieBusinessException;
 
 	List<Sale> findSalesByCustomer(Customer customer,
 			OperationCallBack<Sale> operationCallBack)
-			throws MelanieBusinessException;
+					throws MelanieBusinessException;
 
 	OperationResult recordPayment(Customer customer, List<Sale> sale,
 			double amount, double discount, double balance)
-			throws MelanieBusinessException;
+					throws MelanieBusinessException;
 
 	List<Sale> getSalesBetween(Date fromDate, Date toDate,
 			OperationCallBack<Sale> operationCallBack)
-			throws MelanieBusinessException;
+					throws MelanieBusinessException;
 
 	OperationResult saveCurrentSales(Customer customer, double amountReceived,
 			double discount, double balance) throws MelanieBusinessException;
 
+	void clear();
 }

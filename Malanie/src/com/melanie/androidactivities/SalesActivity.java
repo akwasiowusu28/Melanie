@@ -264,12 +264,12 @@ public class SalesActivity extends AppCompatActivity {
 			e.printStackTrace(); // TODO log it
 		}
 		//printReceipt();
+		updateUIAfterSave(saveResult);
 	}
 
 	private void printReceipt() {
 		if (isPrinterFound) {
 			performPrint();
-			updateUIAfterSave(saveResult);
 		} else {
 			Intent intent = new Intent(this, SelectPrinterActivity.class);
 			intent.putExtra(CodeStrings.PRINTER_TYPE, PrinterType.Receipt.toString());
@@ -279,8 +279,9 @@ public class SalesActivity extends AppCompatActivity {
 	}
 
 	private void performPrint() {
+		ArrayList<Sale> salesToPrintCache = new ArrayList<>(sales);
 		receiptPrintingHelper.initializePrinterWithPrinterInfo(printerInfo);
-		receiptPrintingHelper.printReceipt(sales);
+		receiptPrintingHelper.printReceipt(salesToPrintCache);
 	}
 
 	private void updateUIAfterSave(OperationResult result) {
@@ -290,6 +291,7 @@ public class SalesActivity extends AppCompatActivity {
 
 	private void resetAll() {
 		sales.clear();
+		salesController.clear();
 		removeTextListener();
 		Utils.notifyListUpdate(salesListAdapter, handler);
 		Utils.clearInputTextFields(findViewById(R.id.amountReceived), findViewById(R.id.discountValue));
@@ -329,6 +331,7 @@ public class SalesActivity extends AppCompatActivity {
 				printerInfo = intentData.getStringExtra(CodeStrings.PRINTER_INFO);
 				isPrinterFound = true;
 				printReceipt();
+				updateUIAfterSave(saveResult);
 				break;
 			}
 		}
@@ -506,24 +509,32 @@ public class SalesActivity extends AppCompatActivity {
 		public void onClick(View v) {
 			TextView qtyTextView = (TextView)selectedSaleView.findViewById(R.id.qtyTextView);
 			int currentValue = Integer.parseInt(qtyTextView.getText().toString());
+			Sale sale = sales.get(currentPosition - 1);
+			Product product = sale.getProduct();
+			int quantity = 0;
+			if(product != null){
+				quantity = product.getQuantity();
+			}
 			switch (v.getId()) {
 			case R.id.increaseButton:
-				currentValue ++;
-				qtyTextView.setText(String.valueOf(currentValue));
+
+				if(quantity - 1 >= 0){
+					currentValue ++;
+					product.setQuantity(quantity - 1);
+					qtyTextView.setText(String.valueOf(currentValue));
+				}
 				break;
 			case R.id.decreaseButton:
 				if(currentValue > 1) {
 					currentValue --;
+					product.setQuantity(quantity + 1);
 					qtyTextView.setText(String.valueOf(currentValue));
 				}
 				break;
 			case R.id.saveSaleQtyButton:
-				Sale sale = sales.get(currentPosition - 1);
-				Product product = sale.getProduct();
-				if(product != null && product.getQuantity() - currentValue >= 0) {
-					sale.setQuantitySold(currentValue);
-				}
+				sale.setQuantitySold(currentValue);
 				Utils.notifyListUpdate(salesListAdapter, handler);
+				updateTotalField();
 				configureViewLayout(false);
 				break;
 			}

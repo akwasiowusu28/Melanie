@@ -25,7 +25,7 @@ public class Sale extends BaseEntity {
 	@DatabaseField
 	private int quantitySold;
 
-	@DatabaseField(columnName = "CustomerId", foreignAutoRefresh = true, canBeNull = true, foreign = true)
+	@DatabaseField(columnName = "CustomerId", foreignAutoCreate = true, foreignAutoRefresh = true, canBeNull = true, foreign = true)
 	private Customer customer;
 
 	public Sale() {

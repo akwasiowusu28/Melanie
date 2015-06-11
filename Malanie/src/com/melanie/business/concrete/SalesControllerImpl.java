@@ -37,6 +37,7 @@ public class SalesControllerImpl implements SalesController {
 	private final Queue<String> notFoundProducts;
 	private int operationCount = 0;
 	private final MelanieSession session;
+	private boolean isSaving = false;
 
 	public SalesControllerImpl() {
 		productController = BusinessFactory.makeProductEntryController();
@@ -98,7 +99,7 @@ public class SalesControllerImpl implements SalesController {
 	}
 
 	private void addProductToSale(Product product, int count) {
-		if (product != null) {
+		if (product != null && product.getQuantity() > 0) {
 			Sale sale = new Sale();
 			sale.setProduct(product);
 			sale.setSaleDate(Calendar.getInstance(TimeZone.getDefault()).getTime());
@@ -119,7 +120,8 @@ public class SalesControllerImpl implements SalesController {
 			if(saleQuantity <= productQuantity){
 				product.setQuantity(productQuantity - saleQuantity);
 			}else{
-				sale.setQuantitySold(saleQuantity - justAddedSaleQuantity);
+				sale.setQuantitySold(saleQuantity - justAddedSaleQuantity + productQuantity);
+				product.setQuantity(0);
 			}
 
 		}
@@ -141,6 +143,7 @@ public class SalesControllerImpl implements SalesController {
 		OperationResult result = OperationResult.FAILED;
 		if (dataAccess != null) {
 			try {
+				isSaving = true;
 
 				// TODO: Figure out a way to do this transactionally
 				Payment payment = new Payment(customer, amountReceived, discount, balance);
@@ -160,7 +163,7 @@ public class SalesControllerImpl implements SalesController {
 								}
 							}
 							sales.clear();
-
+							isSaving = false;
 						}
 					});
 				}
@@ -226,6 +229,13 @@ public class SalesControllerImpl implements SalesController {
 		}
 
 		return sales;
+	}
+
+	@Override
+	public void clear() {
+		if(sales != null && !sales.isEmpty() && !isSaving) {
+			sales.clear();
+		}
 	}
 
 	// private void refreshSales(List<Sale> sales)
