@@ -368,7 +368,7 @@ public class DataAccessLayerImpl implements DataAccessLayer {
 	}
 
 	@Override
-	public <T> OperationResult addOrUpdateDataItemInLocalDataStoreOnly(T dataItem,
+	public <T> OperationResult addOrUpdateItemLocalOnly(T dataItem,
 			Class<T> itemClass) throws MelanieDataLayerException {
 		OperationResult result = OperationResult.FAILED;
 		if(dataItem instanceof User){

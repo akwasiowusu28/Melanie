@@ -54,7 +54,7 @@
         android:id="@+id/loginSignupButton"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:background="#59BC59"
+        android:background="#555754"
         android:textColor="@android:color/white"
         android:text="@string/signup" />
 

@@ -1,7 +1,9 @@
 package com.melanie.androidactivities;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.TelephonyManager;
@@ -25,6 +27,7 @@ public class SignupActivity extends AppCompatActivity {
 	private EditText nameField;
 	private EditText phoneField;
 	private String phoneNumber;
+	private ProgressDialog progressDialog;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -48,10 +51,38 @@ public class SignupActivity extends AppCompatActivity {
 
 			@Override
 			public void onClick(View v) {
-				createAccount();
+				signupAsync().execute(null, null, null);
 			}
 		});
 
+	}
+
+	private final AsyncTask<Void, Void, Void> signupAsync() {
+		return new AsyncTask<Void, Void, Void>() {
+
+			@Override
+			protected void onPreExecute() {
+				setupProgressDialog();
+				if (progressDialog != null) {
+					progressDialog.show();
+				}
+			}
+
+			@Override
+			protected Void doInBackground(Void... params) {
+				createAccount();
+				return null;
+			}
+		};
+	}
+
+	private void setupProgressDialog() {
+		if (progressDialog == null) {
+			progressDialog = new ProgressDialog(this);
+			progressDialog.setCancelable(false);
+			progressDialog.setIndeterminate(true);
+			progressDialog.setMessage(getText(R.string.pleaseWait));
+		}
 	}
 
 	private void createAccount() {
@@ -71,6 +102,7 @@ public class SignupActivity extends AppCompatActivity {
 							performCreateAccount();
 						} else {
 							Utils.makeToast(SignupActivity.this, R.string.accountExistForPhone);
+							dismissProgressDialog();
 						}
 					}
 				});
@@ -91,6 +123,13 @@ public class SignupActivity extends AppCompatActivity {
 		} else {
 			Utils.switchInvalidFieldsBackColor(false, passwordField, confirmPasswordField);
 			Utils.makeToast(SignupActivity.this, R.string.passwordsNotMatch);
+			dismissProgressDialog();
+		}
+	}
+
+	private void dismissProgressDialog(){
+		if(progressDialog != null && progressDialog.isShowing()){
+			progressDialog.dismiss();
 		}
 	}
 
@@ -102,6 +141,7 @@ public class SignupActivity extends AppCompatActivity {
 				public void onOperationSuccessful(User user) {
 					Utils.switchInvalidFieldsBackColor(true, passwordField, confirmPasswordField);
 					BusinessFactory.getSession().setUser(user);
+					dismissProgressDialog();
 					launchMainActivity();
 				}
 

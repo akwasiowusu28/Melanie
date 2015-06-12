@@ -190,7 +190,7 @@ public class UserControllerImpl implements UserController {
 
 	private void addUserToLocalDataStore(User user) throws MelanieDataLayerException {
 		if (dataAccess != null) {
-			dataAccess.addOrUpdateDataItemInLocalDataStoreOnly(user, User.class);
+			dataAccess.addOrUpdateItemLocalOnly(user, User.class);
 		}
 	}
 

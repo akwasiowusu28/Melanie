@@ -35,6 +35,7 @@ public class CustomersActivity extends AppCompatActivity {
 	private boolean wasLaunchedFromSales;
 	private SingleTextListAdapter<Customer> customersAdapter;
 	private Handler handler;
+	private int customerId = -1;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -151,6 +152,7 @@ public class CustomersActivity extends AppCompatActivity {
 			if (isEdit) {
 				customer.setName(customerName);
 				customer.setPhoneNumber(phoneNumber);
+				customerId = customer.getId();
 			} else {
 				customer = customersController.cacheTempNewCustomer(
 						customerName, phoneNumber);
@@ -167,7 +169,7 @@ public class CustomersActivity extends AppCompatActivity {
 					Utils.mergeItems(customersFromLocalDataStore, customers, false);
 					Utils.notifyListUpdate(customersAdapter, handler);
 				} else {
-					customersController.cacheCustomerInLocalDataStore(customer);
+					customersController.addCustomer(customer);
 				}
 			}
 		} catch (MelanieBusinessException e) {
@@ -188,18 +190,28 @@ public class CustomersActivity extends AppCompatActivity {
 		if (wasLaunchedFromSales) {
 
 			try {
-				customersController.getLastInsertedCustomerId(new OperationCallBack<Integer>(){
-					@Override
-					public void onOperationSuccessful(Integer customerId) {
-						Intent intent = getIntent();
-						intent.putExtra(CodeStrings.CustomerId, customerId);
-						setResult(RESULT_OK, intent);
-						finish();
-					}
-				});
+				if(customerId < 0){
+					customersController.getLastInsertedCustomerId(new OperationCallBack<Integer>(){
+						@Override
+						public void onOperationSuccessful(Integer customerId) {
+							CustomersActivity.this.customerId = customerId;
+							performFinish();
+						}
+					});
+				}
+				else{
+					performFinish();
+				}
 			} catch (MelanieBusinessException e) {
 				e.printStackTrace(); // TODO: log it
 			}
 		}
+	}
+
+	private void performFinish(){
+		Intent intent = getIntent();
+		intent.putExtra(CodeStrings.CustomerId, customerId);
+		setResult(RESULT_OK, intent);
+		finish();
 	}
 }

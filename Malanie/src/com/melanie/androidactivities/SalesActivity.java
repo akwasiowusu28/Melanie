@@ -351,6 +351,7 @@ public class SalesActivity extends AppCompatActivity {
 				customer = customersController.findCustomer(customerId, null);
 				if (customer != null) {
 					customer.setAmountOwed(customer.getAmountOwed() + balance);
+					customersController.addOrUpdateCustomerLocalOnly(customer);
 				}
 				saveCurrentSales(customer);
 			} catch (MelanieBusinessException e) {

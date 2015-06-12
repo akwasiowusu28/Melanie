@@ -28,12 +28,15 @@ public interface CustomersController {
 	OperationResult updateCustomer(Customer customer)
 			throws MelanieBusinessException;
 
-	void cacheCustomerInLocalDataStore(Customer customer)
+	void addCustomer(Customer customer)
 			throws MelanieBusinessException;
 
 	Customer findCustomer(int customerId,
 			OperationCallBack<Customer> operationCallBack)
 					throws MelanieBusinessException;
+
+	void addOrUpdateCustomerLocalOnly(Customer customer)
+			throws MelanieBusinessException;
 
 	void getLastInsertedCustomerId(OperationCallBack<Integer> operationCallBack) throws MelanieBusinessException;
 }

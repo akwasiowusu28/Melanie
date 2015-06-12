@@ -156,7 +156,7 @@ public class SalesControllerImpl implements SalesController {
 							for (Sale sale : sales) {
 								SalePayment salePayment = new SalePayment(sale, payment);
 								try {
-									dataAccess.addOrUpdateDataItemInLocalDataStoreOnly(sale.getProduct(), Product.class);
+									dataAccess.addOrUpdateItemLocalOnly(sale.getProduct(), Product.class);
 									dataAccess.addDataItem(salePayment, SalePayment.class, null);
 								} catch (MelanieDataLayerException e) {
 									onOperationFailed(e);
