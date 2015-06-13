@@ -74,7 +74,7 @@ public class SalesActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_sales);
 
-		if(savedInstanceState != null){
+		if (savedInstanceState != null) {
 			wasInstanceSaved = true;
 			isInEditProcess = savedInstanceState.getBoolean(CodeStrings.IS_IN_EDIT_PROCESS);
 			sales = (ArrayList<Sale>) savedInstanceState.get(CodeStrings.SALES);
@@ -83,7 +83,7 @@ public class SalesActivity extends AppCompatActivity {
 		initializeFields();
 		setupSalesListView();
 		setupButtonsListeners();
-		if(!wasInstanceSaved) {
+		if (!wasInstanceSaved) {
 			startBarcodeScanning();
 		}
 		setupTextChangedListeners();
@@ -107,11 +107,12 @@ public class SalesActivity extends AppCompatActivity {
 		switch (item.getItemId()) {
 
 		case R.id.editSaleQtyMenuItem:
-			if(!isInEditProcess) {
+			if (!isInEditProcess) {
 				editSale();
 			}
 			break;
 		case R.id.deleteSaleMenuItem:
+			deleteSale();
 			break;
 		}
 
@@ -132,7 +133,7 @@ public class SalesActivity extends AppCompatActivity {
 		handler = new Handler(getMainLooper());
 		executorService = Executors.newScheduledThreadPool(2);
 		salesController = BusinessFactory.makeSalesController();
-		if(!wasInstanceSaved) {
+		if (!wasInstanceSaved) {
 			sales = new ArrayList<Sale>();
 		}
 		salesListAdapter = new ProductsAndSalesListViewAdapter<Sale>(this, sales, false);
@@ -226,7 +227,7 @@ public class SalesActivity extends AppCompatActivity {
 	public void saveSales() {
 
 		recordTotals();
-		if (balance < 0) {
+		if (balance <= 0) {
 			alertDialog.show();
 		} else {
 			saveCurrentSales(null);
@@ -334,8 +335,7 @@ public class SalesActivity extends AppCompatActivity {
 				updateUIAfterSave(saveResult);
 				break;
 			}
-		}
-		else if(resultCode == RESULT_CANCELED){
+		} else if (resultCode == RESULT_CANCELED) {
 			switch (requestCode) {
 			case PRINTER_SELECT_REQUEST_CODE:
 				updateUIAfterSave(saveResult);
@@ -363,7 +363,7 @@ public class SalesActivity extends AppCompatActivity {
 	private void recordSalesFromBarcodes(List<String> barcodes) {
 
 		try {
-			if(!barcodes.isEmpty()){
+			if (!barcodes.isEmpty()) {
 				sales.clear();
 				sales.addAll(salesController.generateSaleItems(barcodes, new OperationCallBack<Sale>() {
 
@@ -481,7 +481,6 @@ public class SalesActivity extends AppCompatActivity {
 		}
 	}
 
-
 	@Override
 	protected void onSaveInstanceState(Bundle bundle) {
 
@@ -490,12 +489,11 @@ public class SalesActivity extends AppCompatActivity {
 		super.onSaveInstanceState(bundle);
 	}
 
-
-	private void editSale(){
+	private void editSale() {
 		selectedSaleView = salesListAdapter.getLongClickedView();
-		ImageButton increaseButton = (ImageButton)selectedSaleView.findViewById(R.id.increaseButton);
-		ImageButton decreaseButton = (ImageButton)selectedSaleView.findViewById(R.id.decreaseButton);
-		Button saveEditButton = (Button)selectedSaleView.findViewById(R.id.saveSaleQtyButton);
+		ImageButton increaseButton = (ImageButton) selectedSaleView.findViewById(R.id.increaseButton);
+		ImageButton decreaseButton = (ImageButton) selectedSaleView.findViewById(R.id.decreaseButton);
+		Button saveEditButton = (Button) selectedSaleView.findViewById(R.id.saveSaleQtyButton);
 
 		decreaseButton.setOnClickListener(editButtonsOnclickListener);
 		increaseButton.setOnClickListener(editButtonsOnclickListener);
@@ -508,26 +506,26 @@ public class SalesActivity extends AppCompatActivity {
 
 		@Override
 		public void onClick(View v) {
-			TextView qtyTextView = (TextView)selectedSaleView.findViewById(R.id.qtyTextView);
+			TextView qtyTextView = (TextView) selectedSaleView.findViewById(R.id.qtyTextView);
 			int currentValue = Integer.parseInt(qtyTextView.getText().toString());
 			Sale sale = sales.get(currentPosition - 1);
 			Product product = sale.getProduct();
 			int quantity = 0;
-			if(product != null){
+			if (product != null) {
 				quantity = product.getQuantity();
 			}
 			switch (v.getId()) {
 			case R.id.increaseButton:
 
-				if(quantity - 1 >= 0){
-					currentValue ++;
+				if (quantity - 1 >= 0) {
+					currentValue++;
 					product.setQuantity(quantity - 1);
 					qtyTextView.setText(String.valueOf(currentValue));
 				}
 				break;
 			case R.id.decreaseButton:
-				if(currentValue > 1) {
-					currentValue --;
+				if (currentValue > 1) {
+					currentValue--;
 					product.setQuantity(quantity + 1);
 					qtyTextView.setText(String.valueOf(currentValue));
 				}
@@ -542,25 +540,30 @@ public class SalesActivity extends AppCompatActivity {
 		}
 	};
 
-	private void configureViewLayout(boolean isInEditMode){
-		ImageButton increaseButton = (ImageButton)selectedSaleView.findViewById(R.id.increaseButton);
-		ImageButton decreaseButton = (ImageButton)selectedSaleView.findViewById(R.id.decreaseButton);
-		Button saveEditButton = (Button)selectedSaleView.findViewById(R.id.saveSaleQtyButton);
-		TextView qtyTextView = (TextView)selectedSaleView.findViewById(R.id.qtyTextView);
-		TextView totalTextView = (TextView)selectedSaleView.findViewById(R.id.totalTextView);
+	private void configureViewLayout(boolean isInEditMode) {
+		ImageButton increaseButton = (ImageButton) selectedSaleView.findViewById(R.id.increaseButton);
+		ImageButton decreaseButton = (ImageButton) selectedSaleView.findViewById(R.id.decreaseButton);
+		Button saveEditButton = (Button) selectedSaleView.findViewById(R.id.saveSaleQtyButton);
+		TextView qtyTextView = (TextView) selectedSaleView.findViewById(R.id.qtyTextView);
+		TextView totalTextView = (TextView) selectedSaleView.findViewById(R.id.totalTextView);
 
-		if(isInEditMode) {
-			Utils.switchViewVisibitlity(true, increaseButton,decreaseButton,saveEditButton);
+		if (isInEditMode) {
+			Utils.switchViewVisibitlity(true, increaseButton, decreaseButton, saveEditButton);
 			Utils.switchViewVisibitlity(false, totalTextView);
 			qtyTextView.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 			selectedSaleView.setEnabled(false);
-		}
-		else{
-			Utils.switchViewVisibitlity(false, increaseButton,decreaseButton,saveEditButton);
+		} else {
+			Utils.switchViewVisibitlity(false, increaseButton, decreaseButton, saveEditButton);
 			Utils.switchViewVisibitlity(true, totalTextView);
 			qtyTextView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 			selectedSaleView.setEnabled(true);
 		}
+	}
+
+	private void deleteSale() {
+		sales.remove(currentPosition - 1);
+		salesController.removeFromTempList(currentPosition -1);
+		Utils.notifyListUpdate(salesListAdapter, handler);
 	}
 
 	@Override

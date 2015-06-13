@@ -19,23 +19,37 @@ import com.melanie.support.exceptions.MelanieBusinessException;
 
 public class CustomerListActivity extends AppCompatActivity {
 
-	private List<Customer> customers;
+	private static class LocalStrings{
+		public static final String CUSTOMERS= "Customers";
+	}
+
+	private ArrayList<Customer> customers;
 	private CustomersController customersController;
 	private CustomersListViewAdapter customersAdapter;
 	private Handler handler;
+	private boolean wasInstanceSaved = false;
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		if(savedInstanceState != null){
+			wasInstanceSaved = true;
+			customers = (ArrayList<Customer>) savedInstanceState.get(LocalStrings.CUSTOMERS);
+		}
 		setContentView(R.layout.activity_customer_list);
 		initializeFields();
-		getAllCustomers();
+
 		setupCustomersListView();
 	}
 
 	private void initializeFields() {
 		handler = new Handler(getMainLooper());
 		customersController = BusinessFactory.makeCustomersController();
+		if (!wasInstanceSaved) {
+			getAllCustomers();
+		}
 	}
 
 	private void setupCustomersListView() {
@@ -63,11 +77,19 @@ public class CustomerListActivity extends AppCompatActivity {
 							Utils.notifyListUpdate(customersAdapter, handler);
 						}
 					});
-			if (tempCustomers != null && !tempCustomers.isEmpty())
+			if (tempCustomers != null && !tempCustomers.isEmpty()) {
 				customers.addAll(tempCustomers);
+			}
 
 		} catch (MelanieBusinessException e) {
 			e.printStackTrace(); // TODO: log it
 		}
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle bundle) {
+
+		bundle.putSerializable(LocalStrings.CUSTOMERS, customers);
+		super.onSaveInstanceState(bundle);
 	}
 }

@@ -30,6 +30,7 @@ import android.widget.Toast;
 import com.melanie.androidactivities.MainActivity;
 import com.melanie.androidactivities.R;
 import com.melanie.support.BusinessFactory;
+import com.melanie.support.CodeStrings;
 import com.melanie.support.OperationResult;
 
 /**
@@ -271,5 +272,21 @@ public final class Utils {
 
 	public static int num(char charValue) {
 		return Character.getNumericValue(charValue);
+	}
+
+	public static boolean isAnyFieldEmpty(EditText... fields){
+		boolean isAnyInValid = false;
+		for(EditText field: fields)
+		{
+			if(field != null && field.getText().toString().equals(CodeStrings.EMPTY_STRING)) {
+				Utils.switchInvalidFieldsBackColor(false, field);
+				if(!isAnyInValid) {
+					isAnyInValid = true;
+				}
+			} else {
+				Utils.switchInvalidFieldsBackColor(true, field);
+			}
+		}
+		return isAnyInValid;
 	}
 }

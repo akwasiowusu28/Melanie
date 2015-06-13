@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -28,21 +30,33 @@ import com.melanie.support.exceptions.MelanieBusinessException;
 
 public class CustomersActivity extends AppCompatActivity {
 
+	private static class LocalStrings {
+		public static final String CUSTOMERS = "Customers";
+	}
+
 	private CustomersController customersController;
-	private List<Customer> customers;
+	private ArrayList<Customer> customers;
 	private Customer customer;
 	private boolean isEdit;
 	private boolean wasLaunchedFromSales;
 	private SingleTextListAdapter<Customer> customersAdapter;
 	private Handler handler;
 	private int customerId = -1;
+	AutoCompleteTextView customerNameView;
+	EditText phoneNumberView;
+	private boolean wasInstanceSaved = false;
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		if (savedInstanceState != null) {
+			wasInstanceSaved = true;
+			customers = (ArrayList<Customer>) savedInstanceState.get(LocalStrings.CUSTOMERS);
+		}
 		setContentView(R.layout.activity_customers);
 		initializeFields();
-		getAllCustomers();
 		setupAutoCompleteCustomers();
 		setupAddCustomersListener();
 	}
@@ -50,9 +64,18 @@ public class CustomersActivity extends AppCompatActivity {
 	private void initializeFields() {
 		handler = new Handler(getMainLooper());
 		customersController = BusinessFactory.makeCustomersController();
+		if (!wasInstanceSaved) {
+			customers = new ArrayList<Customer>();
+			getAllCustomers();
+		}
+
 		customer = null;
 		isEdit = false;
 		wasLaunchedFromSales = wasLaunchedFromSales();
+		customerNameView = (AutoCompleteTextView) findViewById(R.id.customerName);
+		phoneNumberView = (EditText) findViewById(R.id.phoneNumber);
+		customerNameView.addTextChangedListener(textListener);
+		phoneNumberView.addTextChangedListener(textListener);
 	}
 
 	private void setupAddCustomersListener() {
@@ -71,8 +94,7 @@ public class CustomersActivity extends AppCompatActivity {
 		ComponentName callerActivity = getCallingActivity();
 
 		if (callerActivity != null) {
-			String callerClassName = callerActivity.getShortClassName()
-					.substring(1);
+			String callerClassName = callerActivity.getShortClassName().substring(1);
 			String salesActivityClassName = SalesActivity.class.getSimpleName();
 			value = callerClassName.equals(salesActivityClassName);
 		}
@@ -80,23 +102,17 @@ public class CustomersActivity extends AppCompatActivity {
 	}
 
 	private void getAllCustomers() {
-		customers = new ArrayList<Customer>();
 		try {
-			List<Customer> tempCustomers = null;
-			tempCustomers = customersController
-					.getAllCustomers(new OperationCallBack<Customer>() {
 
-						@Override
-						public void onCollectionOperationSuccessful(
-								List<Customer> results) {
+			customers.addAll(customersController.getAllCustomers(new OperationCallBack<Customer>() {
 
-							Utils.mergeItems(results, customers, false);
-							Utils.notifyListUpdate(customersAdapter, handler);
-						}
-					});
-			if (tempCustomers != null && !tempCustomers.isEmpty()) {
-				customers.addAll(tempCustomers);
-			}
+				@Override
+				public void onCollectionOperationSuccessful(List<Customer> results) {
+
+					Utils.mergeItems(results, customers, false);
+					Utils.notifyListUpdate(customersAdapter, handler);
+				}
+			}));
 
 		} catch (MelanieBusinessException e) {
 			e.printStackTrace(); // TODO: log it
@@ -104,19 +120,16 @@ public class CustomersActivity extends AppCompatActivity {
 	}
 
 	private void setupAutoCompleteCustomers() {
-		customersAdapter = new SingleTextListAdapter<Customer>(this,
-				customers);
+		customersAdapter = new SingleTextListAdapter<Customer>(this, customers);
 
-		AutoCompleteTextView customerNameTextView = (AutoCompleteTextView) findViewById(R.id.customerName);
-		customerNameTextView.setAdapter(customersAdapter);
-		customerNameTextView.setOnItemClickListener(autoCompleteListener);
+		customerNameView.setAdapter(customersAdapter);
+		customerNameView.setOnItemClickListener(autoCompleteListener);
 	}
 
 	private final OnItemClickListener autoCompleteListener = new OnItemClickListener() {
 
 		@Override
-		public void onItemClick(AdapterView<?> parent, View view, int position,
-				long id) {
+		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 			customer = customers.get(position);
 			EditText phoneNumberView = (EditText) findViewById(R.id.phoneNumber);
 			if (customer != null) {
@@ -128,25 +141,23 @@ public class CustomersActivity extends AppCompatActivity {
 	};
 
 	public void saveCustomer() {
-		EditText customerNameView = (EditText) findViewById(R.id.customerName);
-		EditText phoneNumberView = (EditText) findViewById(R.id.phoneNumber);
 		String customerName = customerNameView.getText().toString();
 		String phoneNumber = phoneNumberView.getText().toString();
 
-		OperationResult result = saveCustomerAndReturnResult(customerName,
-				phoneNumber);
+		if (!Utils.isAnyFieldEmpty(phoneNumberView, customerNameView)) {
+			OperationResult result = saveCustomerAndReturnResult(customerName, phoneNumber);
 
-		if (!wasLaunchedFromSales) {
-			Utils.makeToastBasedOnOperationResult(this, result,
-					R.string.addCustomerSuccess, R.string.addCustomerFailed);
+			if (!wasLaunchedFromSales) {
+				Utils.makeToastBasedOnOperationResult(this, result, R.string.addCustomerSuccess,
+						R.string.addCustomerFailed);
+			}
+			Utils.clearInputTextFields(customerNameView, phoneNumberView);
+			finishIfLaunchedFromSales();
+			updateButtonText();
 		}
-		Utils.clearInputTextFields(customerNameView, phoneNumberView);
-		finishIfLaunchedFromSales();
-		updateButtonText();
 	}
 
-	private OperationResult saveCustomerAndReturnResult(String customerName,
-			String phoneNumber) {
+	private OperationResult saveCustomerAndReturnResult(String customerName, String phoneNumber) {
 		OperationResult result = OperationResult.FAILED;
 		try {
 			if (isEdit) {
@@ -154,24 +165,22 @@ public class CustomersActivity extends AppCompatActivity {
 				customer.setPhoneNumber(phoneNumber);
 				customerId = customer.getId();
 			} else {
-				customer = customersController.cacheTempNewCustomer(
-						customerName, phoneNumber);
-
-				if (!wasLaunchedFromSales) {
-					if (isEdit) {
-						result = customersController.updateCustomer(customer);
-					} else {
-						result = customersController.addCachedCustomer();
-					}
-
-					List<Customer> customersFromLocalDataStore = customersController
-							.getAllCustomers(null);
-					Utils.mergeItems(customersFromLocalDataStore, customers, false);
-					Utils.notifyListUpdate(customersAdapter, handler);
-				} else {
-					customersController.addCustomer(customer);
-				}
+				customer = customersController.cacheTempNewCustomer(customerName, phoneNumber);
 			}
+			if (!wasLaunchedFromSales) {
+				if (isEdit) {
+					result = customersController.updateCustomer(customer);
+				} else {
+					result = customersController.addCachedCustomer();
+				}
+
+				List<Customer> customersFromLocalDataStore = customersController.getAllCustomers(null);
+				Utils.mergeItems(customersFromLocalDataStore, customers, false);
+				Utils.notifyListUpdate(customersAdapter, handler);
+			} else {
+				customersController.addCustomer(customer);
+			}
+
 		} catch (MelanieBusinessException e) {
 			e.printStackTrace(); // Log it
 		} finally {
@@ -190,16 +199,15 @@ public class CustomersActivity extends AppCompatActivity {
 		if (wasLaunchedFromSales) {
 
 			try {
-				if(customerId < 0){
-					customersController.getLastInsertedCustomerId(new OperationCallBack<Integer>(){
+				if (customerId < 0) {
+					customersController.getLastInsertedCustomerId(new OperationCallBack<Integer>() {
 						@Override
 						public void onOperationSuccessful(Integer customerId) {
 							CustomersActivity.this.customerId = customerId;
 							performFinish();
 						}
 					});
-				}
-				else{
+				} else {
 					performFinish();
 				}
 			} catch (MelanieBusinessException e) {
@@ -208,10 +216,39 @@ public class CustomersActivity extends AppCompatActivity {
 		}
 	}
 
-	private void performFinish(){
+	private void performFinish() {
 		Intent intent = getIntent();
 		intent.putExtra(CodeStrings.CustomerId, customerId);
 		setResult(RESULT_OK, intent);
 		finish();
+	}
+
+	private TextWatcher textListener = new TextWatcher() {
+
+		@Override
+		public void onTextChanged(CharSequence s, int start, int before, int count) {
+		}
+
+		@Override
+		public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+		}
+
+		@Override
+		public void afterTextChanged(Editable s) {
+			if (phoneNumberView != null && phoneNumberView.getText().toString().equals(CodeStrings.EMPTY_STRING)
+					&& customerNameView != null
+					&& customerNameView.getText().toString().equals(CodeStrings.EMPTY_STRING)) {
+				isEdit = false;
+				updateButtonText();
+			}
+
+		}
+	};
+
+	@Override
+	protected void onSaveInstanceState(Bundle bundle) {
+
+		bundle.putSerializable(LocalStrings.CUSTOMERS, customers);
+		super.onSaveInstanceState(bundle);
 	}
 }

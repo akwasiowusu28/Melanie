@@ -190,10 +190,6 @@ public class SalesControllerImpl implements SalesController {
 			try {
 				customerSales = dataAccess.findItemsByFieldName(CUSTOMEROBJECTID,
 						String.valueOf(customer.getObjectId()), Sale.class, operationCallBack);
-				for (Sale sale : customerSales) {
-					dataAccess.refreshItem(sale.getProduct(), Product.class);
-					dataAccess.refreshItem(sale.getCustomer(), Customer.class);
-				}
 			} catch (MelanieDataLayerException e) {
 				throw new MelanieBusinessException(e.getMessage(), e);
 			}
@@ -235,6 +231,13 @@ public class SalesControllerImpl implements SalesController {
 	public void clear() {
 		if(sales != null && !sales.isEmpty() && !isSaving) {
 			sales.clear();
+		}
+	}
+
+	@Override
+	public void removeFromTempList(int saleIndex) {
+		if(sales != null && saleIndex < sales.size()){
+			sales.remove(saleIndex);
 		}
 	}
 

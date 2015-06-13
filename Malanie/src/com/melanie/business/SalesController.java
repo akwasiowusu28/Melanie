@@ -36,5 +36,7 @@ public interface SalesController {
 	OperationResult saveCurrentSales(Customer customer, double amountReceived,
 			double discount, double balance) throws MelanieBusinessException;
 
+	void removeFromTempList(int saleIndex);
+
 	void clear();
 }

@@ -38,4 +38,5 @@ public class CodeStrings {
 	public static final String SPECIAL_CHARS= "[!@#$%\\^&*\\( \\)\\.\\,'\"\\\\?\\-/\\|_\\[\\+\\+`~]";
 	public static final String SALES = "sales";
 	public static final String IS_IN_EDIT_PROCESS = "isEditInProgress";
+
 }

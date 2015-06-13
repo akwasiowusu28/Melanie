@@ -1,6 +1,7 @@
 package com.melanie.androidactivities;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import net.sourceforge.zbar.Config;
@@ -47,6 +48,7 @@ public class ScanBarcodeActivity extends Activity {
 	private MediaPlayer mediaPlayer;
 	private boolean isCameraReleased;
 	ImageScanner scanner;
+	private HashMap<String, Integer> scannedCount;
 
 	static {
 		System.loadLibrary("iconv");
@@ -75,6 +77,7 @@ public class ScanBarcodeActivity extends Activity {
 		handler = new Handler();
 		scannedBarcodes = new ArrayList<String>();
 		isCameraReleased = false;
+		scannedCount = new HashMap<>();
 	}
 
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
@@ -209,16 +212,28 @@ public class ScanBarcodeActivity extends Activity {
 				if (sym.getType() == Symbol.EAN13
 						&& isValidMelanieBarcode(barcode)) {
 					scannedBarcodes.add(barcode);
+					keepScannedCountForBarcode(barcode);
 					updatePreviewText(barcode);
-					// playBeep();
+					playBeep();
 				}
 				break;
 			}
 		}
 
+		private void keepScannedCountForBarcode(String barcode){
+			if(scannedCount.containsKey(barcode)){
+				int count = scannedCount.get(barcode);
+				scannedCount.put(barcode, ++count);
+			}
+			else{
+				scannedCount.put(barcode, 1);
+			}
+		}
+
 		private void updatePreviewText(String barcode) {
 			TextView textView = (TextView) findViewById(R.id.barcodeDigitsTextView);
-			textView.setText(barcode);
+			String barcodeAndCount = barcode + " x" + String.valueOf(scannedCount.get(barcode));
+			textView.setText(barcodeAndCount);
 		}
 
 		private boolean isValidMelanieBarcode(String barcode) {

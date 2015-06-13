@@ -133,7 +133,7 @@ public class AddProductActivity extends AppCompatActivity {
 		EditText priceField = (EditText) findViewById(R.id.price);
 		EditText quantityField = (EditText) findViewById(R.id.quantity);
 
-		if(!isAnyFieldInvalid(priceField,productNameField, quantityField)){
+		if(!Utils.isAnyFieldEmpty(priceField,productNameField, quantityField)){
 
 			String productName = productNameField.getText().toString();
 			String priceStr = priceField.getText().toString();
@@ -145,21 +145,7 @@ public class AddProductActivity extends AppCompatActivity {
 		}
 	}
 
-	private boolean isAnyFieldInvalid(EditText... fields){
-		boolean isAnyInValid = false;
-		for(EditText field: fields)
-		{
-			if(field != null && field.getText().toString().equals(CodeStrings.EMPTY_STRING)) {
-				Utils.switchInvalidFieldsBackColor(false, field);
-				if(!isAnyInValid) {
-					isAnyInValid = true;
-				}
-			} else {
-				Utils.switchInvalidFieldsBackColor(true, field);
-			}
-		}
-		return isAnyInValid;
-	}
+	
 
 	private void addProduct(final Category category,
 			final String productName, final double price) {

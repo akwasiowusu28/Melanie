@@ -66,7 +66,7 @@
     <string name="customerNameHint">Countee Cullen</string>
     <string name="nameWithColon">Name:</string>
     <string name="addCustomerFailed">Sorry. Could not add the customer. Please try again</string>
-    <string name="addCustomerSuccess">Customer added successfully!</string>
+    <string name="addCustomerSuccess">Customer saved successfully!</string>
     <string name="melanie_payment">Payment</string>
     <string name="customerName">Customer name:</string>
     <string name="yes">Yes</string>

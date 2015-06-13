@@ -53,8 +53,8 @@ public class CustomersListViewAdapter extends ArrayAdapter<Customer> {
 			ViewHolder viewHolder = (ViewHolder) rowView.getTag();
 			viewHolder.customerNameTextView.setText(customer.getName());
 			viewHolder.phoneNumberTextView.setText(customer.getPhoneNumber());
-			viewHolder.amountOwedTextView.setText(String.valueOf(customer
-					.getAmountOwed()));
+			viewHolder.amountOwedTextView.setText(String.valueOf(Math.abs(customer
+					.getAmountOwed())));
 		}
 
 		return rowView;

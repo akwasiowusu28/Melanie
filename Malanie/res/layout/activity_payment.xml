@@ -22,6 +22,7 @@
         android:layout_below="@id/customerFindLabel"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
+        android:completionThreshold="1"
         android:inputType="textPersonName"
         android:textColor="@android:color/black" />
 
