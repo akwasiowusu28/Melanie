@@ -19,12 +19,16 @@ import com.melanie.business.MelanieSession;
 import com.melanie.business.UserController;
 import com.melanie.entities.User;
 import com.melanie.support.BusinessFactory;
-import com.melanie.support.CodeStrings;
 import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieBusinessException;
 
 public class ConfirmActivity extends AppCompatActivity {
 
+	private class LocalConstants{
+		public static final String CONFIRM_SMS_MESSAGE = "Your Melanie confirmation code is: ";
+		public static final String PHONE_NUMBER = "phoneNumber";
+		public static final String ISCONFIRMED = "isconfirmed";
+	}
 	private Button confirmButton;
 	private String confirmCode;
 	private UserController userController;
@@ -49,7 +53,7 @@ public class ConfirmActivity extends AppCompatActivity {
 	private void initializeFields() {
 		userController = BusinessFactory.makeUserController();
 		Intent intent = getIntent();
-		phoneNumber = intent.getStringExtra(CodeStrings.PHONE_NUMBER);
+		phoneNumber = intent.getStringExtra(LocalConstants.PHONE_NUMBER);
 		confirmFieldsDisabled = false;
 		confirmTextField = (EditText) findViewById(R.id.confirmTextField);
 		confirmLabel = (TextView) findViewById(R.id.confirmLabel);
@@ -127,7 +131,7 @@ public class ConfirmActivity extends AppCompatActivity {
 				MelanieSession session = BusinessFactory.getSession();
 				User user = session.getUser();
 				user.setConfirmed(true);
-				userController.updateUser(user, CodeStrings.ISCONFIRMED, true,null);
+				userController.updateUser(user, LocalConstants.ISCONFIRMED, true,null);
 			} catch (MelanieBusinessException e) {
 				// TODO log it
 				e.printStackTrace();
@@ -146,7 +150,7 @@ public class ConfirmActivity extends AppCompatActivity {
 	}
 
 	private String getConfirmMessage() {
-		return CodeStrings.CONFIRM_SMS_MESSAGE + confirmCode;
+		return LocalConstants.CONFIRM_SMS_MESSAGE + confirmCode;
 	}
 
 	private void generateConfirmCode() {

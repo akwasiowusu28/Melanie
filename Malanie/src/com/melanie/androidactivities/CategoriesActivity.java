@@ -19,11 +19,15 @@ import com.melanie.androidactivities.support.Utils;
 import com.melanie.business.ProductEntryController;
 import com.melanie.entities.Category;
 import com.melanie.support.BusinessFactory;
-import com.melanie.support.CodeStrings;
 import com.melanie.support.OperationCallBack;
 import com.melanie.support.exceptions.MelanieBusinessException;
 
 public class CategoriesActivity extends AppCompatActivity {
+
+	private class LocalConstants{
+		public static final String CATEGORIES="categories";
+		public static final String EMPTY_STRING = "";
+	}
 
 	private final ProductEntryController productController;
 	private ArrayList<Category> categories;
@@ -82,7 +86,7 @@ public class CategoriesActivity extends AppCompatActivity {
 				EditText categoryNameView = (EditText) findViewById(R.id.categoryName);
 				String categoryName = categoryNameView.getText().toString();
 
-				if(!categoryName.trim().equals(CodeStrings.EMPTY_STRING)){
+				if(!categoryName.trim().equals(LocalConstants.EMPTY_STRING)){
 
 					Category category;
 					try {
@@ -124,14 +128,14 @@ public class CategoriesActivity extends AppCompatActivity {
 
 	@Override
 	protected void onSaveInstanceState(Bundle bundle) {
-		bundle.putSerializable(CodeStrings.CATEGORIES, categories);
+		bundle.putSerializable(LocalConstants.CATEGORIES, categories);
 		super.onSaveInstanceState(bundle);
 	}
 
 	@SuppressWarnings("unchecked")
 	private void restoreInstanceState(Bundle bundle){
 		if(bundle != null){
-			categories = (ArrayList<Category>) bundle.get(CodeStrings.CATEGORIES);
+			categories = (ArrayList<Category>) bundle.get(LocalConstants.CATEGORIES);
 		}
 	}
 }

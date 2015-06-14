@@ -19,7 +19,7 @@ public class Sale extends BaseEntity {
 	@DatabaseField
 	private Date saleDate;
 
-	@DatabaseField(canBeNull = true, foreignAutoRefresh = true, foreign = true)
+	@DatabaseField(canBeNull = true, foreignAutoCreate = true, foreignAutoRefresh = true, foreign = true)
 	private Product product;
 
 	@DatabaseField

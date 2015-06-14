@@ -38,16 +38,24 @@ import com.melanie.entities.Customer;
 import com.melanie.entities.Product;
 import com.melanie.entities.Sale;
 import com.melanie.support.BusinessFactory;
-import com.melanie.support.CodeStrings;
 import com.melanie.support.OperationCallBack;
 import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieBusinessException;
 
 public class SalesActivity extends AppCompatActivity {
 
-	private static final int SCAN_REQUEST_CODE = 28;
-	private static final int CUSTOMER_REQUEST_CODE = 288;
-	private static final int PRINTER_SELECT_REQUEST_CODE = 2888;
+	private class LocalConstants{
+		public static final String SALES = "sales";
+		public static final int SCAN_REQUEST_CODE = 28;
+		public static final int CUSTOMER_REQUEST_CODE = 288;
+		public static final int PRINTER_SELECT_REQUEST_CODE = 2888;
+		public static final String IS_IN_EDIT_PROCESS = "isEditInProgress";
+		public static final String PRINTER_INFO = "printerInfo";
+		public static final String PRINTER_TYPE = "printerType";
+		public static final String CustomerId = "CustomerId";
+		public static final String BARCODES = "barcodes";
+		public static final String EMPTY_STRING = "";
+	}
 
 	private Handler handler;
 	private ArrayList<Sale> sales;
@@ -76,8 +84,8 @@ public class SalesActivity extends AppCompatActivity {
 
 		if (savedInstanceState != null) {
 			wasInstanceSaved = true;
-			isInEditProcess = savedInstanceState.getBoolean(CodeStrings.IS_IN_EDIT_PROCESS);
-			sales = (ArrayList<Sale>) savedInstanceState.get(CodeStrings.SALES);
+			isInEditProcess = savedInstanceState.getBoolean(LocalConstants.IS_IN_EDIT_PROCESS);
+			sales = (ArrayList<Sale>) savedInstanceState.get(LocalConstants.SALES);
 		}
 
 		initializeFields();
@@ -196,7 +204,7 @@ public class SalesActivity extends AppCompatActivity {
 
 	private void startCustomerActivity() {
 		Intent intent = new Intent(this, CustomersActivity.class);
-		startActivityForResult(intent, CUSTOMER_REQUEST_CODE);
+		startActivityForResult(intent, LocalConstants.CUSTOMER_REQUEST_CODE);
 	}
 
 	private void startBarcodeScanning() {
@@ -205,7 +213,7 @@ public class SalesActivity extends AppCompatActivity {
 				@Override
 				public void run() {
 					Intent intent = new Intent(SalesActivity.this, ScanBarcodeActivity.class);
-					startActivityForResult(intent, SCAN_REQUEST_CODE);
+					startActivityForResult(intent, LocalConstants.SCAN_REQUEST_CODE);
 				}
 			}, 100, TimeUnit.MILLISECONDS);
 		}
@@ -240,15 +248,15 @@ public class SalesActivity extends AppCompatActivity {
 		String amountReceivedString = ((EditText) findViewById(R.id.amountReceived)).getText().toString();
 		String balanceString = ((TextView) findViewById(R.id.balanceDue)).getText().toString();
 
-		if (!discountString.equals(CodeStrings.EMPTY_STRING)) {
+		if (!discountString.equals(LocalConstants.EMPTY_STRING)) {
 			discount = Double.parseDouble(discountString);
 		}
 
-		if (!amountReceivedString.equals(CodeStrings.EMPTY_STRING)) {
+		if (!amountReceivedString.equals(LocalConstants.EMPTY_STRING)) {
 			amountReceived = Double.parseDouble(amountReceivedString);
 		}
 
-		if (!balanceString.equals(CodeStrings.EMPTY_STRING)) {
+		if (!balanceString.equals(LocalConstants.EMPTY_STRING)) {
 			balance = Double.parseDouble(balanceString);
 		}
 	}
@@ -273,8 +281,8 @@ public class SalesActivity extends AppCompatActivity {
 			performPrint();
 		} else {
 			Intent intent = new Intent(this, SelectPrinterActivity.class);
-			intent.putExtra(CodeStrings.PRINTER_TYPE, PrinterType.Receipt.toString());
-			startActivityForResult(intent, PRINTER_SELECT_REQUEST_CODE);
+			intent.putExtra(LocalConstants.PRINTER_TYPE, PrinterType.Receipt.toString());
+			startActivityForResult(intent, LocalConstants.PRINTER_SELECT_REQUEST_CODE);
 		}
 
 	}
@@ -320,16 +328,16 @@ public class SalesActivity extends AppCompatActivity {
 		int customerId = -1;
 		if (resultCode == RESULT_OK && intentData != null) {
 			switch (requestCode) {
-			case SCAN_REQUEST_CODE:
-				List<String> barcodes = intentData.getStringArrayListExtra(CodeStrings.BARCODES);
+			case LocalConstants.SCAN_REQUEST_CODE:
+				List<String> barcodes = intentData.getStringArrayListExtra(LocalConstants.BARCODES);
 				recordSalesFromBarcodes(barcodes);
 				break;
-			case CUSTOMER_REQUEST_CODE:
-				customerId = intentData.getIntExtra(CodeStrings.CustomerId, customerId);
+			case LocalConstants.CUSTOMER_REQUEST_CODE:
+				customerId = intentData.getIntExtra(LocalConstants.CustomerId, customerId);
 				saveCreditSaleWithCustomer(customerId);
 				break;
-			case PRINTER_SELECT_REQUEST_CODE:
-				printerInfo = intentData.getStringExtra(CodeStrings.PRINTER_INFO);
+			case LocalConstants.PRINTER_SELECT_REQUEST_CODE:
+				printerInfo = intentData.getStringExtra(LocalConstants.PRINTER_INFO);
 				isPrinterFound = true;
 				printReceipt();
 				updateUIAfterSave(saveResult);
@@ -337,7 +345,7 @@ public class SalesActivity extends AppCompatActivity {
 			}
 		} else if (resultCode == RESULT_CANCELED) {
 			switch (requestCode) {
-			case PRINTER_SELECT_REQUEST_CODE:
+			case LocalConstants.PRINTER_SELECT_REQUEST_CODE:
 				updateUIAfterSave(saveResult);
 				break;
 			}
@@ -350,7 +358,7 @@ public class SalesActivity extends AppCompatActivity {
 			try {
 				customer = customersController.findCustomer(customerId, null);
 				if (customer != null) {
-					customer.setAmountOwed(customer.getAmountOwed() + balance);
+					customer.setAmountOwed(customer.getAmountOwed() + Math.abs(balance));
 					customersController.addOrUpdateCustomerLocalOnly(customer);
 				}
 				saveCurrentSales(customer);
@@ -432,10 +440,10 @@ public class SalesActivity extends AppCompatActivity {
 			TextView totalTextView = (TextView) findViewById(R.id.totalValue);
 			double total = Double.parseDouble(totalTextView.getText().toString());
 			String discountText = ((EditText) findViewById(R.id.discountValue)).getText().toString();
-			if (discountText.equals(CodeStrings.EMPTY_STRING)) {
+			if (discountText.equals(LocalConstants.EMPTY_STRING)) {
 				updateTotalField();
 				total = Double.parseDouble(totalTextView.getText().toString());
-			} else if (!s.toString().equals(CodeStrings.EMPTY_STRING)) {
+			} else if (!s.toString().equals(LocalConstants.EMPTY_STRING)) {
 				handleDiscountNormalCase(totalTextView, s, total);
 			}
 			evaluateBalanceForDiscountChange(total);
@@ -455,7 +463,7 @@ public class SalesActivity extends AppCompatActivity {
 		private void evaluateBalanceForDiscountChange(double total) {
 			EditText amountReceivedText = (EditText) findViewById(R.id.amountReceived);
 			String amountTextValue = amountReceivedText.getText().toString();
-			if (!amountTextValue.equals(CodeStrings.EMPTY_STRING)) {
+			if (!amountTextValue.equals(LocalConstants.EMPTY_STRING)) {
 				calculateBalance(Double.parseDouble(amountTextValue), total);
 			}
 		}
@@ -464,7 +472,7 @@ public class SalesActivity extends AppCompatActivity {
 			TextView totalTextView = (TextView) findViewById(R.id.totalValue);
 			double total = Double.parseDouble(totalTextView.getText().toString());
 			double amountReceived = 0;
-			if (!s.toString().equals(CodeStrings.EMPTY_STRING)) {
+			if (!s.toString().equals(LocalConstants.EMPTY_STRING)) {
 				amountReceived = Double.parseDouble(s.toString());
 			}
 			calculateBalance(amountReceived, total);
@@ -484,8 +492,8 @@ public class SalesActivity extends AppCompatActivity {
 	@Override
 	protected void onSaveInstanceState(Bundle bundle) {
 
-		bundle.putSerializable(CodeStrings.SALES, sales);
-		bundle.putBoolean(CodeStrings.IS_IN_EDIT_PROCESS, isInEditProcess);
+		bundle.putSerializable(LocalConstants.SALES, sales);
+		bundle.putBoolean(LocalConstants.IS_IN_EDIT_PROCESS, isInEditProcess);
 		super.onSaveInstanceState(bundle);
 	}
 

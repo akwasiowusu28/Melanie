@@ -23,10 +23,13 @@ import com.epson.lwprint.sdk.LWPrintParameterKey;
 import com.epson.lwprint.sdk.LWPrintPrintingPhase;
 import com.melanie.androidactivities.R;
 import com.melanie.androidactivities.SelectPrinterActivity;
-import com.melanie.support.CodeStrings;
 import com.melanie.support.OperationCallBack;
 
 public class BarcodePrintHelper {
+
+	private class LocalConstants{
+		public static final String PRINTER_TYPE = "printerType";
+	}
 
 	private Context context;
 	private Map<String, String> printerInfo;
@@ -256,7 +259,7 @@ public class BarcodePrintHelper {
 				performPrint(barcode);
 			} else{
 				Intent intent = new Intent(context, SelectPrinterActivity.class);
-				intent.putExtra(CodeStrings.PRINTER_TYPE, PrinterType.Barcode.toString());
+				intent.putExtra(LocalConstants.PRINTER_TYPE, PrinterType.Barcode.toString());
 				((Activity)context).startActivityForResult(intent, Utils.Constants.PRINTER_SELECT_REQUEST_CODE);
 			}
 		}

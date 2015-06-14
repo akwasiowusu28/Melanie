@@ -23,7 +23,6 @@ import com.melanie.androidactivities.support.Utils;
 import com.melanie.business.ProductEntryController;
 import com.melanie.entities.Category;
 import com.melanie.support.BusinessFactory;
-import com.melanie.support.CodeStrings;
 import com.melanie.support.OperationCallBack;
 import com.melanie.support.exceptions.MelanieBusinessException;
 
@@ -31,7 +30,9 @@ import com.melanie.support.exceptions.MelanieBusinessException;
 public class AddProductActivity extends AppCompatActivity {
 
 	private class LocalConstants{
-
+		public static final String PRINTER_INFO = "printerInfo";
+		public static final String CATEGORIES="categories";
+		public static final String BLUETOOTH_REFUSED = "BluetoothRefused";
 	}
 
 	private ProductEntryController productController;
@@ -145,7 +146,7 @@ public class AddProductActivity extends AppCompatActivity {
 		}
 	}
 
-	
+
 
 	private void addProduct(final Category category,
 			final String productName, final double price) {
@@ -217,7 +218,7 @@ public class AddProductActivity extends AppCompatActivity {
 		if (resultCode == RESULT_OK && requestCode == Utils.Constants.PRINTER_SELECT_REQUEST_CODE) {
 
 			Bundle bundle = intentData.getExtras();
-			printerInfo = (Map<String, String>) bundle.get(CodeStrings.PRINTER_INFO);
+			printerInfo = (Map<String, String>) bundle.get(LocalConstants.PRINTER_INFO);
 			if (printerInfo != null) {
 				setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
 				if(barcodePrintHelper != null) {
@@ -234,16 +235,16 @@ public class AddProductActivity extends AppCompatActivity {
 	@Override
 	protected void onSaveInstanceState(Bundle bundle) {
 
-		bundle.putSerializable(CodeStrings.CATEGORIES, categories);
-		bundle.putBoolean(CodeStrings.BLUETOOTH_REFUSED, bluetoothEnableRefused);
+		bundle.putSerializable(LocalConstants.CATEGORIES, categories);
+		bundle.putBoolean(LocalConstants.BLUETOOTH_REFUSED, bluetoothEnableRefused);
 
 		super.onSaveInstanceState(bundle);
 	}
 
 	private void restoreInstanceState(Bundle bundle){
 		if(bundle != null){
-			bluetoothEnableRefused = bundle.getBoolean(CodeStrings.BLUETOOTH_REFUSED);
-			categories = (ArrayList<Category>) bundle.get(CodeStrings.CATEGORIES);
+			bluetoothEnableRefused = bundle.getBoolean(LocalConstants.BLUETOOTH_REFUSED);
+			categories = (ArrayList<Category>) bundle.get(LocalConstants.CATEGORIES);
 		}
 	}
 	@Override

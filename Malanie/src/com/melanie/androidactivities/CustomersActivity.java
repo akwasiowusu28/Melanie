@@ -23,15 +23,16 @@ import com.melanie.androidactivities.support.Utils;
 import com.melanie.business.CustomersController;
 import com.melanie.entities.Customer;
 import com.melanie.support.BusinessFactory;
-import com.melanie.support.CodeStrings;
 import com.melanie.support.OperationCallBack;
 import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieBusinessException;
 
 public class CustomersActivity extends AppCompatActivity {
 
-	private static class LocalStrings {
+	private static class LocalConstants {
 		public static final String CUSTOMERS = "Customers";
+		public static final String CustomerId = "CustomerId";
+		public static final String EMPTY_STRING = "";
 	}
 
 	private CustomersController customersController;
@@ -53,7 +54,7 @@ public class CustomersActivity extends AppCompatActivity {
 
 		if (savedInstanceState != null) {
 			wasInstanceSaved = true;
-			customers = (ArrayList<Customer>) savedInstanceState.get(LocalStrings.CUSTOMERS);
+			customers = (ArrayList<Customer>) savedInstanceState.get(LocalConstants.CUSTOMERS);
 		}
 		setContentView(R.layout.activity_customers);
 		initializeFields();
@@ -164,23 +165,13 @@ public class CustomersActivity extends AppCompatActivity {
 				customer.setName(customerName);
 				customer.setPhoneNumber(phoneNumber);
 				customerId = customer.getId();
+				result = customersController.updateCustomer(customer);
 			} else {
-				customer = customersController.cacheTempNewCustomer(customerName, phoneNumber);
-			}
-			if (!wasLaunchedFromSales) {
-				if (isEdit) {
-					result = customersController.updateCustomer(customer);
-				} else {
-					result = customersController.addCachedCustomer();
-				}
-
-				List<Customer> customersFromLocalDataStore = customersController.getAllCustomers(null);
-				Utils.mergeItems(customersFromLocalDataStore, customers, false);
+				customer = new Customer(customerName, phoneNumber);
+				result = customersController.addCustomer(customer);
+				customers.add(customer);
 				Utils.notifyListUpdate(customersAdapter, handler);
-			} else {
-				customersController.addCustomer(customer);
 			}
-
 		} catch (MelanieBusinessException e) {
 			e.printStackTrace(); // Log it
 		} finally {
@@ -218,7 +209,7 @@ public class CustomersActivity extends AppCompatActivity {
 
 	private void performFinish() {
 		Intent intent = getIntent();
-		intent.putExtra(CodeStrings.CustomerId, customerId);
+		intent.putExtra(LocalConstants.CustomerId, customerId);
 		setResult(RESULT_OK, intent);
 		finish();
 	}
@@ -235,20 +226,19 @@ public class CustomersActivity extends AppCompatActivity {
 
 		@Override
 		public void afterTextChanged(Editable s) {
-			if (phoneNumberView != null && phoneNumberView.getText().toString().equals(CodeStrings.EMPTY_STRING)
+			if (phoneNumberView != null && phoneNumberView.getText().toString().equals(LocalConstants.EMPTY_STRING)
 					&& customerNameView != null
-					&& customerNameView.getText().toString().equals(CodeStrings.EMPTY_STRING)) {
+					&& customerNameView.getText().toString().equals(LocalConstants.EMPTY_STRING)) {
 				isEdit = false;
 				updateButtonText();
 			}
-
 		}
 	};
 
 	@Override
 	protected void onSaveInstanceState(Bundle bundle) {
 
-		bundle.putSerializable(LocalStrings.CUSTOMERS, customers);
+		bundle.putSerializable(LocalConstants.CUSTOMERS, customers);
 		super.onSaveInstanceState(bundle);
 	}
 }

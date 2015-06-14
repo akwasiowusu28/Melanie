@@ -138,7 +138,7 @@ public class SalesControllerImpl implements SalesController {
 	}
 
 	@Override
-	public OperationResult saveCurrentSales(Customer customer, double amountReceived, double discount, double balance)
+	public OperationResult saveCurrentSales(final Customer customer, double amountReceived, double discount, double balance)
 			throws MelanieBusinessException {
 		OperationResult result = OperationResult.FAILED;
 		if (dataAccess != null) {
@@ -154,6 +154,7 @@ public class SalesControllerImpl implements SalesController {
 						@Override
 						public void onOperationSuccessful(Payment payment) {
 							for (Sale sale : sales) {
+								sale.setCustomer(customer);
 								SalePayment salePayment = new SalePayment(sale, payment);
 								try {
 									dataAccess.addOrUpdateItemLocalOnly(sale.getProduct(), Product.class);
@@ -188,8 +189,7 @@ public class SalesControllerImpl implements SalesController {
 		List<Sale> customerSales = new ArrayList<Sale>();
 		if (session.canConnectToCloud() && dataAccess != null) {
 			try {
-				customerSales = dataAccess.findItemsByFieldName(CUSTOMEROBJECTID,
-						String.valueOf(customer.getObjectId()), Sale.class, operationCallBack);
+				customerSales = dataAccess.findItemsByFieldName(CUSTOMEROBJECTID,customer.getObjectId(), Sale.class, operationCallBack);
 			} catch (MelanieDataLayerException e) {
 				throw new MelanieBusinessException(e.getMessage(), e);
 			}

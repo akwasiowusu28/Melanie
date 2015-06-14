@@ -18,25 +18,28 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.melanie.androidactivities.support.SingleTextListAdapter;
 import com.melanie.androidactivities.support.ProductsAndSalesListViewAdapter;
+import com.melanie.androidactivities.support.SingleTextListAdapter;
 import com.melanie.androidactivities.support.Utils;
 import com.melanie.business.CustomersController;
 import com.melanie.business.SalesController;
 import com.melanie.entities.Customer;
 import com.melanie.entities.Sale;
 import com.melanie.support.BusinessFactory;
-import com.melanie.support.CodeStrings;
 import com.melanie.support.OperationCallBack;
 import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieBusinessException;
 
 public class PaymentActivity extends AppCompatActivity {
 
-	private List<Sale> sales;
+	private class LocalConstants{
+		public static final String SALES = "sales";
+		public static final String EMPTY_STRING = "";
+	}
+	private ArrayList<Sale> sales;
 	private SalesController salesController;
 	private CustomersController customersController;
-	private List<Customer> customers;
+	private ArrayList<Customer> customers;
 	private Customer selectedCustomer;
 	private ProductsAndSalesListViewAdapter<Sale> salesListAdapter;
 	private Handler handler;
@@ -184,11 +187,11 @@ public class PaymentActivity extends AppCompatActivity {
 
 		double balance = 0, amountReceived = 0;
 
-		if (!amountReceivedString.equals(CodeStrings.EMPTY_STRING)) {
+		if (!amountReceivedString.equals(LocalConstants.EMPTY_STRING)) {
 			amountReceived = Double.parseDouble(amountReceivedString);
 		}
 
-		if (!balanceString.equals(CodeStrings.EMPTY_STRING)) {
+		if (!balanceString.equals(LocalConstants.EMPTY_STRING)) {
 			balance = Double.parseDouble(balanceString);
 		}
 
@@ -262,4 +265,13 @@ public class PaymentActivity extends AppCompatActivity {
 			}
 		}
 	};
+
+	@Override
+	protected void onSaveInstanceState(Bundle bundle) {
+
+		bundle.putSerializable(LocalConstants.SALES, sales);
+
+		super.onSaveInstanceState(bundle);
+	}
+
 }

@@ -7,7 +7,6 @@ import com.melanie.dataaccesslayer.CloudAccess;
 import com.melanie.dataaccesslayer.DataAccessLayer;
 import com.melanie.entities.User;
 import com.melanie.support.BusinessFactory;
-import com.melanie.support.CodeStrings;
 import com.melanie.support.DataFactory;
 import com.melanie.support.OperationCallBack;
 import com.melanie.support.OperationResult;
@@ -15,6 +14,14 @@ import com.melanie.support.exceptions.MelanieBusinessException;
 import com.melanie.support.exceptions.MelanieDataLayerException;
 
 public class UserControllerImpl implements UserController {
+
+	private class LocalConstants{
+		public static final String NAME = "name";
+		public static final String OBJECTID = "objectId";
+		public static final String DEVICEID = "deviceid";
+		public static final String ISCONFIRMED = "isconfirmed";
+		public static final String PHONE = "phone";
+	}
 
 	private final DataAccessLayer dataAccess;
 	private final CloudAccess cloudAccess;
@@ -139,7 +146,7 @@ public class UserControllerImpl implements UserController {
 
 					try {
 						if (!localUserExists()) {
-							user.setConfirmed((boolean) user.getProperty(CodeStrings.ISCONFIRMED));
+							user.setConfirmed((boolean) user.getProperty(LocalConstants.ISCONFIRMED));
 							addUserToLocalDataStore(user);
 						}
 					} catch (MelanieDataLayerException | MelanieBusinessException e) {
@@ -164,7 +171,7 @@ public class UserControllerImpl implements UserController {
 			throws MelanieBusinessException {
 		if (session.canConnectToCloud() && cloudAccess != null) {
 			try {
-				cloudAccess.findItemByFieldName(CodeStrings.PHONE, phone, BackendlessUser.class,
+				cloudAccess.findItemByFieldName(LocalConstants.PHONE, phone, BackendlessUser.class,
 						new OperationCallBack<BackendlessUser>() {
 
 					@Override
@@ -198,11 +205,11 @@ public class UserControllerImpl implements UserController {
 		User user = null;
 
 		if (backendlessUser != null) {
-			String objectId = backendlessUser.getProperty(CodeStrings.OBJECTID).toString();
-			String name = backendlessUser.getProperty(CodeStrings.NAME).toString();
-			String phone = backendlessUser.getProperty(CodeStrings.PHONE).toString();
-			String deviceId = backendlessUser.getProperty(CodeStrings.DEVICEID).toString();
-			boolean isConfirmed = Boolean.getBoolean(backendlessUser.getProperty(CodeStrings.ISCONFIRMED).toString());
+			String objectId = backendlessUser.getProperty(LocalConstants.OBJECTID).toString();
+			String name = backendlessUser.getProperty(LocalConstants.NAME).toString();
+			String phone = backendlessUser.getProperty(LocalConstants.PHONE).toString();
+			String deviceId = backendlessUser.getProperty(LocalConstants.DEVICEID).toString();
+			boolean isConfirmed = Boolean.getBoolean(backendlessUser.getProperty(LocalConstants.ISCONFIRMED).toString());
 
 			user = new User(name, null, phone, deviceId, isConfirmed);
 			user.setObjectId(objectId);

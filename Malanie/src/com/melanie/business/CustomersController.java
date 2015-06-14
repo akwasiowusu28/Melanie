@@ -16,11 +16,6 @@ import com.melanie.support.exceptions.MelanieBusinessException;
 
 public interface CustomersController {
 
-	Customer cacheTempNewCustomer(String name, String phoneNumber)
-			throws MelanieBusinessException;
-
-	OperationResult addCachedCustomer() throws MelanieBusinessException;
-
 	List<Customer> getAllCustomers(
 			OperationCallBack<Customer> operationCallBack)
 					throws MelanieBusinessException;
@@ -28,7 +23,7 @@ public interface CustomersController {
 	OperationResult updateCustomer(Customer customer)
 			throws MelanieBusinessException;
 
-	void addCustomer(Customer customer)
+	OperationResult addCustomer(Customer customer)
 			throws MelanieBusinessException;
 
 	Customer findCustomer(int customerId,

@@ -12,13 +12,20 @@ import com.backendless.exceptions.BackendlessFault;
 import com.backendless.persistence.BackendlessDataQuery;
 import com.melanie.dataaccesslayer.datasource.DataSourceManager;
 import com.melanie.entities.User;
-import com.melanie.support.CodeStrings;
 import com.melanie.support.OperationCallBack;
 import com.melanie.support.exceptions.MelanieDataLayerException;
 
 @SuppressWarnings("unchecked")
 public class CloudAccess {
 
+	private class LocalConstants{
+		public static final String ID = "Id";
+		public static final String DATEFORMAT = "yyyyMMddHHmmss";
+		public static final String IS_GREATER_OR_EQUAL_TO = ">= '";
+		public static final String AND = "' and ";
+		public static final String IS_LESS_OR_EQUAL_TO = "<='";
+		public static final String SINGLE_QUOTE = "'";
+	}
 	private boolean isCollectionOperation;
 
 	private int collectionRequestsCount = 0;
@@ -74,7 +81,7 @@ public class CloudAccess {
 			OperationCallBack<T> operationCallBack)
 					throws MelanieDataLayerException {
 		try {
-			findItemByFieldName(CodeStrings.ID, String.valueOf(itemId), itemClass,
+			findItemByFieldName(LocalConstants.ID, String.valueOf(itemId), itemClass,
 					operationCallBack);
 		} catch (Exception e) {
 			throw new MelanieDataLayerException(e.getMessage(), e);
@@ -162,14 +169,14 @@ public class CloudAccess {
 			String upperBoundString = "";
 
 			if (lowerBound instanceof Date && upperBound instanceof Date) {
-				SimpleDateFormat dateFormater = new SimpleDateFormat(CodeStrings.CLOUD_DATEFORMAT);
+				SimpleDateFormat dateFormater = new SimpleDateFormat(LocalConstants.DATEFORMAT);
 				lowerBoundString = dateFormater.format((Date) lowerBound);
 				upperBoundString = dateFormater.format((Date) upperBound);
 			}
 
-			String whereClause = fieldName + CodeStrings.IS_GREATER_OR_EQUAL_TO
-					+ lowerBoundString + CodeStrings.AND + fieldName + CodeStrings.IS_LESS_OR_EQUAL_TO
-					+ upperBoundString + CodeStrings.SINGLE_QUOTE;
+			String whereClause = fieldName + LocalConstants.IS_GREATER_OR_EQUAL_TO
+					+ lowerBoundString + LocalConstants.AND + fieldName + LocalConstants.IS_LESS_OR_EQUAL_TO
+					+ upperBoundString + LocalConstants.SINGLE_QUOTE;
 			BackendlessDataQuery query = new BackendlessDataQuery(whereClause);
 			Backendless.Persistence
 			.of(itemClass)

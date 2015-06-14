@@ -36,10 +36,13 @@ import android.widget.TextView;
 
 import com.melanie.androidactivities.support.CameraPreview;
 import com.melanie.androidactivities.support.Utils;
-import com.melanie.support.CodeStrings;
 
 @SuppressWarnings("deprecation")
 public class ScanBarcodeActivity extends Activity {
+
+	private class LocalConstants{
+		public static final String BARCODES = "barcodes";
+	}
 
 	private Camera camera;
 	private CameraPreview cameraPreview;
@@ -168,7 +171,7 @@ public class ScanBarcodeActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				Intent intent = getIntent();
-				intent.putStringArrayListExtra(CodeStrings.BARCODES,
+				intent.putStringArrayListExtra(LocalConstants.BARCODES,
 						new ArrayList<String>(scannedBarcodes));
 				setResult(RESULT_OK, intent);
 				finish();

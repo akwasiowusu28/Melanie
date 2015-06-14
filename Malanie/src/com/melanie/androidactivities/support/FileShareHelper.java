@@ -12,10 +12,17 @@ import android.graphics.Bitmap.CompressFormat;
 import android.net.Uri;
 import android.support.v4.content.FileProvider;
 
-import com.melanie.support.CodeStrings;
 import com.planetarydoom.barcode.core.WriterException;
 
 public class FileShareHelper {
+
+	private class LocalConstants{
+		public static final String BARCODE_PATH = "barcodes/";
+		public static final String PNG = ".png";
+		public static final String AUTHORITY = "com.melanie.androidactivities.fileprovider";
+		public static final String SPECIAL_CHARS= "[!@#$%\\^&*\\( \\)\\.\\,'\"\\\\?\\-/\\|_\\[\\+\\+`~]";
+		public static final String EMPTY_STRING = "";
+	}
 
 	private Context context;
 	private File barcodeCacheFolder;
@@ -42,12 +49,12 @@ public class FileShareHelper {
 	private Uri saveBarcodeBitmapAndReturnUri(String imageName, String barcode) {
 		Uri fileUri = null;
 		try {
-			String fileName = noSpecialChars(imageName) + CodeStrings.PNG;
+			String fileName = noSpecialChars(imageName) + LocalConstants.PNG;
 			String barcodeString = barcode + String.valueOf(Utils.getCheckSumDigit(barcode));
 			Bitmap barcodeBitmap = new MelanieBarcodeEncoder().generateEAN13Barcode(barcodeString);
 
 			if (barcodeCacheFolder == null) {
-				barcodeCacheFolder = new File(context.getCacheDir(), CodeStrings.BARCODE_PATH);
+				barcodeCacheFolder = new File(context.getCacheDir(), LocalConstants.BARCODE_PATH);
 				barcodeCacheFolder.mkdirs();
 			}
 			File barcodefilePath = new File(barcodeCacheFolder, fileName);
@@ -56,7 +63,7 @@ public class FileShareHelper {
 			stream.flush();
 			stream.close();
 
-			fileUri = FileProvider.getUriForFile(context, CodeStrings.AUTHORITY, barcodefilePath);
+			fileUri = FileProvider.getUriForFile(context, LocalConstants.AUTHORITY, barcodefilePath);
 		} catch (WriterException | IOException e) {
 			// TODO log it
 			e.printStackTrace();
@@ -65,7 +72,7 @@ public class FileShareHelper {
 	}
 
 	private String noSpecialChars(String value) {
-		return value.replaceAll(CodeStrings.SPECIAL_CHARS, CodeStrings.EMPTY_STRING);
+		return value.replaceAll(LocalConstants.SPECIAL_CHARS, LocalConstants.EMPTY_STRING);
 	}
 
 	public void performCleanup() {

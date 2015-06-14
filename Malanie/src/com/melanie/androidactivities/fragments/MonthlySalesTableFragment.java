@@ -30,15 +30,18 @@ import android.widget.ListView;
 
 import com.melanie.androidactivities.R;
 import com.melanie.androidactivities.ViewSalesActivity;
-import com.melanie.androidactivities.support.MelanieDatePicker;
 import com.melanie.androidactivities.support.GroupAdapter;
+import com.melanie.androidactivities.support.MelanieDatePicker;
 import com.melanie.androidactivities.support.ObservablePropertyChangedListener;
 import com.melanie.androidactivities.support.ReportSession;
 import com.melanie.androidactivities.support.Utils;
-import com.melanie.support.CodeStrings;
 
 public class MonthlySalesTableFragment extends Fragment implements
 ObservablePropertyChangedListener {
+
+	private class LocalConstants{
+		public static final String DATEFORMAT = "MMM dd, yyyy";
+	}
 
 	private GroupAdapter<String> displayItemsAdapter;
 	private List<Entry<String, Integer>> displayItems;
@@ -73,7 +76,7 @@ ObservablePropertyChangedListener {
 		reportSession = ReportSession.getInstance(this);
 		displayItems = new ArrayList<Map.Entry<String, Integer>>();
 		displayItems.addAll(reportSession.getDisplayItems(isDaily));
-		dateformater = new SimpleDateFormat(CodeStrings.DATEFORMAT,
+		dateformater = new SimpleDateFormat(LocalConstants.DATEFORMAT,
 				Locale.getDefault());
 		initializeDates();
 		displayItemsAdapter = new GroupAdapter<String>(getActivity(),

@@ -32,12 +32,18 @@ import com.melanie.business.ProductEntryController;
 import com.melanie.entities.CostEntry;
 import com.melanie.entities.CostItem;
 import com.melanie.support.BusinessFactory;
-import com.melanie.support.CodeStrings;
 import com.melanie.support.OperationCallBack;
 import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieBusinessException;
 
 public class RecordCostsActivity extends AppCompatActivity {
+
+	private class LocalConstants{
+		public static final String COST_ENTRIES = "costEntries";
+		public static final String TOTAL = "Total";
+		public static final String EMPTY_STRING = "";
+		public static final String DATEFORMAT = "MMM dd, yyyy";
+	}
 
 	private MelanieAlertDialog promptDialog;
 	private View promptInputView;
@@ -62,8 +68,8 @@ public class RecordCostsActivity extends AppCompatActivity {
 
 		if (savedInstanceState != null) {
 			wasInstanceSaved = true;
-			costEntries = (ArrayList<CostEntry>) savedInstanceState.get(CodeStrings.COST_ENTRIES);
-			total = savedInstanceState.getDouble(CodeStrings.TOTAL);
+			costEntries = (ArrayList<CostEntry>) savedInstanceState.get(LocalConstants.COST_ENTRIES);
+			total = savedInstanceState.getDouble(LocalConstants.TOTAL);
 		}
 
 		initializeFields();
@@ -95,7 +101,7 @@ public class RecordCostsActivity extends AppCompatActivity {
 
 		productEntryController = BusinessFactory.makeProductEntryController();
 
-		dateformater = new SimpleDateFormat(CodeStrings.DATEFORMAT,
+		dateformater = new SimpleDateFormat(LocalConstants.DATEFORMAT,
 				Locale.getDefault());
 	}
 
@@ -201,19 +207,19 @@ public class RecordCostsActivity extends AppCompatActivity {
 		public void okButtonOperation() {
 			EditText costNameTextView = (EditText) promptInputView.findViewById(R.id.costNameEditText);
 			String costName = costNameTextView.getText().toString();
-			if (!costName.trim().equals(CodeStrings.EMPTY_STRING)) {
+			if (!costName.trim().equals(LocalConstants.EMPTY_STRING)) {
 				CostItem costItem = new CostItem(costName);
 				costEntries.add(new CostEntry(costItem, 0));
 				Utils.notifyListUpdate(costEntriesAdapter, handler);
-				costNameTextView.setText(CodeStrings.EMPTY_STRING);
+				costNameTextView.setText(LocalConstants.EMPTY_STRING);
 			}
 		}
 	};
 
 	@Override
 	protected void onSaveInstanceState(Bundle bundle) {
-		bundle.putSerializable(CodeStrings.COST_ENTRIES, costEntries);
-		bundle.putDouble(CodeStrings.TOTAL, total);
+		bundle.putSerializable(LocalConstants.COST_ENTRIES, costEntries);
+		bundle.putDouble(LocalConstants.TOTAL, total);
 		super.onSaveInstanceState(bundle);
 	}
 
@@ -259,7 +265,7 @@ public class RecordCostsActivity extends AppCompatActivity {
 				if (costEntryValue != 0D) {
 					viewHolder.costValueEditText.setText(String.valueOf(costEntry.getValue()));
 				}else{
-					viewHolder.costValueEditText.setText(CodeStrings.EMPTY_STRING);
+					viewHolder.costValueEditText.setText(LocalConstants.EMPTY_STRING);
 				}
 
 				viewHolder.textWatcher = new CostTextWatcher(viewHolder.costValueEditText, position);
@@ -292,7 +298,7 @@ public class RecordCostsActivity extends AppCompatActivity {
 		public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 			if (oldValue == 0) {
 				String strValue = sender.getText().toString().trim();
-				oldValue = strValue.equals(CodeStrings.EMPTY_STRING) ? 0 : Double.parseDouble(strValue);
+				oldValue = strValue.equals(LocalConstants.EMPTY_STRING) ? 0 : Double.parseDouble(strValue);
 			}
 		}
 
@@ -302,7 +308,7 @@ public class RecordCostsActivity extends AppCompatActivity {
 
 		@Override
 		public void afterTextChanged(Editable s) {
-			String emptyStr = CodeStrings.EMPTY_STRING;
+			String emptyStr = LocalConstants.EMPTY_STRING;
 
 			String newValueStr = sender.getText().toString().trim();
 			double newValue = newValueStr.equals(emptyStr) ? 0 : Double.parseDouble(newValueStr);

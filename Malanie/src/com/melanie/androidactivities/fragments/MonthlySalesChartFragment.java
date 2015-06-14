@@ -34,12 +34,15 @@ import com.melanie.androidactivities.support.MelanieDatePicker;
 import com.melanie.androidactivities.support.ObservablePropertyChangedListener;
 import com.melanie.androidactivities.support.ReportSession;
 import com.melanie.androidactivities.support.Utils;
-import com.melanie.support.CodeStrings;
 
 public class MonthlySalesChartFragment extends Fragment implements
 ObservablePropertyChangedListener {
 
-	private static final String DAILY_SALES = "Daily Sales";
+	private class LocalConstants{
+		public static final String EMPTY_STRING = "";
+		private static final String DAILY_SALES = "Daily Sales";
+		public static final String DATEFORMAT = "MMM dd, yyyy";
+	}
 
 	private List<Entry<String, Integer>> displayItems;
 	private SimpleDateFormat dateformater;
@@ -71,7 +74,7 @@ ObservablePropertyChangedListener {
 		reportSession = ReportSession.getInstance(this);
 		displayItems = new ArrayList<Map.Entry<String, Integer>>();
 		displayItems.addAll(reportSession.getDisplayItems(isDaily));
-		dateformater = new SimpleDateFormat(CodeStrings.DATEFORMAT,
+		dateformater = new SimpleDateFormat(LocalConstants.DATEFORMAT,
 				Locale.getDefault());
 		initializeDates();
 		chartEntries = new ArrayList<>();
@@ -101,7 +104,7 @@ ObservablePropertyChangedListener {
 	private void setUpLineChart() {
 		salesChart = (LineChart) getView().findViewById(R.id.salesChart);
 		configureAxis();
-		salesChart.setDescription(CodeStrings.EMPTY_STRING);
+		salesChart.setDescription(LocalConstants.EMPTY_STRING);
 	}
 
 	private void configureAxis() {
@@ -115,7 +118,7 @@ ObservablePropertyChangedListener {
 	}
 
 	private void refreshDataSet() {
-		dataSet = new LineDataSet(chartEntries, DAILY_SALES);
+		dataSet = new LineDataSet(chartEntries, LocalConstants.DAILY_SALES);
 		dataSet.setColor(Color.MAGENTA);
 		dataSet.setCircleColor(Color.BLUE);
 		dataSet.setLineWidth(1f);

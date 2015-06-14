@@ -22,7 +22,6 @@ import com.melanie.business.UserController;
 import com.melanie.dataaccesslayer.datasource.DataSource;
 import com.melanie.entities.User;
 import com.melanie.support.BusinessFactory;
-import com.melanie.support.CodeStrings;
 import com.melanie.support.OperationCallBack;
 import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieBusinessException;
@@ -32,6 +31,11 @@ import com.melanie.support.exceptions.MelanieBusinessException;
 //Indeed, the whole user module should be implemented with the state design pattern
 
 public class LoginActivity extends Activity {
+
+	private class LocalConstants{
+		public static final String DEVICEID = "deviceid";
+		public static final String EMPTY_STRING = "";
+	}
 
 	private UserController userController;
 	private MelanieAlertDialog differntDeviceAlertDialog;
@@ -75,7 +79,7 @@ public class LoginActivity extends Activity {
 		handler = new Handler(getMainLooper());
 		session = BusinessFactory.getSession();
 		currentDeviceId = getCurrentDeviceId();
-		password = CodeStrings.EMPTY_STRING;
+		password = LocalConstants.EMPTY_STRING;
 	}
 
 	private void setupSignupButton() {
@@ -215,7 +219,7 @@ public class LoginActivity extends Activity {
 	private void updateUserDeviceId(OperationCallBack<OperationResult> operationCallBack) {
 		if (userController != null) {
 			try {
-				userController.updateUser(user, CodeStrings.DEVICEID, currentDeviceId,operationCallBack);
+				userController.updateUser(user, LocalConstants.DEVICEID, currentDeviceId,operationCallBack);
 			} catch (MelanieBusinessException e) {
 				// TODO log it
 				e.printStackTrace();

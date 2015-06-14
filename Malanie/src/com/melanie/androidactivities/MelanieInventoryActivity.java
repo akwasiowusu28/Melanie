@@ -32,11 +32,18 @@ import com.melanie.business.ProductEntryController;
 import com.melanie.entities.Category;
 import com.melanie.entities.Product;
 import com.melanie.support.BusinessFactory;
-import com.melanie.support.CodeStrings;
 import com.melanie.support.OperationCallBack;
 import com.melanie.support.exceptions.MelanieBusinessException;
 
 public class MelanieInventoryActivity extends AppCompatActivity {
+
+	private class LocalConstants{
+		public static final String CATEGORIES="categories";
+		public static final String CURRENTPRODUCTS="currentProducts";
+		public static final String ALLPRODUCTS = "allProducts";
+		public static final String IS_IN_EDIT_PROCESS = "isEditInProgress";
+		public static final String PRINTER_INFO = "printerInfo";
+	}
 
 	private ArrayList<Product> allProducts;
 	private ProductsAndSalesListViewAdapter<Product> productsAdapter;
@@ -70,7 +77,7 @@ public class MelanieInventoryActivity extends AppCompatActivity {
 
 		if (savedInstanceState != null) {
 			instanceWasSaved = true;
-			isInEditProcess = savedInstanceState.getBoolean(CodeStrings.IS_IN_EDIT_PROCESS);
+			isInEditProcess = savedInstanceState.getBoolean(LocalConstants.IS_IN_EDIT_PROCESS);
 			restoreInstanceState(savedInstanceState);
 		}
 		initializeFields();
@@ -294,7 +301,7 @@ public class MelanieInventoryActivity extends AppCompatActivity {
 		if (resultCode == RESULT_OK && requestCode == Utils.Constants.PRINTER_SELECT_REQUEST_CODE) {
 
 			Bundle bundle = intentData.getExtras();
-			printerInfo = (Map<String, String>) bundle.get(CodeStrings.PRINTER_INFO);
+			printerInfo = (Map<String, String>) bundle.get(LocalConstants.PRINTER_INFO);
 			if (printerInfo != null) {
 				setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
 				if(barcodePrintHelper != null) {
@@ -307,19 +314,19 @@ public class MelanieInventoryActivity extends AppCompatActivity {
 
 	@Override
 	protected void onSaveInstanceState(Bundle bundle) {
-		bundle.putSerializable(CodeStrings.ALLPRODUCTS, allProducts);
-		bundle.putSerializable(CodeStrings.CATEGORIES, categories);
-		bundle.putSerializable(CodeStrings.CURRENTPRODUCTS, currentProducts);
+		bundle.putSerializable(LocalConstants.ALLPRODUCTS, allProducts);
+		bundle.putSerializable(LocalConstants.CATEGORIES, categories);
+		bundle.putSerializable(LocalConstants.CURRENTPRODUCTS, currentProducts);
 		super.onSaveInstanceState(bundle);
 	}
 
 	@SuppressWarnings("unchecked")
 	private void restoreInstanceState(Bundle bundle) {
 		if (bundle != null) {
-			bundle.putBoolean(CodeStrings.IS_IN_EDIT_PROCESS, isInEditProcess);
-			allProducts = (ArrayList<Product>) bundle.get(CodeStrings.ALLPRODUCTS);
-			categories = (ArrayList<Category>) bundle.get(CodeStrings.CATEGORIES);
-			currentProducts = (ArrayList<Product>) bundle.get(CodeStrings.CURRENTPRODUCTS);
+			bundle.putBoolean(LocalConstants.IS_IN_EDIT_PROCESS, isInEditProcess);
+			allProducts = (ArrayList<Product>) bundle.get(LocalConstants.ALLPRODUCTS);
+			categories = (ArrayList<Category>) bundle.get(LocalConstants.CATEGORIES);
+			currentProducts = (ArrayList<Product>) bundle.get(LocalConstants.CURRENTPRODUCTS);
 		}
 	}
 

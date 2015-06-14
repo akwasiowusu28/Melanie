@@ -30,7 +30,6 @@ import android.widget.Toast;
 import com.melanie.androidactivities.MainActivity;
 import com.melanie.androidactivities.R;
 import com.melanie.support.BusinessFactory;
-import com.melanie.support.CodeStrings;
 import com.melanie.support.OperationResult;
 
 /**
@@ -44,6 +43,7 @@ public final class Utils {
 	public static class Constants {
 		public static final int BLUETOOTH_REQUEST_CODE = 208;
 		public static final int PRINTER_SELECT_REQUEST_CODE = 28;
+		public static final String EMPTY_STRING = "";
 	}
 
 	/**
@@ -265,7 +265,7 @@ public final class Utils {
 			}
 		int mod10ofSum = sum % 10;
 
-		int checkDigit = mod10ofSum > 0 ? 10 - sum % 10 : 0;
+		int checkDigit = mod10ofSum > 0 ? 10 - mod10ofSum : 0;
 		return  checkDigit;
 
 	}
@@ -278,7 +278,7 @@ public final class Utils {
 		boolean isAnyInValid = false;
 		for(EditText field: fields)
 		{
-			if(field != null && field.getText().toString().equals(CodeStrings.EMPTY_STRING)) {
+			if(field != null && field.getText().toString().equals(Constants.EMPTY_STRING)) {
 				Utils.switchInvalidFieldsBackColor(false, field);
 				if(!isAnyInValid) {
 					isAnyInValid = true;

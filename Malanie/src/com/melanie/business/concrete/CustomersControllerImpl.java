@@ -24,7 +24,6 @@ import com.melanie.support.exceptions.MelanieDataLayerException;
 public class CustomersControllerImpl implements CustomersController {
 
 	private final DataAccessLayer dataAccess;
-	private Customer customer;
 	private final MelanieSession session;
 
 	public CustomersControllerImpl() {
@@ -33,39 +32,10 @@ public class CustomersControllerImpl implements CustomersController {
 	}
 
 	@Override
-	public Customer cacheTempNewCustomer(String name, String phoneNumber) throws MelanieBusinessException {
-		customer = new Customer(name, phoneNumber);
-		return customer;
-	}
-
-	@Override
-	public void addCustomer(Customer customer) throws MelanieBusinessException {
+	public OperationResult addCustomer(Customer customer) throws MelanieBusinessException {
+		OperationResult result = OperationResult.FAILED;
 		if (dataAccess != null) {
 			try {
-				dataAccess.addDataItem(customer, Customer.class, null);
-			} catch (MelanieDataLayerException e) {
-				throw new MelanieBusinessException(e.getMessage(), e);
-			}
-		}
-	}
-
-	/**
-	 * Adds a new Customer
-	 * 
-	 * @param name
-	 *            The customer's name
-	 * @param phoneNumber
-	 *            The Customer's phone number
-	 * @return {@link OperationResult}
-	 */
-	@Override
-	public OperationResult addCachedCustomer() throws MelanieBusinessException {
-
-		OperationResult result = OperationResult.FAILED;
-
-		if (session.canConnectToCloud() && dataAccess != null && customer != null) {
-			try {
-				customer.setOwnerId(session.getUser().getObjectId());
 				result = dataAccess.addDataItem(customer, Customer.class, null);
 			} catch (MelanieDataLayerException e) {
 				throw new MelanieBusinessException(e.getMessage(), e);

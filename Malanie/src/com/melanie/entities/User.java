@@ -2,12 +2,19 @@ package com.melanie.entities;
 
 import com.backendless.BackendlessUser;
 import com.j256.ormlite.field.DatabaseField;
-import com.melanie.support.CodeStrings;
 
 public class User extends BackendlessUser {
 
+	private class LocalConstants{
+		public static final String PASSWORD = "password";
+		public static final String NAME = "name";
+		public static final String DEVICEID = "deviceid";
+		public static final String ISCONFIRMED = "isconfirmed";
+		public static final String PHONE = "phone";
+	}
+
 	private static final long serialVersionUID = 1L;
-	
+
 	@DatabaseField(generatedId = true, allowGeneratedIdInsert = true)
 	private int id;
 
@@ -16,19 +23,19 @@ public class User extends BackendlessUser {
 
 	@DatabaseField
 	private boolean isConfirmed;
-	
+
 	@DatabaseField
 	private String password;
-	
+
 	@DatabaseField
 	private String name;
-	
+
 	@DatabaseField
 	private String deviceId;
-	
+
 	@DatabaseField
 	private String phone;
-	
+
 	public User() {
 		super();
 	}
@@ -39,12 +46,12 @@ public class User extends BackendlessUser {
 		this.name = name;
 		this.deviceId = deviceId;
 		this.phone = phone;
-		
-		setProperty(CodeStrings.NAME, name);
-		setProperty(CodeStrings.PASSWORD, password);
-		setProperty(CodeStrings.PHONE, phone);
-		setProperty(CodeStrings.DEVICEID, deviceId);
-		setProperty(CodeStrings.ISCONFIRMED, isConfirmed);
+
+		setProperty(LocalConstants.NAME, name);
+		setProperty(LocalConstants.PASSWORD, password);
+		setProperty(LocalConstants.PHONE, phone);
+		setProperty(LocalConstants.DEVICEID, deviceId);
+		setProperty(LocalConstants.ISCONFIRMED, isConfirmed);
 	}
 
 	@Override
@@ -80,7 +87,7 @@ public class User extends BackendlessUser {
 	@Override
 	public void setPassword(String password) {
 		this.password = password;
-		setProperty(CodeStrings.PASSWORD, password);
+		setProperty(LocalConstants.PASSWORD, password);
 	}
 
 	public String getName() {
@@ -97,7 +104,7 @@ public class User extends BackendlessUser {
 
 	public void setDeviceId(String deviceId) {
 		this.deviceId = deviceId;
-		setProperty(CodeStrings.DEVICEID, deviceId);
+		setProperty(LocalConstants.DEVICEID, deviceId);
 	}
 
 	public String getPhone() {
@@ -107,5 +114,5 @@ public class User extends BackendlessUser {
 	public void setPhone(String phone) {
 		this.phone = phone;
 	}
-	
+
 }

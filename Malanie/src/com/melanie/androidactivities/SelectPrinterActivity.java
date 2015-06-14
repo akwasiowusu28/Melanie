@@ -18,10 +18,15 @@ import com.melanie.androidactivities.support.MelaniePrinterDiscoverer;
 import com.melanie.androidactivities.support.PrinterType;
 import com.melanie.androidactivities.support.SingleTextListAdapter;
 import com.melanie.androidactivities.support.Utils;
-import com.melanie.support.CodeStrings;
 import com.melanie.support.OperationCallBack;
 
 public class SelectPrinterActivity extends Activity {
+
+	private class LocalConstants{
+		public static final String PRINTER_INFO = "printerInfo";
+		public static final String PRINTER_TYPE = "printerType";
+		public static final String NAME = "name";
+	}
 
 	private List<String> printers;
 	private HashMap<String, String> printerInfo;
@@ -39,7 +44,7 @@ public class SelectPrinterActivity extends Activity {
 		initializeFields();
 
 		callerActivityIntent = getIntent();
-		printerType = PrinterType.valueOf(callerActivityIntent.getStringExtra(CodeStrings.PRINTER_TYPE));
+		printerType = PrinterType.valueOf(callerActivityIntent.getStringExtra(LocalConstants.PRINTER_TYPE));
 		setupListView();
 		setupPrinterDiscoverer();
 
@@ -63,7 +68,7 @@ public class SelectPrinterActivity extends Activity {
 				printerInfo.putAll(result);
 
 				if (printerType.equals(PrinterType.Barcode)) {
-					printers.add(printerInfo.get(CodeStrings.NAME));
+					printers.add(printerInfo.get(LocalConstants.NAME));
 				} else {
 					printers.add(printerInfo.keySet().iterator().next());
 				}
@@ -96,10 +101,10 @@ public class SelectPrinterActivity extends Activity {
 
 			if (printerType.equals(PrinterType.Barcode)) {
 				Bundle bundle = new Bundle();
-				bundle.putSerializable(CodeStrings.PRINTER_INFO, printerInfo);
+				bundle.putSerializable(LocalConstants.PRINTER_INFO, printerInfo);
 				callerActivityIntent.putExtras(bundle);
 			} else {
-				callerActivityIntent.putExtra(CodeStrings.PRINTER_INFO, printerInfo.get(printers.get(position)));
+				callerActivityIntent.putExtra(LocalConstants.PRINTER_INFO, printerInfo.get(printers.get(position)));
 			}
 
 			setResult(RESULT_OK, callerActivityIntent);
