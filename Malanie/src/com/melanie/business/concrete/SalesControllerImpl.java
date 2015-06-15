@@ -1,11 +1,14 @@
 package com.melanie.business.concrete;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Set;
 import java.util.TimeZone;
@@ -14,6 +17,7 @@ import com.melanie.androidactivities.support.Utils;
 import com.melanie.business.MelanieSession;
 import com.melanie.business.ProductEntryController;
 import com.melanie.business.SalesController;
+import com.melanie.dataaccesslayer.CloudAccess;
 import com.melanie.dataaccesslayer.DataAccessLayer;
 import com.melanie.entities.Customer;
 import com.melanie.entities.Payment;
@@ -29,15 +33,20 @@ import com.melanie.support.exceptions.MelanieDataLayerException;
 
 public class SalesControllerImpl implements SalesController {
 
-	private static final String CUSTOMEROBJECTID = "Customer.ObjectId";
+	private class LocalConstants{
+		public static final String CUSTOMEROBJECTID = "Sale.Customer.ObjectId";
+		public static final String DATEFORMAT = "MMM dd, yyyy";
+	}
 
 	private final ProductEntryController productController;
 	private final DataAccessLayer dataAccess;
+	private final CloudAccess cloudAccess;
 	private List<Sale> sales;
 	private final Queue<String> notFoundProducts;
 	private int operationCount = 0;
 	private final MelanieSession session;
 	private boolean isSaving = false;
+	private SimpleDateFormat dateformater;
 
 	public SalesControllerImpl() {
 		productController = BusinessFactory.makeProductEntryController();
@@ -45,6 +54,8 @@ public class SalesControllerImpl implements SalesController {
 		sales = new ArrayList<Sale>();
 		notFoundProducts = new LinkedList<String>();
 		session = BusinessFactory.getSession();
+		cloudAccess = DataFactory.makeCloudAccess();
+		dateformater = new SimpleDateFormat(LocalConstants.DATEFORMAT);
 	}
 
 	@Override
@@ -93,7 +104,7 @@ public class SalesControllerImpl implements SalesController {
 			}
 		});
 
-		if(product != null) {
+		if (product != null) {
 			addProductToSale(product, count);
 		}
 	}
@@ -111,19 +122,18 @@ public class SalesControllerImpl implements SalesController {
 	}
 
 	//The whole setup of recording the sales needs to be revisited...This seems messed up but I'm so tired right now to deal with it
-	private void updateProductQuantityOfSale(Sale sale, int justAddedSaleQuantity){
+	private void updateProductQuantityOfSale(Sale sale, int justAddedSaleQuantity) {
 		Product product = sale.getProduct();
-		if(product != null){
+		if (product != null) {
 			int productQuantity = product.getQuantity();
 			int saleQuantity = sale.getQuantitySold();
 
-			if(saleQuantity <= productQuantity){
+			if (saleQuantity <= productQuantity) {
 				product.setQuantity(productQuantity - saleQuantity);
-			}else{
+			} else {
 				sale.setQuantitySold(saleQuantity - justAddedSaleQuantity + productQuantity);
 				product.setQuantity(0);
 			}
-
 		}
 	}
 
@@ -138,8 +148,8 @@ public class SalesControllerImpl implements SalesController {
 	}
 
 	@Override
-	public OperationResult saveCurrentSales(final Customer customer, double amountReceived, double discount, double balance)
-			throws MelanieBusinessException {
+	public OperationResult saveCurrentSales(final Customer customer, double amountReceived, double discount,
+			final double balance) throws MelanieBusinessException {
 		OperationResult result = OperationResult.FAILED;
 		if (dataAccess != null) {
 			try {
@@ -154,7 +164,9 @@ public class SalesControllerImpl implements SalesController {
 						@Override
 						public void onOperationSuccessful(Payment payment) {
 							for (Sale sale : sales) {
-								sale.setCustomer(customer);
+								if(sale.getCustomer() == null && customer != null) {
+									sale.setCustomer(customer);
+								}
 								SalePayment salePayment = new SalePayment(sale, payment);
 								try {
 									dataAccess.addOrUpdateItemLocalOnly(sale.getProduct(), Product.class);
@@ -174,7 +186,6 @@ public class SalesControllerImpl implements SalesController {
 			}
 			result = OperationResult.SUCCESSFUL;
 		}
-
 		return result;
 	}
 
@@ -183,25 +194,49 @@ public class SalesControllerImpl implements SalesController {
 	}
 
 	@Override
-	public List<Sale> findSalesByCustomer(Customer customer, OperationCallBack<Sale> operationCallBack)
+	public void findSalesByCustomer(Customer customer, OperationCallBack<SalePayment> operationCallBack)
 			throws MelanieBusinessException {
 
-		List<Sale> customerSales = new ArrayList<Sale>();
 		if (session.canConnectToCloud() && dataAccess != null) {
 			try {
-				customerSales = dataAccess.findItemsByFieldName(CUSTOMEROBJECTID,customer.getObjectId(), Sale.class, operationCallBack);
+				String where = LocalConstants.CUSTOMEROBJECTID + "='" + customer.getObjectId() + "' and Sale.paidFor=False";
+				cloudAccess.findItemsByWhereClause(where, SalePayment.class,
+						operationCallBack);
 			} catch (MelanieDataLayerException e) {
 				throw new MelanieBusinessException(e.getMessage(), e);
 			}
 		}
-		return customerSales;
 	}
 
 	@Override
 	public OperationResult recordPayment(Customer customer, List<Sale> sales, double amountReceived, double discount,
-			double balance) throws MelanieBusinessException {
+			double balance, Map<String, Payment> previousPaymentsGroup) throws MelanieBusinessException {
 		this.sales = new ArrayList<Sale>(sales);
+		updatePaidFor(this.sales, amountReceived, previousPaymentsGroup);
 		return saveCurrentSales(customer, amountReceived, discount, balance);
+	}
+
+	private void updatePaidFor(List<Sale> sales, double amountReceived, Map<String,Payment> payments){
+		Iterator<Entry<String, Payment>> iterator = payments.entrySet().iterator();
+		while(iterator.hasNext()){
+			if(amountReceived > 0){
+				Entry<String, Payment> entry = iterator.next();
+				Payment payment = entry.getValue();
+				double balance = Math.abs(payment.getBalance());
+
+				if(amountReceived > balance){
+					amountReceived -= balance;
+					for(Sale sale: sales){
+						String saleDate = dateformater.format(sale.getSaleDate());
+						if(saleDate.equals(entry.getKey())) {
+							sale.setPaidFor(true);
+						}
+					}
+					break;
+				}
+
+			}
+		}
 	}
 
 	private void addBarcodeToNotFoundList(String barcode) {
@@ -229,14 +264,14 @@ public class SalesControllerImpl implements SalesController {
 
 	@Override
 	public void clear() {
-		if(sales != null && !sales.isEmpty() && !isSaving) {
+		if (sales != null && !sales.isEmpty() && !isSaving) {
 			sales.clear();
 		}
 	}
 
 	@Override
 	public void removeFromTempList(int saleIndex) {
-		if(sales != null && saleIndex < sales.size()){
+		if (sales != null && saleIndex < sales.size()) {
 			sales.remove(saleIndex);
 		}
 	}

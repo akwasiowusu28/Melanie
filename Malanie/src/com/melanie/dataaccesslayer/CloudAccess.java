@@ -152,6 +152,23 @@ public class CloudAccess {
 		}
 	}
 
+	public <T> void findItemsByWhereClause(String whereClause,
+			Class<T> itemClass, OperationCallBack<T> operationCallBack)
+					throws MelanieDataLayerException {
+		try {
+			isCollectionOperation = true;
+			collectionRequestsCount ++;
+			BackendlessDataQuery query = new BackendlessDataQuery(whereClause);
+			Backendless.Persistence
+			.of(itemClass)
+			.find(query,
+					(AsyncCallback<BackendlessCollection<T>>) new BackendAsynCallBack<T>(
+							operationCallBack));
+		} catch (Exception e) {
+			throw new MelanieDataLayerException(e.getMessage(), e);
+		}
+	}
+
 	public <T, E> void findItemsBetween(String fieldName, E lowerBound,
 			E upperBound, Class<T> itemClass,
 			OperationCallBack<T> operationCallBack)

@@ -28,6 +28,9 @@ public class Sale extends BaseEntity {
 	@DatabaseField(columnName = "CustomerId", foreignAutoCreate = true, foreignAutoRefresh = true, canBeNull = true, foreign = true)
 	private Customer customer;
 
+	@DatabaseField
+	private boolean paidFor = false;
+
 	public Sale() {
 		super();
 	}
@@ -64,6 +67,14 @@ public class Sale extends BaseEntity {
 		this.customer = customer;
 	}
 
+	public boolean isPaidFor() {
+		return paidFor;
+	}
+
+	public void setPaidFor(boolean paidFor) {
+		this.paidFor = paidFor;
+	}
+
 	@Override
 	public boolean equals(Object another) {
 		boolean equals = false;
@@ -85,5 +96,4 @@ public class Sale extends BaseEntity {
 		hash *= saleDate != null ? saleDate.hashCode() : 2;
 		return 31 * hash;
 	}
-
 }

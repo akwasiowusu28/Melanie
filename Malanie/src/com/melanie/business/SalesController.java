@@ -2,9 +2,12 @@ package com.melanie.business;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import com.melanie.entities.Customer;
+import com.melanie.entities.Payment;
 import com.melanie.entities.Sale;
+import com.melanie.entities.SalePayment;
 import com.melanie.support.OperationCallBack;
 import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieBusinessException;
@@ -21,12 +24,12 @@ public interface SalesController {
 			OperationCallBack<Sale> salesCallBack)
 					throws MelanieBusinessException;
 
-	List<Sale> findSalesByCustomer(Customer customer,
-			OperationCallBack<Sale> operationCallBack)
+	void findSalesByCustomer(Customer customer,
+			OperationCallBack<SalePayment> operationCallBack)
 					throws MelanieBusinessException;
 
 	OperationResult recordPayment(Customer customer, List<Sale> sale,
-			double amount, double discount, double balance)
+			double amount, double discount, double balance, Map<String, Payment> previousPaymentsGroup)
 					throws MelanieBusinessException;
 
 	List<Sale> getSalesBetween(Date fromDate, Date toDate,

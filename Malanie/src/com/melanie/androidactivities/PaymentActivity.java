@@ -1,7 +1,10 @@
 package com.melanie.androidactivities;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,12 +22,15 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.melanie.androidactivities.support.ProductsAndSalesListViewAdapter;
+import com.melanie.androidactivities.support.SectionHeader;
 import com.melanie.androidactivities.support.SingleTextListAdapter;
 import com.melanie.androidactivities.support.Utils;
 import com.melanie.business.CustomersController;
 import com.melanie.business.SalesController;
 import com.melanie.entities.Customer;
+import com.melanie.entities.Payment;
 import com.melanie.entities.Sale;
+import com.melanie.entities.SalePayment;
 import com.melanie.support.BusinessFactory;
 import com.melanie.support.OperationCallBack;
 import com.melanie.support.OperationResult;
@@ -32,27 +38,45 @@ import com.melanie.support.exceptions.MelanieBusinessException;
 
 public class PaymentActivity extends AppCompatActivity {
 
-	private class LocalConstants{
+	private class LocalConstants {
 		public static final String SALES = "sales";
+		public static final String SALES_PAYMENT = "salesPayment";
 		public static final String EMPTY_STRING = "";
+		public static final String CUSTOMERS = "Customers";
+		public static final String DATEFORMAT = "MMM dd, yyyy";
 	}
-	private ArrayList<Sale> sales;
+
+	private ArrayList<Object> salesDisplay;
 	private SalesController salesController;
 	private CustomersController customersController;
 	private ArrayList<Customer> customers;
 	private Customer selectedCustomer;
-	private ProductsAndSalesListViewAdapter<Sale> salesListAdapter;
+	private ProductsAndSalesListViewAdapter<Object> salesListAdapter;
 	private Handler handler;
+	private boolean wasInstanceSaved = false;
+	private ArrayList<SalePayment> salesPayments;
 	SingleTextListAdapter<Customer> customersAdapter;
+	private SimpleDateFormat dateformater;
+	private double totalOwing = 0D;
+	private Map<String,Payment> payments;
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_payment);
+		if (savedInstanceState != null) {
+			wasInstanceSaved = true;
+			salesPayments = (ArrayList<SalePayment>) savedInstanceState.get(LocalConstants.SALES_PAYMENT);
+			salesDisplay = (ArrayList<Object>) savedInstanceState.get(LocalConstants.SALES);
+			customers = (ArrayList<Customer>) savedInstanceState.get(LocalConstants.CUSTOMERS);
+		}
 		initializeFields();
 		setupSalesListView();
 		setupAmountTextChangedListener();
-		getAllCustomers();
+		if (!wasInstanceSaved) {
+			getAllCustomers();
+		}
 		setupAutoCompleteCustomers();
 		setupButtonsClickListener();
 	}
@@ -61,17 +85,15 @@ public class PaymentActivity extends AppCompatActivity {
 		customers = new ArrayList<Customer>();
 		try {
 			List<Customer> tempCustomers = null;
-			tempCustomers = customersController
-					.getAllCustomers(new OperationCallBack<Customer>() {
+			tempCustomers = customersController.getAllCustomers(new OperationCallBack<Customer>() {
 
-						@Override
-						public void onCollectionOperationSuccessful(
-								List<Customer> results) {
+				@Override
+				public void onCollectionOperationSuccessful(List<Customer> results) {
 
-							Utils.mergeItems(results, customers, false);
-							Utils.notifyListUpdate(customersAdapter, handler);
-						}
-					});
+					Utils.mergeItems(results, customers, false);
+					Utils.notifyListUpdate(customersAdapter, handler);
+				}
+			});
 			if (tempCustomers != null && !tempCustomers.isEmpty()) {
 				customers.addAll(tempCustomers);
 			}
@@ -82,8 +104,7 @@ public class PaymentActivity extends AppCompatActivity {
 	}
 
 	private void setupAutoCompleteCustomers() {
-		customersAdapter = new SingleTextListAdapter<Customer>(this,
-				customers);
+		customersAdapter = new SingleTextListAdapter<Customer>(this, customers);
 
 		AutoCompleteTextView customerNameTextView = (AutoCompleteTextView) findViewById(R.id.customerFind);
 		customerNameTextView.setAdapter(customersAdapter);
@@ -117,8 +138,7 @@ public class PaymentActivity extends AppCompatActivity {
 	private final OnItemClickListener autoCompleteListener = new OnItemClickListener() {
 
 		@Override
-		public void onItemClick(AdapterView<?> parent, View view, int position,
-				long id) {
+		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 			selectedCustomer = customers.get(position);
 			updateSalesBasedOnSelectedAutoComplete();
 		}
@@ -126,19 +146,19 @@ public class PaymentActivity extends AppCompatActivity {
 
 	private void updateSalesBasedOnSelectedAutoComplete() {
 		try {
-			sales.clear();
-			List<Sale> tempSales = salesController.findSalesByCustomer(
-					selectedCustomer, new OperationCallBack<Sale>() {
+			salesDisplay.clear();
+			salesController.findSalesByCustomer(selectedCustomer, new OperationCallBack<SalePayment>() {
 
-						@Override
-						public void onCollectionOperationSuccessful(
-								List<Sale> results) {
-							Utils.mergeItems(results, sales, false);
-							Utils.notifyListUpdate(salesListAdapter, handler);
-						}
-					});
-			sales.addAll(tempSales);
-			Utils.notifyListUpdate(salesListAdapter, handler);
+				@Override
+				public void onCollectionOperationSuccessful(List<SalePayment> results) {
+					salesPayments.clear();
+					salesPayments.addAll(results);
+
+					addSales();
+
+					Utils.notifyListUpdate(salesListAdapter, handler);
+				}
+			});
 		} catch (MelanieBusinessException e) {
 			e.printStackTrace(); // log it
 		}
@@ -152,8 +172,7 @@ public class PaymentActivity extends AppCompatActivity {
 	private void setupSalesListView() {
 
 		ListView listView = (ListView) findViewById(R.id.salesListView);
-		View headerView = getLayoutInflater().inflate(
-				R.layout.layout_saleitems_header, listView, false);
+		View headerView = getLayoutInflater().inflate(R.layout.layout_saleitems_header, listView, false);
 
 		listView.addHeaderView(headerView);
 		listView.setAdapter(salesListAdapter);
@@ -162,28 +181,24 @@ public class PaymentActivity extends AppCompatActivity {
 	private void initializeFields() {
 		handler = new Handler(getMainLooper());
 		salesController = BusinessFactory.makeSalesController();
-		sales = new ArrayList<Sale>();
-		salesListAdapter = new ProductsAndSalesListViewAdapter<Sale>(this,
-				sales, false);
+		if (!wasInstanceSaved) {
+			salesDisplay = new ArrayList<>();
+			salesPayments = new ArrayList<>();
+		}
+		dateformater = new SimpleDateFormat(LocalConstants.DATEFORMAT);
+		payments = new LinkedHashMap<>();
+		salesListAdapter = new ProductsAndSalesListViewAdapter<Object>(this, salesDisplay, true);
 		customersController = BusinessFactory.makeCustomersController();
 	}
 
 	private void updateTotalField() {
-		if (!sales.isEmpty()) {
-			double total = 0;
-			for (Sale sale : sales) {
-				total += sale.getQuantitySold() * sale.getProduct().getPrice();
-			}
-			TextView totalView = (TextView) findViewById(R.id.totalValue);
-			totalView.setText(String.valueOf(total));
-		}
+		TextView totalView = (TextView) findViewById(R.id.totalToPay);
+		totalView.setText(String.valueOf(totalOwing));
 	}
 
 	public void savePayment() {
-		String amountReceivedString = ((EditText) findViewById(R.id.amountReceived))
-				.getText().toString();
-		String balanceString = ((TextView) findViewById(R.id.balanceDue))
-				.getText().toString();
+		String amountReceivedString = ((EditText) findViewById(R.id.paidAmount)).getText().toString();
+		String balanceString = ((TextView) findViewById(R.id.paymentBalance)).getText().toString();
 
 		double balance = 0, amountReceived = 0;
 
@@ -197,16 +212,21 @@ public class PaymentActivity extends AppCompatActivity {
 
 		OperationResult result = savePayment(amountReceived, balance);
 
-		Utils.makeToastBasedOnOperationResult(this, result,
-				R.string.paymentSuccess, R.string.paymentFailed);
+		Utils.makeToastBasedOnOperationResult(this, result, R.string.paymentSuccess, R.string.paymentFailed);
 		resetAll();
 	}
 
 	private OperationResult savePayment(double amountReceived, double balance) {
 		OperationResult result = OperationResult.FAILED;
 		try {
-			result = salesController.recordPayment(selectedCustomer, sales,
-					amountReceived, 0, balance);
+			List<Sale> salesToRecord = new ArrayList<>();
+			for (Object item : salesDisplay) {
+				if (item instanceof Sale) {
+					Sale sale = (Sale) item;
+					salesToRecord.add(sale);
+				}
+			}
+			result = salesController.recordPayment(selectedCustomer, salesToRecord, amountReceived, 0, balance, payments);
 		} catch (MelanieBusinessException e) {
 			e.printStackTrace(); // TODO log it
 		}
@@ -219,23 +239,20 @@ public class PaymentActivity extends AppCompatActivity {
 	}
 
 	private void resetAll() {
-		sales.clear();
+		salesDisplay.clear();
 		Utils.notifyListUpdate(salesListAdapter, handler);
 		Utils.clearInputTextFields(findViewById(R.id.paidAmount));
-		Utils.resetTextFieldsToZeros(findViewById(R.id.totalToPay),
-				findViewById(R.id.paymentBalance));
+		Utils.resetTextFieldsToZeros(findViewById(R.id.totalToPay), findViewById(R.id.paymentBalance));
 	}
 
 	private final TextWatcher amountTextChangedListener = new TextWatcher() {
 
 		@Override
-		public void onTextChanged(CharSequence s, int start, int before,
-				int count) {
+		public void onTextChanged(CharSequence s, int start, int before, int count) {
 		}
 
 		@Override
-		public void beforeTextChanged(CharSequence s, int start, int count,
-				int after) {
+		public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 		}
 
 		@Override
@@ -244,11 +261,10 @@ public class PaymentActivity extends AppCompatActivity {
 		}
 
 		private void handleAmountReceivedChanged(Editable s) {
-			TextView totalTextView = (TextView) findViewById(R.id.totalValue);
-			double total = Double.parseDouble(totalTextView.getText()
-					.toString());
+			TextView totalTextView = (TextView) findViewById(R.id.totalToPay);
+			double total = Double.parseDouble(totalTextView.getText().toString());
 			double amountReceived = 0;
-			if (!s.toString().equals("")) {
+			if (!s.toString().equals(LocalConstants.EMPTY_STRING)) {
 				amountReceived = Double.parseDouble(s.toString());
 			}
 			calculateBalance(amountReceived, total);
@@ -256,22 +272,45 @@ public class PaymentActivity extends AppCompatActivity {
 
 		private void calculateBalance(double amountReceived, double total) {
 			double balance = amountReceived - total;
-			TextView balanceTextView = (TextView) findViewById(R.id.balanceDue);
+			TextView balanceTextView = (TextView) findViewById(R.id.paymentBalance);
 			if (amountReceived != 0) {
 				balanceTextView.setText(String.valueOf(balance));
 			} else {
 				Utils.resetTextFieldsToZeros(balanceTextView);
-				updateTotalField();
 			}
 		}
 	};
 
-	@Override
-	protected void onSaveInstanceState(Bundle bundle) {
+	private void addSales() {
+		String previousDate = null;
+		for (SalePayment salePayment : salesPayments) {
+			Sale sale = salePayment.getSale();
+			String salesDate = dateformater.format(sale.getSaleDate());
+			if (!salesDate.equals(previousDate)) {
+				previousDate = salesDate;
 
-		bundle.putSerializable(LocalConstants.SALES, sales);
+				Payment payment = salePayment.getPayment();
+				payments.put(salesDate, payment);
 
-		super.onSaveInstanceState(bundle);
+				double amount = payment.getAmountReceived();
+				double balance = Math.abs(payment.getBalance());
+
+				String sectionDisplay = salesDate + ": " + String.valueOf(amount) + " paid, "
+						+ String.valueOf(balance) + " remaining";
+				salesDisplay.add(new SectionHeader(sectionDisplay));
+
+				totalOwing += balance;
+			}
+			salesDisplay.add(sale);
+		}
+		updateTotalField();
 	}
 
+	@Override
+	protected void onSaveInstanceState(Bundle bundle) {
+		bundle.putSerializable(LocalConstants.SALES_PAYMENT, salesPayments);
+		bundle.putSerializable(LocalConstants.SALES, salesDisplay);
+		bundle.putSerializable(LocalConstants.CUSTOMERS, customers);
+		super.onSaveInstanceState(bundle);
+	}
 }
