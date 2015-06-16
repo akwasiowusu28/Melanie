@@ -1,0 +1,9 @@
+com.melanie.androidactivities
+com.melanie.androidactivities.support
+com.melanie.business
+com.melanie.business.concrete
+com.melanie.dataaccesslayer
+com.melanie.dataaccesslayer.datasource
+com.melanie.entities
+com.melanie.support
+com.melanie.support.exceptions

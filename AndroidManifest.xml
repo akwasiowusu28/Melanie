@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.melanie.androidactivities"
+    android:versionCode="1"
+    android:versionName="1.0">
+
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature
+        android:name="android.hardware.camera.autofocus"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="false" />
+
+    <uses-sdk
+        android:minSdkVersion="10"
+        android:targetSdkVersion="22" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme">
+        <service android:name="com.backendless.AndroidService" />
+
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.melanie.androidactivities.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/sharefilespaths" />
+        </provider>
+
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/title_activity_main">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".CategoriesActivity"
+            android:label="@string/app_name">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.melanie.androidactivities.ProductsMainActivity" />
+        </activity>
+        <activity
+            android:name=".ProductsMainActivity"
+            android:label="@string/title_activity_products">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.melanie.androidactivities.MainActivity" />
+        </activity>
+        <activity
+            android:name=".AddProductActivity"
+            android:label="@string/title_activity_add_product">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.melanie.androidactivities.ProductsMainActivity" />
+        </activity>
+        <activity
+            android:name=".ScanBarcodeActivity"
+            android:label="@string/title_activity_scan_barcode"
+            android:theme="@android:style/Theme.Dialog">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.melanie.androidactivities.SalesActivity" />
+        </activity>
+        <activity
+            android:name=".SalesActivity"
+            android:label="@string/title_activity_sales">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.melanie.androidactivities.MainActivity" />
+        </activity>
+        <activity
+            android:name=".CustomersActivity"
+            android:label="@string/title_activity_customers">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.melanie.androidactivities.MainActivity" />
+        </activity>
+        <activity
+            android:name=".ReportsActivity"
+            android:label="@string/title_activity_reports">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.melanie.androidactivities.MainActivity" />
+        </activity>
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.melanie.androidactivities.MainActivity" />
+        </activity>
+        <activity
+            android:name=".PaymentActivity"
+            android:label="@string/melanie_payment">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.melanie.androidactivities.MainActivity" />
+        </activity>
+        <activity
+            android:name=".MelanieInventoryActivity"
+            android:label="@string/melanie_inventory">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.melanie.androidactivities.ProductsMainActivity" />
+        </activity>
+        <activity
+            android:name=".CustomerListActivity"
+            android:label="@string/title_activity_customer_list"></activity>
+        <activity
+            android:name=".DailySalesReportActivity"
+            android:label="@string/title_activity_sales_report">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.melanie.androidactivities.MainActivity" />
+        </activity>
+        <activity
+            android:name=".CustomerMainActivity"
+            android:label="@string/title_activity_customer_main">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.melanie.androidactivities.MainActivity" />
+        </activity>
+        <activity
+            android:name=".ViewSalesActivity"
+            android:label="@string/title_activity_view_sales"
+            android:theme="@android:style/Theme.Dialog"></activity>
+        <activity
+            android:name=".MonthlySalesReportActivity"
+            android:label="@string/title_activity_monthly_sales_report"></activity>
+        <activity
+            android:name=".SelectPrinterActivity"
+            android:label="@string/title_activity_select_printer"
+            android:theme="@android:style/Theme.Dialog">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.melanie.androidactivities.MainActivity" />
+        </activity>
+        <activity
+            android:name=".SignupActivity"
+            android:label="@string/signup"
+            android:noHistory="true"></activity>
+        <activity
+            android:name=".ConfirmActivity"
+            android:label="@string/title_activity_confirm"
+            android:noHistory="true"></activity>
+        <activity
+            android:name=".LoginActivity"
+            android:label="@string/title_activity_login"
+            android:noHistory="true"></activity>
+        <activity android:name=".RecordCostsActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.melanie.androidactivities.ProductsMainActivity" />
+        </activity>
+    </application>
+
+</manifest>
