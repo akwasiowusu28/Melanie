@@ -44,11 +44,13 @@ public class BarcodePrintHelper {
 
     public BarcodePrintHelper(Context context, boolean bluetoothEnabledRefused) {
         this.isInitialized = !bluetoothEnabledRefused;
+
         if (!bluetoothEnabledRefused) {
             this.context = context;
             initializePrinter();
             createPrintProgressDialog();
             handler = new Handler(context.getMainLooper());
+
         }
     }
 

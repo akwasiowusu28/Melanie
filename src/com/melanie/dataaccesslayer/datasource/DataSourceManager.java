@@ -52,9 +52,9 @@ public class DataSourceManager {
      * @return a data access object
      * @throws MelanieDataLayerException
      */
-    public static Dao<Object, Integer> getCachedDaoFor(Class<?> entityClass)
+    public static <T>Dao<T, Integer> getCachedDaoFor(Class<T> entityClass)
             throws MelanieDataLayerException {
-        Dao<Object, Integer> dao = null;
+        Dao<T, Integer> dao = null;
         try {
             if (dataSource != null) {
                 dao = dataSource.getDao(entityClass);

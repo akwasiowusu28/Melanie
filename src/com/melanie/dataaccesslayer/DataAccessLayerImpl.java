@@ -36,7 +36,7 @@ public class DataAccessLayerImpl implements DataAccessLayer {
     }
 
     /**
-     * @param dataSource the ORM datasource helper pushed from the UI
+     * @param dataContext the ORM datasource helper pushed from the UI
      */
     @Override
     public <T> void initialize(T dataContext) {
@@ -54,12 +54,12 @@ public class DataAccessLayerImpl implements DataAccessLayer {
     public <T> OperationResult addDataItem(T dataItem, Class<T> itemClass, OperationCallBack<T> operationCallBack)
             throws MelanieDataLayerException {
         if (dataItem instanceof User) {
-            addUser(dataItem, operationCallBack);
+            addUser((User)dataItem, (OperationCallBack<User>)operationCallBack);
             return OperationResult.SUCCESSFUL;
         }
         OperationResult result = OperationResult.FAILED;
         try {
-            Dao<Object, Integer> dao = DataSourceManager.getCachedDaoFor(itemClass);
+            Dao<T, Integer> dao = DataSourceManager.getCachedDaoFor(itemClass);
             if (dao != null) {
                 int addReturn = dao.create(dataItem);
                 if (addReturn == 1) {
@@ -90,7 +90,7 @@ public class DataAccessLayerImpl implements DataAccessLayer {
             if (cloudAccess != null) {
                 cloudAccess.addDataItemSync(dataItem, itemClass);
             }
-            Dao<Object, Integer> dao = DataSourceManager.getCachedDaoFor(itemClass);
+            Dao<T, Integer> dao = DataSourceManager.getCachedDaoFor(itemClass);
             if (dao != null) {
                 int addReturn = dao.create(dataItem);
                 if (addReturn == 1) {
@@ -131,7 +131,7 @@ public class DataAccessLayerImpl implements DataAccessLayer {
 
         try {
             if (dataItem != null) {
-                Dao<Object, Integer> dao = DataSourceManager.getCachedDaoFor(itemClass);
+                Dao<T, Integer> dao = DataSourceManager.getCachedDaoFor(itemClass);
                 if (dao != null && dao.idExists(((BaseEntity) dataItem).getId())) {
                     int deleteReturn = dao.delete(dataItem);
                     if (deleteReturn == 1) {
@@ -159,7 +159,7 @@ public class DataAccessLayerImpl implements DataAccessLayer {
             throws MelanieDataLayerException {
         T item = null;
         try {
-            Dao<Object, Integer> dao = DataSourceManager.getCachedDaoFor(itemClass);
+            Dao<T, Integer> dao = DataSourceManager.getCachedDaoFor(itemClass);
             if (dao != null && dao.idExists(itemId)) {
                 item = itemClass.cast(dao.queryForId(itemId));
                 if (itemClass != User.class) {
@@ -189,9 +189,9 @@ public class DataAccessLayerImpl implements DataAccessLayer {
                                      OperationCallBack<T> operationCallBack) throws MelanieDataLayerException {
         T item = null;
         try {
-            Dao<Object, Integer> dao = DataSourceManager.getCachedDaoFor(itemClass);
+            Dao<T, Integer> dao = DataSourceManager.getCachedDaoFor(itemClass);
             if (dao != null) {
-                List<Object> results = dao.queryForEq(getFieldNameWithoutClassNamePrefix(fieldName), searchValue);
+                List<T> results = dao.queryForEq(getFieldNameWithoutClassNamePrefix(fieldName), searchValue);
                 if (results != null && results.size() > 0) {
                     item = itemClass.cast(results.get(0));
                     DataUtil.updateDataCache(item);
@@ -262,10 +262,10 @@ public class DataAccessLayerImpl implements DataAccessLayer {
                                             OperationCallBack<T> operationCallBack) throws MelanieDataLayerException {
         List<T> items = new ArrayList<T>();
         try {
-            Dao<Object, Integer> dao = DataSourceManager.getCachedDaoFor(itemClass);
+            Dao<T, Integer> dao = DataSourceManager.getCachedDaoFor(itemClass);
             if (dao != null) {
 
-                List<Object> results = dao.queryForEq(getFieldNameWithoutClassNamePrefix(fieldName), searchValue);
+                List<T> results = dao.queryForEq(getFieldNameWithoutClassNamePrefix(fieldName), searchValue);
                 if (results != null && results.size() > 0) {
                     items = (List<T>) results;
                     for (T item : items) {
@@ -303,7 +303,7 @@ public class DataAccessLayerImpl implements DataAccessLayer {
         OperationResult result = OperationResult.FAILED;
         try {
             if (dataItem != null) {
-                Dao<Object, Integer> dao = DataSourceManager.getCachedDaoFor(itemClass);
+                Dao<T, Integer> dao = DataSourceManager.getCachedDaoFor(itemClass);
                 if (dao != null && dao.idExists(((BaseEntity) dataItem).getId())) {
                     int updateReturn = dao.refresh(dataItem);
                     if (updateReturn == 1) {
@@ -324,7 +324,7 @@ public class DataAccessLayerImpl implements DataAccessLayer {
             throws MelanieDataLayerException {
         OperationResult result = OperationResult.FAILED;
         if (dataItem instanceof User) {
-            Dao<Object, Integer> dao = DataSourceManager.getCachedDaoFor(itemClass);
+            Dao<T, Integer> dao = DataSourceManager.getCachedDaoFor(itemClass);
             try {
                 result = DataUtil.addOrUpdateItem(dao, dataItem);
             } catch (SQLException e) {
@@ -342,10 +342,10 @@ public class DataAccessLayerImpl implements DataAccessLayer {
 
         List<T> result = new ArrayList<T>();
         try {
-            Dao<Object, Integer> dao = DataSourceManager.getCachedDaoFor(itemClass);
+            Dao<T, Integer> dao = DataSourceManager.getCachedDaoFor(itemClass);
             if (dao != null && dao.queryBuilder() != null) {
-                QueryBuilder<Object, Integer> queryBuilder = dao.queryBuilder();
-                Where<Object, Integer> where = queryBuilder.where();
+                QueryBuilder<T, Integer> queryBuilder = dao.queryBuilder();
+                Where<T, Integer> where = queryBuilder.where();
                 where.between(fieldName, lowerBound, upperBound);
 
                 result.addAll((List<T>) dao.query(queryBuilder.prepare()));
@@ -359,9 +359,9 @@ public class DataAccessLayerImpl implements DataAccessLayer {
         return result;
     }
 
-    private <T> void addUser(T user, final OperationCallBack<T> operationCallBack) throws MelanieDataLayerException {
+    private void addUser(User user, final OperationCallBack<User> operationCallBack) throws MelanieDataLayerException {
         try {
-            Dao<Object, Integer> dao = DataSourceManager.getCachedDaoFor(User.class);
+            Dao<User, Integer> dao = DataSourceManager.getCachedDaoFor(User.class);
             DataUtil.addOrUpdateItem(dao, user);
             addUserToCloud((User) user, dao, (OperationCallBack<User>) operationCallBack);
         } catch (MelanieDataLayerException | SQLException e) {
@@ -369,7 +369,7 @@ public class DataAccessLayerImpl implements DataAccessLayer {
         }
     }
 
-    private void addUserToCloud(User user, final Dao<Object, Integer> dao,
+    private void addUserToCloud(User user, final Dao<User, Integer> dao,
                                 final OperationCallBack<User> operationCallBack) {
         final User userInstance = user;
         cloudAccess.addUser(userInstance, new OperationCallBack<BackendlessUser>() {
@@ -392,7 +392,7 @@ public class DataAccessLayerImpl implements DataAccessLayer {
         boolean itemExists = false;
         try {
             if (dataItem != null) {
-                Dao<Object, Integer> dao = DataSourceManager.getCachedDaoFor(itemClass);
+                Dao<T, Integer> dao = DataSourceManager.getCachedDaoFor(itemClass);
                 itemExists = dao != null && dao.idExists(((BaseEntity) dataItem).getId());
 
             }

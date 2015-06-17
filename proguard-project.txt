@@ -21,9 +21,11 @@
 -libraryjars /libs/ormlite-core-4.48.jar
 -libraryjars /libs/zbar.jar
 
+
 -keep class backendless.** { *; }
 -keep class com.backendless.** { *; }
 -keep class weborb.** { *; }
+-keep class com.epson.** { *; }
 
 #OrmLite uses reflection
 -keep class com.j256.**

@@ -23,7 +23,7 @@ final class DataUtil {
     public static <T> List<T> findAllItemsFromCache(Class<T> itemClass) throws MelanieDataLayerException {
         List<T> items = new ArrayList<T>();
         try {
-            Dao<Object, Integer> dao = DataSourceManager.getCachedDaoFor(itemClass);
+            Dao<T, Integer> dao = DataSourceManager.getCachedDaoFor(itemClass);
             if (dao != null) {
                 items.addAll((List<T>) dao.queryForAll());
             }
@@ -34,14 +34,14 @@ final class DataUtil {
         return items;
     }
 
-    private static <T> void removeLeastRecentlyUsedItem(Dao<Object, Integer> dao, Class<T> itemClass)
+    private static <T> void removeLeastRecentlyUsedItem(Dao<T, Integer> dao, Class<T> itemClass)
             throws MelanieDataLayerException {
         List<BaseEntity> items = (List<BaseEntity>) findAllItemsFromCache(itemClass);
         int size = items.size();
         if (size > 0) {
             Collections.sort(items);
             try {
-                dao.delete(items.remove(0));
+                dao.delete((T)items.remove(0));
             } catch (SQLException e) {
                 throw new MelanieDataLayerException(e.getMessage(), e);
             }
@@ -52,8 +52,8 @@ final class DataUtil {
         OperationResult result = OperationResult.FAILED;
         try {
             if (dataItem != null) {
-                Class<?> itemClass = dataItem.getClass();
-                Dao<Object, Integer> dao = DataSourceManager.getCachedDaoFor(itemClass);
+                Class<T> itemClass = (Class<T>)dataItem.getClass();
+                Dao<T, Integer> dao = DataSourceManager.getCachedDaoFor(itemClass);
                 if (dao != null && dao.countOf() >= 30) {
                     DataUtil.removeLeastRecentlyUsedItem(dao, itemClass);
                 }
@@ -67,7 +67,7 @@ final class DataUtil {
         return result;
     }
 
-    public static <T> OperationResult addOrUpdateItem(Dao<Object, Integer> dao, T dataItem) throws SQLException {
+    public static <T> OperationResult addOrUpdateItem(Dao<T, Integer> dao, T dataItem) throws SQLException {
 
         OperationResult result = OperationResult.FAILED;
 
