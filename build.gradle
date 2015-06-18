@@ -13,7 +13,6 @@ android {
     dependencies {
         compile "com.android.support:appcompat-v7:22.2.0"
         compile fileTree(dir: 'libs', include: '*')
-
     }
 
     defaultConfig {
@@ -38,6 +37,7 @@ android {
                 renderscript.srcDirs = ['src']
                 res.srcDirs = ['res']
                 assets.srcDirs = ['assets']
+                jniLibs.srcDirs = ['libs']
             }
         }
     }
@@ -45,10 +45,7 @@ android {
     buildTypes {
         release {
             minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt')
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-project.txt'
         }
     }
-}
-
-dependencies {
 }

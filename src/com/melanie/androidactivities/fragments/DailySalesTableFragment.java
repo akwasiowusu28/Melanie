@@ -143,7 +143,7 @@ public class DailySalesTableFragment extends Fragment implements
 
     private MelanieDatePicker getDatePicker(final Button pickerButton) {
 
-        return new MelanieDatePicker(getActivity(), new OnDateSetListener() {
+        return MelanieDatePicker.createInstance(getActivity(), new OnDateSetListener() {
 
             @Override
             public void onDateSet(DatePicker view, int year, int month, int day) {

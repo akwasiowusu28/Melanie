@@ -12,13 +12,41 @@ import java.util.TimeZone;
 
 public class MelanieDatePicker extends DialogFragment {
 
+    private class LocalConstants{
+        public static final  String CONTEXT = "context";
+        public static final String DATELISTENER = "dateListener";
+    }
+
     private Context context;
     private OnDateSetListener dateSetListener;
 
-    public MelanieDatePicker(Context context, OnDateSetListener dateSetListener) {
+    public MelanieDatePicker(){
         super();
-        this.context = context;
+    }
+
+    public static MelanieDatePicker createInstance(Context context, OnDateSetListener dateSetListener){
+           MelanieDatePicker picker = new MelanieDatePicker();
+
+        picker.setContext(context);
+        picker.setDateSetListener(dateSetListener);
+
+        return picker;
+    }
+
+    public OnDateSetListener getDateSetListener() {
+        return dateSetListener;
+    }
+
+    public void setDateSetListener(OnDateSetListener dateSetListener) {
         this.dateSetListener = dateSetListener;
+    }
+
+    public Context getContext() {
+        return context;
+    }
+
+    public void setContext(Context context) {
+        this.context = context;
     }
 
     @Override

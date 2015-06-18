@@ -12,14 +12,14 @@
 
 # Add any project specific keep options here:
 
--libraryjars /libs/backendless.jar
--libraryjars /libs/barcodegenerator.jar
--libraryjars /libs/btsdk.jar
--libraryjars /libs/LWPrint.jar
--libraryjars /libs/mpandroidchartlibrary-2-0-8.jar
--libraryjars /libs/ormlite-android-4.48.jar
--libraryjars /libs/ormlite-core-4.48.jar
--libraryjars /libs/zbar.jar
+#-libraryjars libs/backendless.jar
+#-libraryjars libs/barcodegenerator.jar
+#-libraryjars libs/btsdk.jar
+#-libraryjars libs/LWPrint.jar
+#-libraryjars libs/mpandroidchartlibrary-2-0-8.jar
+#-libraryjars libs/ormlite-android-4.48.jar
+#-libraryjars libs/ormlite-core-4.48.jar
+#-libraryjars libs/zbar.jar
 
 
 -keep class backendless.** { *; }
@@ -34,6 +34,7 @@
 -keepclassmembers enum com.j256.** { *; }
 -keep interface com.j256.**
 -keepclassmembers interface com.j256.** { *; }
+-keep class net.sourceforge.** { *; }
 
 -keep class com.melanie.dataacesslayer.datasource.** { *; }
 -keep class com.melanie.entities.** { *; }

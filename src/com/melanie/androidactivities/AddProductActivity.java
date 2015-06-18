@@ -111,9 +111,7 @@ public class AddProductActivity extends AppCompatActivity {
 
     /**
      * Add a new product from the user input
-     *
-     * @param view the add button
-     */
+         */
     public void addProduct() {
 
         Category category = getSelectedCategory();
