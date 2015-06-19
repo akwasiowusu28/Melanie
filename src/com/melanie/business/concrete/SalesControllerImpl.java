@@ -13,8 +13,10 @@ import com.melanie.entities.Sale;
 import com.melanie.entities.SalePayment;
 import com.melanie.support.BusinessFactory;
 import com.melanie.support.DataFactory;
+import com.melanie.support.MelanieArgumentValidator;
 import com.melanie.support.OperationCallBack;
 import com.melanie.support.OperationResult;
+import com.melanie.support.SupportFactory;
 import com.melanie.support.exceptions.MelanieBusinessException;
 import com.melanie.support.exceptions.MelanieDataLayerException;
 
@@ -22,7 +24,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +42,8 @@ public class SalesControllerImpl implements SalesController {
     private List<Sale> sales;
     private int operationCount = 0;
     private boolean isSaving = false;
-    private SimpleDateFormat dateformater;
+    private SimpleDateFormat dateFormatter;
+    MelanieArgumentValidator validator;
 
     public SalesControllerImpl() {
         productController = BusinessFactory.makeProductEntryController();
@@ -50,7 +52,8 @@ public class SalesControllerImpl implements SalesController {
         notFoundProducts = new LinkedList<String>();
         session = BusinessFactory.getSession();
         cloudAccess = DataFactory.makeCloudAccess();
-        dateformater = new SimpleDateFormat(LocalConstants.DATEFORMAT);
+        dateFormatter = new SimpleDateFormat(LocalConstants.DATEFORMAT);
+        validator = SupportFactory.makeValidator();
     }
 
     @Override
@@ -146,7 +149,6 @@ public class SalesControllerImpl implements SalesController {
     public OperationResult saveCurrentSales(final Customer customer, double amountReceived, double discount,
                                             final double balance) throws MelanieBusinessException {
         OperationResult result = OperationResult.FAILED;
-        if (dataAccess != null) {
             try {
                 isSaving = true;
 
@@ -155,7 +157,7 @@ public class SalesControllerImpl implements SalesController {
                 payment.setOwnerId(session.getUser().getObjectId());
 
                 if (session.canConnectToCloud() && dataAccess != null) {
-                    dataAccess.addDataItem(payment, Payment.class, new OperationCallBack<Payment>() {
+                    result = dataAccess.addDataItem(payment, Payment.class, new OperationCallBack<Payment>() {
                         @Override
                         public void onOperationSuccessful(Payment payment) {
                             for (Sale sale : sales) {
@@ -179,8 +181,7 @@ public class SalesControllerImpl implements SalesController {
             } catch (MelanieDataLayerException e) {
                 throw new MelanieBusinessException(e.getMessage(), e);
             }
-            result = OperationResult.SUCCESSFUL;
-        }
+
         return result;
     }
 
@@ -192,7 +193,7 @@ public class SalesControllerImpl implements SalesController {
     public void findSalesByCustomer(Customer customer, OperationCallBack<SalePayment> operationCallBack)
             throws MelanieBusinessException {
 
-        if (session.canConnectToCloud() && dataAccess != null) {
+        if (session.canConnectToCloud()) {
             try {
                 String where = LocalConstants.CUSTOMEROBJECTID + "='" + customer.getObjectId() + "' and Sale.paidFor=False";
                 cloudAccess.findItemsByWhereClause(where, SalePayment.class,
@@ -206,32 +207,36 @@ public class SalesControllerImpl implements SalesController {
     @Override
     public OperationResult recordPayment(Customer customer, List<Sale> sales, double amountReceived, double discount,
                                          double balance, Map<String, Payment> previousPaymentsGroup) throws MelanieBusinessException {
-        this.sales = new ArrayList<Sale>(sales);
-        updatePaidFor(this.sales, amountReceived, previousPaymentsGroup);
-        return saveCurrentSales(customer, amountReceived, discount, balance);
-    }
+        OperationResult result = OperationResult.FAILED;
 
-    private void updatePaidFor(List<Sale> sales, double amountReceived, Map<String, Payment> payments) {
-        Iterator<Entry<String, Payment>> iterator = payments.entrySet().iterator();
-        while (iterator.hasNext()) {
-            if (amountReceived > 0) {
-                Entry<String, Payment> entry = iterator.next();
-                Payment payment = entry.getValue();
-                double balance = Math.abs(payment.getBalance());
+        validator.VerifyParamsNonNull(previousPaymentsGroup, sales);
 
-                if (amountReceived > balance) {
-                    amountReceived -= balance;
-                    for (Sale sale : sales) {
-                        String saleDate = dateformater.format(sale.getSaleDate());
-                        if (saleDate.equals(entry.getKey())) {
-                            sale.setPaidFor(true);
-                        }
+        for(Entry<String, Payment> entry: previousPaymentsGroup.entrySet()){
+            Payment payment = entry.getValue();
+            String date = entry.getKey();
+            if(payment != null){
+                double paymentBalance = Math.abs(payment.getBalance());
+                this.sales.clear();
+                for(Sale sale : sales){
+                    if(dateFormatter.format(sale.getSaleDate()).equals(date)){
+                        sale.setPaidFor(true);
+                        this.sales.add(sale);
                     }
-                    break;
                 }
-
+                if(amountReceived >= paymentBalance){
+                    amountReceived -= paymentBalance;
+                   result = saveCurrentSales(customer,paymentBalance,0,0);
+                }
+                else {
+                    if(amountReceived > 0) {
+                       result = saveCurrentSales(customer, amountReceived, 0, -(paymentBalance - amountReceived));
+                        break; //there is no point moving on in this case;
+                    }
+                }
             }
         }
+
+       return result;
     }
 
     private void addBarcodeToNotFoundList(String barcode) {

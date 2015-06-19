@@ -133,10 +133,9 @@ public class PaymentActivity extends AppCompatActivity {
     }
 
     private void getAllCustomers() {
-        customers = new ArrayList<Customer>();
+        customers = new ArrayList<>();
         try {
-            List<Customer> tempCustomers = null;
-            tempCustomers = customersController.getAllCustomers(new OperationCallBack<Customer>() {
+            customers.addAll(customersController.getAllCustomers(new OperationCallBack<Customer>() {
 
                 @Override
                 public void onCollectionOperationSuccessful(List<Customer> results) {
@@ -144,10 +143,7 @@ public class PaymentActivity extends AppCompatActivity {
                     Utils.mergeItems(results, customers, false);
                     Utils.notifyListUpdate(customersAdapter, handler);
                 }
-            });
-            if (tempCustomers != null && !tempCustomers.isEmpty()) {
-                customers.addAll(tempCustomers);
-            }
+            }));
 
         } catch (MelanieBusinessException e) {
             e.printStackTrace(); // TODO: log it
@@ -155,7 +151,7 @@ public class PaymentActivity extends AppCompatActivity {
     }
 
     private void setupAutoCompleteCustomers() {
-        customersAdapter = new SingleTextListAdapter<Customer>(this, customers);
+        customersAdapter = new SingleTextListAdapter<>(this, customers);
 
         AutoCompleteTextView customerNameTextView = (AutoCompleteTextView) findViewById(R.id.customerFind);
         customerNameTextView.setAdapter(customersAdapter);
@@ -212,7 +208,7 @@ public class PaymentActivity extends AppCompatActivity {
         }
         dateformater = new SimpleDateFormat(LocalConstants.DATEFORMAT);
         payments = new LinkedHashMap<>();
-        salesListAdapter = new ProductsAndSalesListViewAdapter<Object>(this, salesDisplay, true);
+        salesListAdapter = new ProductsAndSalesListViewAdapter<>(this, salesDisplay, true);
         customersController = BusinessFactory.makeCustomersController();
     }
 
@@ -274,23 +270,25 @@ public class PaymentActivity extends AppCompatActivity {
         String previousDate = null;
         for (SalePayment salePayment : salesPayments) {
             Sale sale = salePayment.getSale();
-            String salesDate = dateformater.format(sale.getSaleDate());
-            if (!salesDate.equals(previousDate)) {
-                previousDate = salesDate;
+                String salesDate = dateformater.format(sale.getSaleDate());
+                if (!salesDate.equals(previousDate)) {
+                    previousDate = salesDate;
 
-                Payment payment = salePayment.getPayment();
-                payments.put(salesDate, payment);
+                    Payment payment = salePayment.getPayment();
+                    payments.put(salesDate, payment);
 
-                double amount = payment.getAmountReceived();
-                double balance = Math.abs(payment.getBalance());
+                    double amount = payment.getAmountReceived();
+                    double balance = Math.abs(payment.getBalance());
 
-                String sectionDisplay = salesDate + ": " + String.valueOf(amount) + " paid, "
-                        + String.valueOf(balance) + " remaining";
-                salesDisplay.add(new SectionHeader(sectionDisplay));
+                    String sectionDisplay = salesDate + ": " + String.valueOf(amount) + " paid, "
+                            + String.valueOf(balance) + " remaining";
+                    salesDisplay.add(new SectionHeader(sectionDisplay));
 
-                totalOwing += balance;
+                    totalOwing += balance;
+                }
+            if(!salesDisplay.contains(sale)) {
+                salesDisplay.add(sale);
             }
-            salesDisplay.add(sale);
         }
         updateTotalField();
     }

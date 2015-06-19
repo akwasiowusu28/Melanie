@@ -92,8 +92,8 @@ public class ScanBarcodeActivity extends Activity {
                     keepScannedCountForBarcode(barcode);
                     updatePreviewText(barcode);
                     playBeep();
+                    break;
                 }
-                break;
             }
         }
 
