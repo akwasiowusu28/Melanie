@@ -86,7 +86,7 @@ public class ProductsAndSalesListViewAdapter<T> extends ArrayAdapter<T> {
                 setValues(convertView, name, quantity, price);
             } else if (item instanceof SectionHeader) {
                 setSectionValue(convertView,
-                        ((SectionHeader) item).getSectiontext());
+                        ((SectionHeader) item).getSectionText());
             }
         convertView.setOnLongClickListener(longClickListener);
         return convertView;

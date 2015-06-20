@@ -32,7 +32,7 @@ import com.melanie.support.exceptions.MelanieBusinessException;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -85,7 +85,7 @@ public class PaymentActivity extends AppCompatActivity {
     private ArrayList<SalePayment> salesPayments;
     private SimpleDateFormat dateformater;
     private double totalOwing = 0D;
-    private Map<String, Payment> payments;
+    private Map<String, Double> balancesPerSaleDates;
     private final OnClickListener buttonsClickListener = new OnClickListener() {
 
         @Override
@@ -207,7 +207,7 @@ public class PaymentActivity extends AppCompatActivity {
             salesPayments = new ArrayList<>();
         }
         dateformater = new SimpleDateFormat(LocalConstants.DATEFORMAT);
-        payments = new LinkedHashMap<>();
+        balancesPerSaleDates = new HashMap<>();
         salesListAdapter = new ProductsAndSalesListViewAdapter<>(this, salesDisplay, true);
         customersController = BusinessFactory.makeCustomersController();
     }
@@ -247,7 +247,7 @@ public class PaymentActivity extends AppCompatActivity {
                     salesToRecord.add(sale);
                 }
             }
-            result = salesController.recordPayment(selectedCustomer, salesToRecord, amountReceived, 0, balance, payments);
+            result = salesController.recordPayment(selectedCustomer, salesToRecord, amountReceived, 0, balance, balancesPerSaleDates);
         } catch (MelanieBusinessException e) {
             e.printStackTrace(); // TODO log it
         }
@@ -267,17 +267,15 @@ public class PaymentActivity extends AppCompatActivity {
     }
 
     private void addSales() {
-        String previousDate = null;
         for (SalePayment salePayment : salesPayments) {
             Sale sale = salePayment.getSale();
                 String salesDate = dateformater.format(sale.getSaleDate());
-                if (!salesDate.equals(previousDate)) {
-                    previousDate = salesDate;
+                if (!balancesPerSaleDates.containsKey(salesDate)) {
 
                     Payment payment = salePayment.getPayment();
-                    payments.put(salesDate, payment);
+                    double amount = totalAmountPaid(salesDate);
+                    balancesPerSaleDates.put(salesDate, payment.getBalance());
 
-                    double amount = payment.getAmountReceived();
                     double balance = Math.abs(payment.getBalance());
 
                     String sectionDisplay = salesDate + ": " + String.valueOf(amount) + " paid, "
@@ -291,6 +289,35 @@ public class PaymentActivity extends AppCompatActivity {
             }
         }
         updateTotalField();
+    }
+
+    /*need a pair type like Tuple in C# but too lazy to write my own now and don't want to include
+    * any apache jar so throwing caution to the wind and doing this
+    *ugly hacky thing. I apologize :-( */
+
+    private double totalAmountPaid(String date){
+           double amount = 0D;
+
+        List<Payment> payments = new ArrayList<>();
+        List<Sale> sales = new ArrayList<>();
+
+        for(SalePayment salePayment : salesPayments){
+
+            Sale sale = salePayment.getSale();
+
+            String saleDate = sale != null ?
+                    dateformater.format(sale.getSaleDate()) : LocalConstants.EMPTY_STRING;
+            Payment payment = salePayment.getPayment();
+
+            if(sale != null && payment != null && saleDate.equals(date)
+                    && !sales.contains(sale) && !payments.contains(payment)){
+
+                payments.add(payment);
+                sales.add(sale);
+                amount += Math.abs(payment.getAmountReceived());
+            }
+        }
+        return amount;
     }
 
     @Override
@@ -307,5 +334,7 @@ public class PaymentActivity extends AppCompatActivity {
         public static final String EMPTY_STRING = "";
         public static final String CUSTOMERS = "Customers";
         public static final String DATEFORMAT = "MMM dd, yyyy";
+        public static final int AMOUNT = 0;
+        public static final int BALANCE = 1;
     }
 }

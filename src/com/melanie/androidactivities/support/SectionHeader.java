@@ -1,20 +1,24 @@
 package com.melanie.androidactivities.support;
 
-public class SectionHeader {
+import java.io.Serializable;
 
-    private String sectiontext;
+public class SectionHeader implements Serializable{
 
-    public SectionHeader(String sectiontext) {
+    private static final long serialVersionUID = -7539641282828977852L;
+
+    private String sectionText;
+
+    public SectionHeader(String sectionText) {
         super();
-        this.sectiontext = sectiontext;
+        this.sectionText = sectionText;
     }
 
-    public String getSectiontext() {
-        return sectiontext;
+    public String getSectionText() {
+        return sectionText;
     }
 
-    public void setSectiontext(String sectiontext) {
-        this.sectiontext = sectiontext;
+    public void setSectionText(String sectionText) {
+        this.sectionText = sectionText;
     }
 
 }

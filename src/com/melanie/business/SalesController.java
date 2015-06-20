@@ -28,7 +28,7 @@ public interface SalesController {
             throws MelanieBusinessException;
 
     OperationResult recordPayment(Customer customer, List<Sale> sale,
-                                  double amount, double discount, double balance, Map<String, Payment> previousPaymentsGroup)
+                                  double amount, double discount, double balance, Map<String, Double> balancesPerSaleDate)
             throws MelanieBusinessException;
 
     List<Sale> getSalesBetween(Date fromDate, Date toDate,

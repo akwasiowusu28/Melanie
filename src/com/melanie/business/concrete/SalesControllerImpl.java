@@ -154,6 +154,7 @@ public class SalesControllerImpl implements SalesController {
 
                 // TODO: Figure out a way to do this transactionally
                 Payment payment = new Payment(customer, amountReceived, discount, balance);
+
                 payment.setOwnerId(session.getUser().getObjectId());
 
                 if (session.canConnectToCloud() && dataAccess != null) {
@@ -164,6 +165,11 @@ public class SalesControllerImpl implements SalesController {
                                 if (sale.getCustomer() == null && customer != null) {
                                     sale.setCustomer(customer);
                                 }
+
+                                if(balance >= 0){
+                                    sale.setPaidFor(true);
+                                }
+
                                 SalePayment salePayment = new SalePayment(sale, payment);
                                 try {
                                     dataAccess.addOrUpdateItemLocalOnly(sale.getProduct(), Product.class);
@@ -185,7 +191,7 @@ public class SalesControllerImpl implements SalesController {
         return result;
     }
 
-    private String getBarcodeNoChecksum(String barcode) {
+    public String getBarcodeNoChecksum(String barcode) {
         return barcode.substring(0, barcode.length() - 1);
     }
 
@@ -206,34 +212,33 @@ public class SalesControllerImpl implements SalesController {
 
     @Override
     public OperationResult recordPayment(Customer customer, List<Sale> sales, double amountReceived, double discount,
-                                         double balance, Map<String, Payment> previousPaymentsGroup) throws MelanieBusinessException {
+                                         double balance, Map<String, Double> balancesPerSalesDate) throws MelanieBusinessException {
         OperationResult result = OperationResult.FAILED;
 
-        validator.VerifyParamsNonNull(previousPaymentsGroup, sales);
+        validator.VerifyParamsNonNull(balancesPerSalesDate, sales);
 
-        for(Entry<String, Payment> entry: previousPaymentsGroup.entrySet()){
-            Payment payment = entry.getValue();
+        customer.setAmountOwed(customer.getAmountOwed() - amountReceived);
+
+        for(Entry<String, Double> entry: balancesPerSalesDate.entrySet()){
+            double balancePerDate = entry.getValue();
             String date = entry.getKey();
-            if(payment != null){
-                double paymentBalance = Math.abs(payment.getBalance());
                 this.sales.clear();
                 for(Sale sale : sales){
                     if(dateFormatter.format(sale.getSaleDate()).equals(date)){
-                        sale.setPaidFor(true);
                         this.sales.add(sale);
                     }
                 }
-                if(amountReceived >= paymentBalance){
-                    amountReceived -= paymentBalance;
-                   result = saveCurrentSales(customer,paymentBalance,0,0);
+
+                if(amountReceived >= balancePerDate){
+                    amountReceived -= balancePerDate;
+                   result = saveCurrentSales(customer,balancePerDate,0,0);
                 }
                 else {
                     if(amountReceived > 0) {
-                       result = saveCurrentSales(customer, amountReceived, 0, -(paymentBalance - amountReceived));
+                       result = saveCurrentSales(customer, amountReceived, 0, -(balancePerDate - amountReceived));
                         break; //there is no point moving on in this case;
                     }
                 }
-            }
         }
 
        return result;
