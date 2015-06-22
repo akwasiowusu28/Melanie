@@ -86,6 +86,7 @@ public class PaymentActivity extends AppCompatActivity {
     private SimpleDateFormat dateformater;
     private double totalOwing = 0D;
     private Map<String, Double> balancesPerSaleDates;
+
     private final OnClickListener buttonsClickListener = new OnClickListener() {
 
         @Override
@@ -102,6 +103,7 @@ public class PaymentActivity extends AppCompatActivity {
             }
         }
     };
+
     private final OnItemClickListener autoCompleteListener = new OnItemClickListener() {
 
         @Override
@@ -121,6 +123,8 @@ public class PaymentActivity extends AppCompatActivity {
             salesPayments = (ArrayList<SalePayment>) savedInstanceState.get(LocalConstants.SALES_PAYMENT);
             salesDisplay = (ArrayList<Object>) savedInstanceState.get(LocalConstants.SALES);
             customers = (ArrayList<Customer>) savedInstanceState.get(LocalConstants.CUSTOMERS);
+            totalOwing = savedInstanceState.getDouble(LocalConstants.TOTAL);
+            updateTotalField();
         }
         initializeFields();
         setupSalesListView();
@@ -206,7 +210,7 @@ public class PaymentActivity extends AppCompatActivity {
             salesDisplay = new ArrayList<>();
             salesPayments = new ArrayList<>();
         }
-        dateformater = new SimpleDateFormat(LocalConstants.DATEFORMAT);
+        dateformater = new SimpleDateFormat(LocalConstants.MMM_DD_YYYY);
         balancesPerSaleDates = new HashMap<>();
         salesListAdapter = new ProductsAndSalesListViewAdapter<>(this, salesDisplay, true);
         customersController = BusinessFactory.makeCustomersController();
@@ -268,40 +272,43 @@ public class PaymentActivity extends AppCompatActivity {
 
     private void addSales() {
         for (SalePayment salePayment : salesPayments) {
+
             Sale sale = salePayment.getSale();
-                String salesDate = dateformater.format(sale.getSaleDate());
-                if (!balancesPerSaleDates.containsKey(salesDate)) {
+            String salesDate = dateformater.format(sale.getSaleDate());
+            Payment payment = salePayment.getPayment();
 
-                    Payment payment = salePayment.getPayment();
-                    double amount = totalAmountPaid(salesDate);
-                    balancesPerSaleDates.put(salesDate, payment.getBalance());
+            boolean salesExists = balancesPerSaleDates.containsKey(salesDate);
+            double balance = Math.abs(payment.getBalance());
 
-                    double balance = Math.abs(payment.getBalance());
+            if (salesExists && balance < balancesPerSaleDates.get(salesDate)) {
+               balancesPerSaleDates.put(salesDate, balance);
+            }
 
-                    String sectionDisplay = salesDate + ": " + String.valueOf(amount) + " paid, "
-                            + String.valueOf(balance) + " remaining";
-                    salesDisplay.add(new SectionHeader(sectionDisplay));
+            if (!salesExists) {
 
-                    totalOwing += balance;
-                }
-            if(!salesDisplay.contains(sale)) {
+                double amount = totalAmountPaid(salesDate);
+                balancesPerSaleDates.put(salesDate, balance);
+
+                String sectionDisplay = salesDate + ": " + String.valueOf(amount) + " paid, "
+                        + String.valueOf(balance) + " remaining";
+                salesDisplay.add(new SectionHeader(sectionDisplay));
+
+                totalOwing += balance;
+            }
+            if (!salesDisplay.contains(sale)) {
                 salesDisplay.add(sale);
             }
         }
         updateTotalField();
     }
 
-    /*need a pair type like Tuple in C# but too lazy to write my own now and don't want to include
-    * any apache jar so throwing caution to the wind and doing this
-    *ugly hacky thing. I apologize :-( */
-
-    private double totalAmountPaid(String date){
-           double amount = 0D;
+    private double totalAmountPaid(String date) {
+        double amount = 0D;
 
         List<Payment> payments = new ArrayList<>();
         List<Sale> sales = new ArrayList<>();
 
-        for(SalePayment salePayment : salesPayments){
+        for (SalePayment salePayment : salesPayments) {
 
             Sale sale = salePayment.getSale();
 
@@ -309,8 +316,8 @@ public class PaymentActivity extends AppCompatActivity {
                     dateformater.format(sale.getSaleDate()) : LocalConstants.EMPTY_STRING;
             Payment payment = salePayment.getPayment();
 
-            if(sale != null && payment != null && saleDate.equals(date)
-                    && !sales.contains(sale) && !payments.contains(payment)){
+            if (sale != null && payment != null && saleDate.equals(date)
+                    && !sales.contains(sale) && !payments.contains(payment)) {
 
                 payments.add(payment);
                 sales.add(sale);
@@ -322,9 +329,12 @@ public class PaymentActivity extends AppCompatActivity {
 
     @Override
     protected void onSaveInstanceState(Bundle bundle) {
+
         bundle.putSerializable(LocalConstants.SALES_PAYMENT, salesPayments);
         bundle.putSerializable(LocalConstants.SALES, salesDisplay);
         bundle.putSerializable(LocalConstants.CUSTOMERS, customers);
+        bundle.putDouble(LocalConstants.TOTAL, totalOwing);
+
         super.onSaveInstanceState(bundle);
     }
 
@@ -333,8 +343,7 @@ public class PaymentActivity extends AppCompatActivity {
         public static final String SALES_PAYMENT = "salesPayment";
         public static final String EMPTY_STRING = "";
         public static final String CUSTOMERS = "Customers";
-        public static final String DATEFORMAT = "MMM dd, yyyy";
-        public static final int AMOUNT = 0;
-        public static final int BALANCE = 1;
+        public static final String MMM_DD_YYYY = "MMM dd, yyyy";
+        public static final String TOTAL = "total";
     }
 }

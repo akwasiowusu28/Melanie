@@ -39,7 +39,7 @@ public class SalesControllerImpl implements SalesController {
     private final CloudAccess cloudAccess;
     private final Queue<String> notFoundProducts;
     private final MelanieSession session;
-    private List<Sale> sales;
+    private List<Sale> salesFromScannedItems;
     private int operationCount = 0;
     private boolean isSaving = false;
     private SimpleDateFormat dateFormatter;
@@ -48,7 +48,7 @@ public class SalesControllerImpl implements SalesController {
     public SalesControllerImpl() {
         productController = BusinessFactory.makeProductEntryController();
         dataAccess = DataFactory.makeDataAccess();
-        sales = new ArrayList<Sale>();
+        salesFromScannedItems = new ArrayList<Sale>();
         notFoundProducts = new LinkedList<String>();
         session = BusinessFactory.getSession();
         cloudAccess = DataFactory.makeCloudAccess();
@@ -79,7 +79,7 @@ public class SalesControllerImpl implements SalesController {
                 throw new MelanieBusinessException(e.getMessage(), e); // TODO: log it
             }
         }
-        return sales;
+        return salesFromScannedItems;
     }
 
     private void addNewSale(final String barcode, final int count, final int total,
@@ -96,7 +96,7 @@ public class SalesControllerImpl implements SalesController {
                 operationCount++;
                 addProductToSale(result, count);
                 if (uiCallBack != null && operationCount == total) {
-                    uiCallBack.onCollectionOperationSuccessful(sales);
+                    uiCallBack.onCollectionOperationSuccessful(salesFromScannedItems);
                     operationCount = 0;
                 }
             }
@@ -115,11 +115,10 @@ public class SalesControllerImpl implements SalesController {
             sale.setQuantitySold(count);
             updateProductQuantityOfSale(sale, count);
             sale.setOwnerId(session.getUser().getObjectId());
-            sales.add(sale);
+            salesFromScannedItems.add(sale);
         }
     }
 
-    //The whole setup of recording the sales needs to be revisited...This seems messed up but I'm so tired right now to deal with it
     private void updateProductQuantityOfSale(Sale sale, int justAddedSaleQuantity) {
         Product product = sale.getProduct();
         if (product != null) {
@@ -137,7 +136,7 @@ public class SalesControllerImpl implements SalesController {
 
     private Sale getExistingSale(String barcode) {
         Sale sale = null;
-        for (Sale existingSale : sales)
+        for (Sale existingSale : salesFromScannedItems)
             if (existingSale.getProduct().getBarcode().equals(barcode)) {
                 sale = existingSale;
                 break;
@@ -146,8 +145,8 @@ public class SalesControllerImpl implements SalesController {
     }
 
     @Override
-    public OperationResult saveCurrentSales(final Customer customer, double amountReceived, double discount,
-                                            final double balance) throws MelanieBusinessException {
+    public OperationResult saveSales(final List<Sale> sales, final Customer customer, double amountReceived, double discount,
+                                     final double balance) throws MelanieBusinessException {
         OperationResult result = OperationResult.FAILED;
             try {
                 isSaving = true;
@@ -222,25 +221,22 @@ public class SalesControllerImpl implements SalesController {
         for(Entry<String, Double> entry: balancesPerSalesDate.entrySet()){
             double balancePerDate = entry.getValue();
             String date = entry.getKey();
-                this.sales.clear();
+                List<Sale> currentSales = new ArrayList<>();
                 for(Sale sale : sales){
                     if(dateFormatter.format(sale.getSaleDate()).equals(date)){
-                        this.sales.add(sale);
+                        currentSales.add(sale);
                     }
                 }
 
                 if(amountReceived >= balancePerDate){
                     amountReceived -= balancePerDate;
-                   result = saveCurrentSales(customer,balancePerDate,0,0);
+                   result = saveSales(currentSales, customer, balancePerDate, 0, 0);
                 }
-                else {
-                    if(amountReceived > 0) {
-                       result = saveCurrentSales(customer, amountReceived, 0, -(balancePerDate - amountReceived));
+                else if(amountReceived > 0) {
+                       result = saveSales(currentSales, customer, amountReceived, 0, -(balancePerDate - amountReceived));
                         break; //there is no point moving on in this case;
-                    }
                 }
         }
-
        return result;
     }
 
@@ -258,7 +254,7 @@ public class SalesControllerImpl implements SalesController {
         try {
             if (session.canConnectToCloud() && dataAccess != null) {
                 sales.addAll(dataAccess.findItemsBetween("SaleDate", fromDate, toDate, Sale.class, operationCallBack));
-                // refreshSales(sales);
+                // refreshSales(salesFromScannedItems);
             }
         } catch (MelanieDataLayerException e) {
             throw new MelanieBusinessException(e.getMessage(), e);
@@ -269,15 +265,15 @@ public class SalesControllerImpl implements SalesController {
 
     @Override
     public void clear() {
-        if (sales != null && !sales.isEmpty() && !isSaving) {
-            sales.clear();
+        if (salesFromScannedItems != null && !salesFromScannedItems.isEmpty() && !isSaving) {
+            salesFromScannedItems.clear();
         }
     }
 
     @Override
     public void removeFromTempList(int saleIndex) {
-        if (sales != null && saleIndex < sales.size()) {
-            sales.remove(saleIndex);
+        if (salesFromScannedItems != null && saleIndex < salesFromScannedItems.size()) {
+            salesFromScannedItems.remove(saleIndex);
         }
     }
 
@@ -286,10 +282,10 @@ public class SalesControllerImpl implements SalesController {
         public static final String DATEFORMAT = "MMM dd, yyyy";
     }
 
-    // private void refreshSales(List<Sale> sales)
+    // private void refreshSales(List<Sale> salesFromScannedItems)
     // throws MelanieDataLayerException {
     // if (dataAccess != null)
-    // for (Sale sale : sales)
+    // for (Sale sale : salesFromScannedItems)
     // dataAccess.refreshItem(sale.getProduct(), Product.class);
     // }
 }

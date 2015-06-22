@@ -52,7 +52,7 @@ public class SalesActivity extends AppCompatActivity {
     private ProductsAndSalesListViewAdapter<Sale> salesListAdapter;
     private TextListener discountListener, amountListener;
     private MelanieAlertDialog alertDialog;
-    private double balance, amountReceived, discount;
+    private double balance = 0D, amountReceived = 0D, discount = 0D, total = 0D;
     private boolean isPrinterFound = false;
     private ReceiptPrintingHelper receiptPrintingHelper;
     private ListView listView;
@@ -258,7 +258,7 @@ public class SalesActivity extends AppCompatActivity {
     public void saveSales() {
 
         recordTotals();
-        if (balance <= 0) {
+        if (amountReceived < total) {
             alertDialog.show();
         } else {
             saveCurrentSales(null);
@@ -291,7 +291,7 @@ public class SalesActivity extends AppCompatActivity {
 
     private void saveCurrentSales(Customer customer) {
         try {
-            saveResult = salesController.saveCurrentSales(customer, amountReceived, discount, balance);
+            saveResult = salesController.saveSales(new ArrayList<>(sales), customer, amountReceived, discount, balance);
         } catch (MelanieBusinessException e) {
             e.printStackTrace(); // TODO log it
         }
@@ -417,7 +417,7 @@ public class SalesActivity extends AppCompatActivity {
 
     private void updateTotalField() {
         if (!sales.isEmpty()) {
-            double total = 0;
+            total = 0D;
             for (Sale sale : sales) {
                 total += sale.getQuantitySold() * sale.getProduct().getPrice();
             }
@@ -527,7 +527,7 @@ public class SalesActivity extends AppCompatActivity {
 
         private void handleDiscountChanged(Editable s) {
             TextView totalTextView = (TextView) findViewById(R.id.totalValue);
-            double total = Double.parseDouble(totalTextView.getText().toString());
+
             String discountText = ((EditText) findViewById(R.id.discountValue)).getText().toString();
             if (discountText.equals(LocalConstants.EMPTY_STRING)) {
                 updateTotalField();

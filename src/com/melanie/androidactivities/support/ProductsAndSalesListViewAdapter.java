@@ -110,19 +110,27 @@ public class ProductsAndSalesListViewAdapter<T> extends ArrayAdapter<T> {
 
     private void setValues(View rowView, String name, int quantity, double price) {
 
-        ((TextView) rowView.findViewById(R.id.productNameTextView))
-                .setText(name);
-        ((TextView) rowView.findViewById(R.id.qtyTextView)).setText(String
-                .valueOf(quantity));
-        ((TextView) rowView.findViewById(R.id.unitPriceTextView))
-                .setText(String.valueOf(price));
-        ((TextView) rowView.findViewById(R.id.totalTextView)).setText(String
-                .valueOf(quantity * price));
+        TextView productNameTextView = (TextView) rowView.findViewById(R.id.productNameTextView);
+        if (productNameTextView != null)
+            productNameTextView.setText(name);
+
+        TextView qtyTextView = (TextView) rowView.findViewById(R.id.qtyTextView);
+        if (qtyTextView != null)
+            qtyTextView.setText(String.valueOf(quantity));
+
+        TextView unitPriceTextView = (TextView) rowView.findViewById(R.id.unitPriceTextView);
+        if (unitPriceTextView != null)
+            unitPriceTextView.setText(String.valueOf(price));
+
+        TextView totalTextView = (TextView) rowView.findViewById(R.id.totalTextView);
+        if (totalTextView != null)
+            totalTextView.setText(String.valueOf(quantity * price));
     }
 
     private void setSectionValue(View rowView, String sectionValue) {
 
-        ((TextView) rowView.findViewById(R.id.sectionTextView))
-                .setText(sectionValue);
+        TextView sectionView = (TextView) rowView.findViewById(R.id.sectionTextView);
+        if (sectionView != null)
+            sectionView.setText(sectionValue);
     }
 }

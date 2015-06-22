@@ -35,8 +35,8 @@ public interface SalesController {
                                OperationCallBack<Sale> operationCallBack)
             throws MelanieBusinessException;
 
-    OperationResult saveCurrentSales(Customer customer, double amountReceived,
-                                     double discount, double balance) throws MelanieBusinessException;
+    OperationResult saveSales(List<Sale> sales, Customer customer, double amountReceived,
+                              double discount, double balance) throws MelanieBusinessException;
 
     void removeFromTempList(int saleIndex);
 
