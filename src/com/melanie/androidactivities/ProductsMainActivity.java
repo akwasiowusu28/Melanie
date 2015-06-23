@@ -23,6 +23,7 @@ public class ProductsMainActivity extends AppCompatActivity {
                 NavigationHelper.getProductMainIcons(), NavigationHelper
                 .getProductMainNavigationItems(), NavigationHelper
                 .getProductMainNavigationDescription()));
+
         mainListView.setOnItemClickListener(new OnItemClickListener() {
 
             @Override

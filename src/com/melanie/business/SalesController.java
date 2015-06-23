@@ -1,7 +1,6 @@
 package com.melanie.business;
 
 import com.melanie.entities.Customer;
-import com.melanie.entities.Payment;
 import com.melanie.entities.Sale;
 import com.melanie.entities.SalePayment;
 import com.melanie.support.OperationCallBack;

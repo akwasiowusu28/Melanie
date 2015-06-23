@@ -49,7 +49,7 @@ public class ProductEntryControllerImpl implements ProductEntryController {
     public Category addCategory(String categoryName) throws MelanieBusinessException {
         argumentValidator.VerifyNotEmptyString(categoryName);
         Category category = null;
-        if (session.canConnectToCloud() && dataAccess != null) {
+        if (session.canConnectToCloud()) {
             category = new Category(categoryName);
             category.setOwnerId(session.getUser().getObjectId());
             OperationResult result;
@@ -75,7 +75,7 @@ public class ProductEntryControllerImpl implements ProductEntryController {
     @Override
     public Category findCategory(int id, OperationCallBack<Category> operationCallBack) throws MelanieBusinessException {
         Category category = null;
-        if (session.canConnectToCloud() && dataAccess != null) {
+        if (session.canConnectToCloud()) {
             try {
                 category = dataAccess.findItemById(id, Category.class, operationCallBack);
 
@@ -99,9 +99,9 @@ public class ProductEntryControllerImpl implements ProductEntryController {
             throws MelanieBusinessException {
         new MelanieArgumentValidatorImpl().VerifyNotEmptyString(categoryName);
         Category category = null;
-        if (session.canConnectToCloud() && dataAccess != null) {
+        if (session.canConnectToCloud()) {
             try {
-                category = dataAccess.findItemByFieldName(LocalConstants.CATEGORYNAME, categoryName, Category.class,
+                category = dataAccess.findItemByFieldName(LocalConstants.CATEGORY_NAME, categoryName, Category.class,
                         operationCallBack);
             } catch (MelanieDataLayerException e) {
                 throw new MelanieBusinessException(e.getMessage(), e);
@@ -119,8 +119,8 @@ public class ProductEntryControllerImpl implements ProductEntryController {
     @Override
     public List<Category> getAllCategories(OperationCallBack<Category> operationCallBack)
             throws MelanieBusinessException {
-        List<Category> allCategories = new ArrayList<Category>();
-        if (session.canConnectToCloud() && dataAccess != null) {
+        List<Category> allCategories = new ArrayList<>();
+        if (session.canConnectToCloud()) {
             try {
                 allCategories.addAll(getAllItemsOf(Category.class, operationCallBack));
             } catch (MelanieDataLayerException e) {
@@ -146,7 +146,7 @@ public class ProductEntryControllerImpl implements ProductEntryController {
         argumentValidator.VerifyNonNull(category);
         argumentValidator.VerifyNotEmptyString(productName);
 
-        if (session.canConnectToCloud() && dataAccess != null) {
+        if (session.canConnectToCloud()) {
             Product product = new Product(productName, quantity, price, category, barcode);
             product.setOwnerId(session.getUser().getObjectId());
             try {
@@ -164,8 +164,8 @@ public class ProductEntryControllerImpl implements ProductEntryController {
     @Override
     public List<Product> findAllProducts(OperationCallBack<Product> operationCallBack) throws MelanieBusinessException {
 
-        List<Product> allProducts = new ArrayList<Product>();
-        if (session.canConnectToCloud() && dataAccess != null) {
+        List<Product> allProducts = new ArrayList<>();
+        if (session.canConnectToCloud()) {
             try {
                 allProducts.addAll(getAllItemsOf(Product.class, operationCallBack));
                 for (Product product : allProducts) {
@@ -186,13 +186,13 @@ public class ProductEntryControllerImpl implements ProductEntryController {
      */
     @Override
     public OperationResult removeProduct(int productId) throws MelanieBusinessException {
-        try {
+
             findProduct(productId, new OperationCallBack<Product>() {
 
                 @Override
                 public void onOperationSuccessful(Product result) {
                     try {
-                        if (session.canConnectToCloud() && dataAccess != null) {
+                        if (session.canConnectToCloud()) {
                             dataAccess.deleteDataItem(result, Product.class);
                         }
                     } catch (MelanieDataLayerException e) {
@@ -201,8 +201,7 @@ public class ProductEntryControllerImpl implements ProductEntryController {
                 }
 
             });
-        } finally {
-        }
+
         return OperationResult.SUCCESSFUL;
     }
 
@@ -216,7 +215,7 @@ public class ProductEntryControllerImpl implements ProductEntryController {
     public Product findProduct(int productId, OperationCallBack<Product> operationCallBack)
             throws MelanieBusinessException {
         Product product = null;
-        if (session.canConnectToCloud() && dataAccess != null) {
+        if (session.canConnectToCloud()) {
             try {
                 product = dataAccess.findItemById(productId, Product.class, operationCallBack);
             } catch (MelanieDataLayerException e) {
@@ -236,9 +235,9 @@ public class ProductEntryControllerImpl implements ProductEntryController {
     public Product findProduct(String productName, OperationCallBack<Product> operationCallBack)
             throws MelanieBusinessException {
         Product product = null;
-        if (session.canConnectToCloud() && dataAccess != null) {
+        if (session.canConnectToCloud()) {
             try {
-                product = dataAccess.findItemByFieldName(LocalConstants.PRODUCTNAME, productName, Product.class,
+                product = dataAccess.findItemByFieldName(LocalConstants.PRODUCT_NAME, productName, Product.class,
                         operationCallBack);
             } catch (MelanieDataLayerException e) {
                 throw new MelanieBusinessException(e.getMessage(), e);
@@ -250,14 +249,13 @@ public class ProductEntryControllerImpl implements ProductEntryController {
     /**
      * Use this to update the quantity of a product
      *
-     * @param productName the name of the product to update
      * @throws MelanieBusinessException
      */
     @Override
     public OperationResult updateProduct(Product product) throws MelanieBusinessException {
         OperationResult result = OperationResult.FAILED;
         if (product != null) {
-            if (session.canConnectToCloud() && dataAccess != null) {
+            if (session.canConnectToCloud()) {
                 try {
                     result = dataAccess.updateDataItem(product, Product.class);
 
@@ -277,7 +275,7 @@ public class ProductEntryControllerImpl implements ProductEntryController {
     @Override
     public void getLastInsertedProductId(OperationCallBack<Integer> operationCallBack) throws MelanieBusinessException {
 
-        if (session.canConnectToCloud() && dataAccess != null) {
+        if (session.canConnectToCloud()) {
             try {
                 dataAccess.getLastInsertedId(Product.class, operationCallBack);
             } catch (MelanieDataLayerException e) {
@@ -289,7 +287,6 @@ public class ProductEntryControllerImpl implements ProductEntryController {
     /**
      * Use this to get find a product by its barcode
      *
-     * @param barcodDigits the barcode to search for
      * @return the found product or null
      * @throws MelanieBusinessException
      */
@@ -299,7 +296,7 @@ public class ProductEntryControllerImpl implements ProductEntryController {
         Product product = null;
         argumentValidator.VerifyNotEmptyString(barcode);
         try {
-            if (session.canConnectToCloud() && dataAccess != null) {
+            if (session.canConnectToCloud()) {
 
                 product = dataAccess.findItemByFieldName(LocalConstants.BARCODE, barcode, Product.class,
                         operationCallBack);
@@ -322,7 +319,7 @@ public class ProductEntryControllerImpl implements ProductEntryController {
         OperationResult result = OperationResult.FAILED;
 
         try {
-            if (session.canConnectToCloud() && dataAccess != null) {
+            if (session.canConnectToCloud()) {
                 for (CostEntry costEntry : costEntries) {
                     if (costEntry.getValue() != 0D) {
                         performSaveCostEntry(costEntry);
@@ -331,7 +328,7 @@ public class ProductEntryControllerImpl implements ProductEntryController {
                 result = OperationResult.SUCCESSFUL;
             }
         } catch (MelanieDataLayerException e) {
-
+             throw new MelanieBusinessException(e.getMessage(),e);
         }
         return result;
     }
@@ -341,7 +338,6 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 
         costEntry.setEntryDate(Calendar.getInstance().getTime());
 
-        if (dataAccess != null) {
             if (dataAccess.itemExists(costEntry.getCostItem(), CostItem.class)) {
 
                 dataAccess.addDataItem(costEntry, CostEntry.class, operationCallBack);
@@ -361,13 +357,12 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 
                 });
             }
-        }
     }
 
     @Override
     public List<CostEntry> getAllCostEntries(OperationCallBack<CostEntry> operationCallBack)
             throws MelanieBusinessException {
-        List<CostEntry> allCostEntries = new ArrayList<CostEntry>();
+        List<CostEntry> allCostEntries = new ArrayList<>();
         try {
             allCostEntries.addAll(getAllItemsOf(CostEntry.class, operationCallBack));
         } catch (MelanieDataLayerException e) {
@@ -379,7 +374,7 @@ public class ProductEntryControllerImpl implements ProductEntryController {
     @Override
     public List<CostItem> getAllCostItems(OperationCallBack<CostItem> operationCallBack)
             throws MelanieBusinessException {
-        List<CostItem> allCostItems = new ArrayList<CostItem>();
+        List<CostItem> allCostItems = new ArrayList<>();
         try {
             allCostItems.addAll(getAllItemsOf(CostItem.class, operationCallBack));
         } catch (MelanieDataLayerException e) {
@@ -390,9 +385,9 @@ public class ProductEntryControllerImpl implements ProductEntryController {
 
     private <T> List<T> getAllItemsOf(Class<T> itemClass, OperationCallBack<T> operationCallBack)
             throws MelanieDataLayerException {
-        List<T> items = new ArrayList<T>();
+        List<T> items = new ArrayList<>();
 
-        if (session.canConnectToCloud() && dataAccess != null) {
+        if (session.canConnectToCloud()) {
 
             items.addAll(dataAccess.findAllItems(itemClass, operationCallBack));
         }
@@ -400,8 +395,8 @@ public class ProductEntryControllerImpl implements ProductEntryController {
     }
 
     private class LocalConstants {
-        public static final String CATEGORYNAME = "CategoryName";
-        public static final String PRODUCTNAME = "CategoryName";
+        public static final String CATEGORY_NAME = "CategoryName";
+        public static final String PRODUCT_NAME = "ProductName";
         public static final String BARCODE = "Barcode";
     }
 }

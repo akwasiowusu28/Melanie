@@ -9,12 +9,14 @@ import com.melanie.androidactivities.CategoriesActivity;
 import com.melanie.androidactivities.CustomerListActivity;
 import com.melanie.androidactivities.CustomerMainActivity;
 import com.melanie.androidactivities.CustomersActivity;
+import com.melanie.androidactivities.DailySalesReportActivity;
 import com.melanie.androidactivities.MelanieInventoryActivity;
 import com.melanie.androidactivities.MonthlySalesReportActivity;
 import com.melanie.androidactivities.PaymentActivity;
 import com.melanie.androidactivities.ProductsMainActivity;
 import com.melanie.androidactivities.R;
 import com.melanie.androidactivities.RecordCostsActivity;
+import com.melanie.androidactivities.ReportsActivity;
 import com.melanie.androidactivities.SalesActivity;
 import com.melanie.androidactivities.SettingsActivity;
 import com.melanie.androidactivities.fragments.DailySalesLineChartFragment;
@@ -129,6 +131,40 @@ public class NavigationHelper {
                 R.string.SettingsDesc};
     }
 
+
+
+    /**
+     * Defines the main navigation items on the Reports main page. Add to this
+     * if you want to add another item on the navigation page
+     *
+     * @return String ids of the navigation items
+     */
+    public static Integer[] getReportsMainNavigationItems() {
+        return new Integer[]{R.string.dailySales, R.string.monthlySales,
+                R.string.userDailySales, R.string.userMonthlySales};
+    }
+
+    /**
+     * Returns the navigation icons used in the reports main page
+     *
+     * @return Ids for Icons used in the product main page
+     */
+    public static Integer[] getReportsMainIcons() {
+        return new Integer[]{R.drawable.dailyreport, R.drawable.monthlyreport,
+                R.drawable.userdailyreport, R.drawable.usermonthlyreport};
+    }
+
+    /**
+     * returns the small text descriptions under each navigation item on the
+     * reports main page
+     *
+     * @return Ids of the descriptions
+     */
+    public static Integer[] getReportsMainNavigationDescription() {
+        return new Integer[]{R.string.dailySalesDescription,
+                R.string.monthlySalesDescription, R.string.userDailySalesDescription, R.string.userMonthlySalesDescription};
+    }
+
     /**
      * A SparseArray containing the main Activities
      *
@@ -141,7 +177,7 @@ public class NavigationHelper {
                 append(0, ProductsMainActivity.class);
                 append(1, SalesActivity.class);
                 append(2, CustomerMainActivity.class);
-                append(3, MonthlySalesReportActivity.class);
+                append(3, ReportsActivity.class);
                 append(4, SettingsActivity.class);
             }
         };
@@ -176,6 +212,24 @@ public class NavigationHelper {
                 append(0, CustomersActivity.class);
                 append(1, PaymentActivity.class);
                 append(2, CustomerListActivity.class);
+            }
+        };
+    }
+
+
+    /**
+     * A SparseArray containing the activities in the Products navigation item
+     *
+     * @return the activities of the Product navigation item
+     */
+    public static SparseArray<Class<? extends Activity>> getReportsActivities() {
+
+        return new SparseArray<Class<? extends Activity>>() {
+            {
+                append(0, DailySalesReportActivity.class);
+                append(1, MonthlySalesReportActivity.class);
+                append(2, DailySalesReportActivity.class);
+                append(3, MonthlySalesReportActivity.class);
             }
         };
     }

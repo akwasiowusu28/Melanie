@@ -1,6 +1,7 @@
 package com.melanie.business.concrete;
 
 import com.melanie.androidactivities.support.Utils;
+import com.melanie.business.CustomersController;
 import com.melanie.business.MelanieSession;
 import com.melanie.business.ProductEntryController;
 import com.melanie.business.SalesController;
@@ -43,17 +44,20 @@ public class SalesControllerImpl implements SalesController {
     private int operationCount = 0;
     private boolean isSaving = false;
     private SimpleDateFormat dateFormatter;
-    MelanieArgumentValidator validator;
+    private MelanieArgumentValidator validator;
+    private CustomersController customersController;
+
 
     public SalesControllerImpl() {
         productController = BusinessFactory.makeProductEntryController();
         dataAccess = DataFactory.makeDataAccess();
-        salesFromScannedItems = new ArrayList<Sale>();
-        notFoundProducts = new LinkedList<String>();
+        salesFromScannedItems = new ArrayList<>();
+        notFoundProducts = new LinkedList<>();
         session = BusinessFactory.getSession();
         cloudAccess = DataFactory.makeCloudAccess();
         dateFormatter = new SimpleDateFormat(LocalConstants.DATEFORMAT);
         validator = SupportFactory.makeValidator();
+        customersController = BusinessFactory.makeCustomersController();
     }
 
     @Override
@@ -156,7 +160,7 @@ public class SalesControllerImpl implements SalesController {
 
                 payment.setOwnerId(session.getUser().getObjectId());
 
-                if (session.canConnectToCloud() && dataAccess != null) {
+                if (session.canConnectToCloud()) {
                     result = dataAccess.addDataItem(payment, Payment.class, new OperationCallBack<Payment>() {
                         @Override
                         public void onOperationSuccessful(Payment payment) {
@@ -217,6 +221,7 @@ public class SalesControllerImpl implements SalesController {
         validator.VerifyParamsNonNull(balancesPerSalesDate, sales);
 
         customer.setAmountOwed(customer.getAmountOwed() - amountReceived);
+        customersController.updateCustomer(customer);
 
         for(Entry<String, Double> entry: balancesPerSalesDate.entrySet()){
             double balancePerDate = entry.getValue();
@@ -250,9 +255,9 @@ public class SalesControllerImpl implements SalesController {
     @Override
     public List<Sale> getSalesBetween(Date fromDate, Date toDate, final OperationCallBack<Sale> operationCallBack)
             throws MelanieBusinessException {
-        List<Sale> sales = new ArrayList<Sale>();
+        List<Sale> sales = new ArrayList<>();
         try {
-            if (session.canConnectToCloud() && dataAccess != null) {
+            if (session.canConnectToCloud()) {
                 sales.addAll(dataAccess.findItemsBetween("SaleDate", fromDate, toDate, Sale.class, operationCallBack));
                 // refreshSales(salesFromScannedItems);
             }

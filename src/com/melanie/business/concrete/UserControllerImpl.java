@@ -29,7 +29,7 @@ public class UserControllerImpl implements UserController {
     public void createUser(String name, String phone, String password, String deviceId,
                            final OperationCallBack<User> operationCallBack) throws MelanieBusinessException {
         User user = new User(name, password, phone, deviceId, false);
-        if (session.canConnectToCloud() && dataAccess != null) {
+        if (session.canConnectToCloud() ) {
             try {
                 dataAccess.addDataItem(user, User.class, operationCallBack);
             } catch (MelanieDataLayerException e) {
@@ -43,10 +43,10 @@ public class UserControllerImpl implements UserController {
     public void loginSavedUser(final OperationCallBack<User> operationCallBack) throws MelanieBusinessException {
         // Since there's should be only one user on this device, find the user
         // with id 1 from cache
-        if (session.canConnectToCloud() && dataAccess != null) {
+        if (session.canConnectToCloud() ) {
             try {
                 final User user = dataAccess.findItemById(1, User.class, null);
-                if (user != null && cloudAccess != null) {
+                if (user != null) {
                     cloudAccess.login(user, new OperationCallBack<BackendlessUser>() {
 
                         @Override
@@ -67,7 +67,7 @@ public class UserControllerImpl implements UserController {
     public void updateUser(User user, String field, Object value,
                            final OperationCallBack<OperationResult> operationCallBack) throws MelanieBusinessException {
 
-        if (session.canConnectToCloud() && dataAccess != null) {
+        if (session.canConnectToCloud() ) {
             try {
                 if (user == null) {
                     user = getLocalUser();
@@ -98,7 +98,7 @@ public class UserControllerImpl implements UserController {
 
     private void performUpdate(final User user, OperationCallBack<BackendlessUser> operationCallBack)
             throws MelanieDataLayerException {
-        if (session.canConnectToCloud() && user != null && cloudAccess != null) {
+        if (session.canConnectToCloud() && user != null) {
             addUserToLocalDataStore(user);
             cloudAccess.updateUser(user, operationCallBack);
         }
@@ -106,18 +106,16 @@ public class UserControllerImpl implements UserController {
 
     @Override
     public boolean localUserExists() throws MelanieBusinessException {
-        boolean userExists = false;
 
-        userExists = getLocalUser() != null;
+       return getLocalUser() != null;
 
-        return userExists;
     }
 
     @Override
     public User getLocalUser() throws MelanieBusinessException {
         User user = null;
         try {
-            if (session.canConnectToCloud() && dataAccess != null) {
+            if (session.canConnectToCloud() ) {
                 user = dataAccess.findItemById(1, User.class, null);
             }
         } catch (MelanieDataLayerException e) {
@@ -128,7 +126,7 @@ public class UserControllerImpl implements UserController {
 
     @Override
     public void login(final User user, final OperationCallBack<OperationResult> operationCallBack) {
-        if (session.canConnectToCloud() && cloudAccess != null) {
+        if (session.canConnectToCloud()) {
             cloudAccess.login(user, new OperationCallBack<BackendlessUser>() {
 
                 @Override
@@ -138,7 +136,7 @@ public class UserControllerImpl implements UserController {
 
                     try {
                         if (!localUserExists()) {
-                            user.setConfirmed((boolean) user.getProperty(LocalConstants.ISCONFIRMED));
+                            user.setConfirmed((boolean) user.getProperty(LocalConstants.IS_CONFIRMED));
                             addUserToLocalDataStore(user);
                         }
                     } catch (MelanieDataLayerException | MelanieBusinessException e) {
@@ -161,7 +159,7 @@ public class UserControllerImpl implements UserController {
     @Override
     public void checkPhoneExistOnCloud(String phone, final OperationCallBack<User> operationCallBack)
             throws MelanieBusinessException {
-        if (session.canConnectToCloud() && cloudAccess != null) {
+        if (session.canConnectToCloud()) {
             try {
                 cloudAccess.findItemByFieldName(LocalConstants.PHONE, phone, BackendlessUser.class,
                         new OperationCallBack<BackendlessUser>() {
@@ -188,20 +186,18 @@ public class UserControllerImpl implements UserController {
     }
 
     private void addUserToLocalDataStore(User user) throws MelanieDataLayerException {
-        if (dataAccess != null) {
             dataAccess.addOrUpdateItemLocalOnly(user, User.class);
-        }
     }
 
     private User constructUserFromBackendless(BackendlessUser backendlessUser) {
         User user = null;
 
         if (backendlessUser != null) {
-            String objectId = backendlessUser.getProperty(LocalConstants.OBJECTID).toString();
+            String objectId = backendlessUser.getProperty(LocalConstants.OBJECT_ID).toString();
             String name = backendlessUser.getProperty(LocalConstants.NAME).toString();
             String phone = backendlessUser.getProperty(LocalConstants.PHONE).toString();
-            String deviceId = backendlessUser.getProperty(LocalConstants.DEVICEID).toString();
-            boolean isConfirmed = Boolean.getBoolean(backendlessUser.getProperty(LocalConstants.ISCONFIRMED).toString());
+            String deviceId = backendlessUser.getProperty(LocalConstants.DEVICE_ID).toString();
+            boolean isConfirmed = Boolean.getBoolean(backendlessUser.getProperty(LocalConstants.IS_CONFIRMED).toString());
 
             user = new User(name, null, phone, deviceId, isConfirmed);
             user.setObjectId(objectId);
@@ -214,9 +210,9 @@ public class UserControllerImpl implements UserController {
 
     private class LocalConstants {
         public static final String NAME = "name";
-        public static final String OBJECTID = "objectId";
-        public static final String DEVICEID = "deviceid";
-        public static final String ISCONFIRMED = "isconfirmed";
+        public static final String OBJECT_ID = "objectId";
+        public static final String DEVICE_ID = "deviceid";
+        public static final String IS_CONFIRMED = "isconfirmed";
         public static final String PHONE = "phone";
     }
 }

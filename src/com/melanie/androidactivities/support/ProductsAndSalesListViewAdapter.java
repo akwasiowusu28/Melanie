@@ -74,9 +74,13 @@ public class ProductsAndSalesListViewAdapter<T> extends ArrayAdapter<T> {
 
                 Sale sale = (Sale) item;
                 quantity = sale.getQuantitySold();
-                price = sale.getProduct().getPrice();
-                name = sale.getProduct().getProductName();
-                setValues(convertView, name, quantity, price);
+                Product product = sale.getProduct();
+                if(product != null){
+                    price = product.getPrice();
+                    name = product.getProductName();
+                    setValues(convertView, name, quantity, price);
+                }
+
             } else if (item instanceof Product) {
 
                 Product product = (Product) item;

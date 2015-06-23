@@ -86,6 +86,7 @@ public class PaymentActivity extends AppCompatActivity {
     private SimpleDateFormat dateformater;
     private double totalOwing = 0D;
     private Map<String, Double> balancesPerSaleDates;
+    AutoCompleteTextView customerNameTextView;
 
     private final OnClickListener buttonsClickListener = new OnClickListener() {
 
@@ -108,8 +109,11 @@ public class PaymentActivity extends AppCompatActivity {
 
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
             selectedCustomer = customers.get(position);
             updateSalesBasedOnSelectedAutoComplete();
+
+            Utils.dismissKeyboard(PaymentActivity.this, customerNameTextView);
         }
     };
 
@@ -134,6 +138,7 @@ public class PaymentActivity extends AppCompatActivity {
         }
         setupAutoCompleteCustomers();
         setupButtonsClickListener();
+        Utils.dismissKeyboard(this,customerNameTextView);
     }
 
     private void getAllCustomers() {
@@ -157,7 +162,7 @@ public class PaymentActivity extends AppCompatActivity {
     private void setupAutoCompleteCustomers() {
         customersAdapter = new SingleTextListAdapter<>(this, customers);
 
-        AutoCompleteTextView customerNameTextView = (AutoCompleteTextView) findViewById(R.id.customerFind);
+
         customerNameTextView.setAdapter(customersAdapter);
         customerNameTextView.setOnItemClickListener(autoCompleteListener);
     }
@@ -171,7 +176,6 @@ public class PaymentActivity extends AppCompatActivity {
 
     private void updateSalesBasedOnSelectedAutoComplete() {
         try {
-            salesDisplay.clear();
             salesController.findSalesByCustomer(selectedCustomer, new OperationCallBack<SalePayment>() {
 
                 @Override
@@ -179,6 +183,7 @@ public class PaymentActivity extends AppCompatActivity {
                     salesPayments.clear();
                     salesPayments.addAll(results);
 
+                    salesDisplay.clear();
                     addSales();
 
                     Utils.notifyListUpdate(salesListAdapter, handler);
@@ -210,6 +215,7 @@ public class PaymentActivity extends AppCompatActivity {
             salesDisplay = new ArrayList<>();
             salesPayments = new ArrayList<>();
         }
+        customerNameTextView = (AutoCompleteTextView) findViewById(R.id.customerFind);
         dateformater = new SimpleDateFormat(LocalConstants.MMM_DD_YYYY);
         balancesPerSaleDates = new HashMap<>();
         salesListAdapter = new ProductsAndSalesListViewAdapter<>(this, salesDisplay, true);
@@ -271,6 +277,7 @@ public class PaymentActivity extends AppCompatActivity {
     }
 
     private void addSales() {
+        totalOwing = 0D;
         for (SalePayment salePayment : salesPayments) {
 
             Sale sale = salePayment.getSale();

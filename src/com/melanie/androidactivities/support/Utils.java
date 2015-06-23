@@ -12,6 +12,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -276,5 +277,13 @@ public final class Utils {
         public static final int BLUETOOTH_REQUEST_CODE = 208;
         public static final int PRINTER_SELECT_REQUEST_CODE = 28;
         public static final String EMPTY_STRING = "";
+    }
+
+    public static void dismissKeyboard(Context context, EditText editText){
+        if(editText != null){
+            InputMethodManager imm = (InputMethodManager)context.getSystemService(
+                    Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
+        }
     }
 }

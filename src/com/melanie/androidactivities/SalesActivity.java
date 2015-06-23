@@ -55,13 +55,14 @@ public class SalesActivity extends AppCompatActivity {
     private double balance = 0D, amountReceived = 0D, discount = 0D, total = 0D;
     private boolean isPrinterFound = false;
     private ReceiptPrintingHelper receiptPrintingHelper;
-    private ListView listView;
     private String printerInfo;
     private OperationResult saveResult;
     private boolean wasInstanceSaved = false;
     private View selectedSaleView = null;
     private int currentPosition = 0;
     private boolean isInEditProcess = false;
+    private EditText discountText, amountText;
+
     private final OnClickListener buttonsClickListener = new OnClickListener() {
 
         @Override
@@ -78,6 +79,8 @@ public class SalesActivity extends AppCompatActivity {
                     clearFields();
                     break;
             }
+            Utils.dismissKeyboard(SalesActivity.this, discountText);
+            Utils.dismissKeyboard(SalesActivity.this, amountText);
         }
     };
     private OnClickListener editButtonsOnclickListener = new OnClickListener() {
@@ -88,32 +91,33 @@ public class SalesActivity extends AppCompatActivity {
             int currentValue = Integer.parseInt(qtyTextView.getText().toString());
             Sale sale = sales.get(currentPosition - 1);
             Product product = sale.getProduct();
-            int quantity = 0;
+            int quantity;
             if (product != null) {
                 quantity = product.getQuantity();
-            }
-            switch (v.getId()) {
-                case R.id.increaseButton:
 
-                    if (quantity - 1 >= 0) {
-                        currentValue++;
-                        product.setQuantity(quantity - 1);
-                        qtyTextView.setText(String.valueOf(currentValue));
-                    }
-                    break;
-                case R.id.decreaseButton:
-                    if (currentValue > 1) {
-                        currentValue--;
-                        product.setQuantity(quantity + 1);
-                        qtyTextView.setText(String.valueOf(currentValue));
-                    }
-                    break;
-                case R.id.saveSaleQtyButton:
-                    sale.setQuantitySold(currentValue);
-                    Utils.notifyListUpdate(salesListAdapter, handler);
-                    updateTotalField();
-                    configureViewLayout(false);
-                    break;
+                switch (v.getId()) {
+                    case R.id.increaseButton:
+
+                        if (quantity - 1 >= 0) {
+                            currentValue++;
+                            product.setQuantity(quantity - 1);
+                            qtyTextView.setText(String.valueOf(currentValue));
+                        }
+                        break;
+                    case R.id.decreaseButton:
+                        if (currentValue > 1) {
+                            currentValue--;
+                            product.setQuantity(quantity + 1);
+                            qtyTextView.setText(String.valueOf(currentValue));
+                        }
+                        break;
+                    case R.id.saveSaleQtyButton:
+                        sale.setQuantitySold(currentValue);
+                        Utils.notifyListUpdate(salesListAdapter, handler);
+                        updateTotalField();
+                        configureViewLayout(false);
+                        break;
+                }
             }
         }
     };
@@ -171,7 +175,7 @@ public class SalesActivity extends AppCompatActivity {
 
     private void setupSalesListView() {
 
-        listView = (ListView) findViewById(R.id.salesListView);
+        ListView listView = (ListView) findViewById(R.id.salesListView);
         View headerView = getLayoutInflater().inflate(R.layout.layout_saleitems_header, listView, false);
 
         listView.addHeaderView(headerView);
@@ -184,9 +188,11 @@ public class SalesActivity extends AppCompatActivity {
         executorService = Executors.newScheduledThreadPool(2);
         salesController = BusinessFactory.makeSalesController();
         if (!wasInstanceSaved) {
-            sales = new ArrayList<Sale>();
+            sales = new ArrayList<>();
         }
-        salesListAdapter = new ProductsAndSalesListViewAdapter<Sale>(this, sales, false);
+        discountText = (EditText) findViewById(R.id.discountValue);
+        amountText = (EditText) findViewById(R.id.amountReceived);
+        salesListAdapter = new ProductsAndSalesListViewAdapter<>(this, sales, false);
         discountListener = new TextListener(R.id.discountValue);
         amountListener = new TextListener(R.id.amountReceived);
         customersController = BusinessFactory.makeCustomersController();
@@ -243,8 +249,7 @@ public class SalesActivity extends AppCompatActivity {
     }
 
     private void setupTextChangedListeners() {
-        EditText discountText = (EditText) findViewById(R.id.discountValue);
-        EditText amountText = (EditText) findViewById(R.id.amountReceived);
+
 
         discountText.addTextChangedListener(new TextListener(R.id.discountValue));
         amountText.addTextChangedListener(new TextListener(R.id.amountReceived));
@@ -266,7 +271,6 @@ public class SalesActivity extends AppCompatActivity {
     }
 
     private void recordTotals() {
-        ((TextView) findViewById(R.id.balanceDue)).getText().toString();
         String discountString = ((EditText) findViewById(R.id.discountValue)).getText().toString();
         String amountReceivedString = ((EditText) findViewById(R.id.amountReceived)).getText().toString();
         String balanceString = ((TextView) findViewById(R.id.balanceDue)).getText().toString();
@@ -376,7 +380,7 @@ public class SalesActivity extends AppCompatActivity {
     }
 
     private void saveCreditSaleWithCustomer(int customerId) {
-        Customer customer = null;
+        Customer customer;
         if (customersController != null) {
             try {
                 customer = customersController.findCustomer(customerId, null);
