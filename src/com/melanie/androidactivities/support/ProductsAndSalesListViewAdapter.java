@@ -65,9 +65,9 @@ public class ProductsAndSalesListViewAdapter<T> extends ArrayAdapter<T> {
                     parent, false);
         }
 
-        int quantity = 0;
-        double price = 0;
-        String name = "";
+        int quantity;
+        double price;
+        String name;
 
         if (item != null)
             if (item instanceof Sale) {

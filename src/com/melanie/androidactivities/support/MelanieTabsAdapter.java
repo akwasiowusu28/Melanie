@@ -1,5 +1,6 @@
 package com.melanie.androidactivities.support;
 
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -8,11 +9,13 @@ import android.util.SparseArray;
 public class MelanieTabsAdapter extends FragmentPagerAdapter {
 
     private SparseArray<Class<? extends Fragment>> fragments;
+    private boolean isDaily;
 
-    public <T> MelanieTabsAdapter(FragmentManager fm,
-                                  SparseArray<Class<? extends Fragment>> fragments) {
+    public MelanieTabsAdapter(FragmentManager fm,
+                                  SparseArray<Class<? extends Fragment>> fragments, boolean isDaily) {
         super(fm);
         this.fragments = fragments;
+        this.isDaily = isDaily;
     }
 
     @Override
@@ -22,9 +25,13 @@ public class MelanieTabsAdapter extends FragmentPagerAdapter {
         Class<? extends Fragment> klass = fragments.get(index);
         try {
             fragment = klass.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
+            Bundle bundle = new Bundle();
+            bundle.putBoolean(Utils.Constants.IS_DAILY,isDaily);
+            fragment.setArguments(bundle);
+        } catch (IllegalAccessException | InstantiationException e) {
             // TODO: log it
         }
+
         return fragment;
     }
 
@@ -36,7 +43,7 @@ public class MelanieTabsAdapter extends FragmentPagerAdapter {
 
     @Override
     public CharSequence getPageTitle(int position) {
-        return "Sales Report " + (position + 1);
+        return  position == 0 ? "Table" : "Chart";
     }
 
 }

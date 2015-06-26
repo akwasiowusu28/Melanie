@@ -23,11 +23,9 @@ import com.melanie.androidactivities.R;
 import com.melanie.support.BusinessFactory;
 import com.melanie.support.OperationResult;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -75,14 +73,13 @@ public final class Utils {
     /**
      * Clears any number of text fields supplied
      *
-     * @param views
+     * @param views the editTextFields
      */
     public static void clearInputTextFields(View... views) {
-        for (View view : views)
-            if (view instanceof EditText) {
-                ((EditText) view).setText("");
-            }
-
+        for (View view : views) {
+           if(view instanceof EditText)
+               ( (EditText)view).setText("");
+        }
     }
 
     /**
@@ -127,11 +124,6 @@ public final class Utils {
         Toast.makeText(context, stringId, Toast.LENGTH_LONG).show();
     }
 
-    public static <T> List<T> removeDuplicates(List<T> items) {
-        List<T> tempItems = new ArrayList<T>();
-        tempItems.addAll(new HashSet<T>(items));
-        return tempItems;
-    }
 
     public static <T> void mergeItems(List<T> sourceItems, List<T> targetItems, boolean keepTargetFirstItem) {
         for (T item : sourceItems)
@@ -158,7 +150,7 @@ public final class Utils {
     }
 
     public static <T> Map<T, Integer> groupItems(List<T> items) {
-        Map<T, Integer> itemGroup = new HashMap<T, Integer>();
+        Map<T, Integer> itemGroup = new HashMap<>();
 
         for (T item : items)
             if (!itemGroup.containsKey(item)) {
@@ -249,8 +241,7 @@ public final class Utils {
             }
         int mod10ofSum = sum % 10;
 
-        int checkDigit = mod10ofSum > 0 ? 10 - mod10ofSum : 0;
-        return checkDigit;
+        return  mod10ofSum > 0 ? 10 - mod10ofSum : 0;
 
     }
 
@@ -277,6 +268,7 @@ public final class Utils {
         public static final int BLUETOOTH_REQUEST_CODE = 208;
         public static final int PRINTER_SELECT_REQUEST_CODE = 28;
         public static final String EMPTY_STRING = "";
+        public static final String IS_DAILY = "isDaily";
     }
 
     public static void dismissKeyboard(Context context, EditText editText){

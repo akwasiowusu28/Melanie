@@ -19,10 +19,8 @@ import com.melanie.androidactivities.RecordCostsActivity;
 import com.melanie.androidactivities.ReportsActivity;
 import com.melanie.androidactivities.SalesActivity;
 import com.melanie.androidactivities.SettingsActivity;
-import com.melanie.androidactivities.fragments.DailySalesLineChartFragment;
-import com.melanie.androidactivities.fragments.DailySalesTableFragment;
-import com.melanie.androidactivities.fragments.MonthlySalesChartFragment;
-import com.melanie.androidactivities.fragments.MonthlySalesTableFragment;
+import com.melanie.androidactivities.fragments.SalesChartFragment;
+import com.melanie.androidactivities.fragments.SalesTableFragment;
 
 /**
  * @author Akwasi Owusu
@@ -242,23 +240,23 @@ public class NavigationHelper {
     public static SparseArray<Class<? extends Fragment>> getDailySalesReportFragments() {
         return new SparseArray<Class<? extends Fragment>>() {
             {
-                append(0, DailySalesTableFragment.class);
-                append(1, DailySalesLineChartFragment.class);
+                append(0, SalesTableFragment.class);
+                append(1, SalesChartFragment.class);
             }
         };
     }
 
-    /**
-     * A SparseArray containing the fragments used in the monthly sales report
-     *
-     * @return the fragments
-     */
-    public static SparseArray<Class<? extends Fragment>> getMonthlySalesReportFragments() {
-        return new SparseArray<Class<? extends Fragment>>() {
-            {
-                append(0, MonthlySalesTableFragment.class);
-                append(1, MonthlySalesChartFragment.class);
-            }
-        };
-    }
+//    /**
+//     * A SparseArray containing the fragments used in the monthly sales report
+//     *
+//     * @return the fragments
+//     */
+//    public static SparseArray<Class<? extends Fragment>> getMonthlySalesReportFragments() {
+//        return new SparseArray<Class<? extends Fragment>>() {
+//            {
+//                append(0, MonthlySalesTableFragment.class);
+//                append(1, MonthlySalesChartFragment.class);
+//            }
+//        };
+//    }
 }

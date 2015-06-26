@@ -19,7 +19,7 @@ public class DailySalesReportActivity extends AppCompatActivity {
         ViewPager viewPager = (ViewPager) findViewById(R.id.reportsViewPager);
         viewPager.setAdapter(new MelanieTabsAdapter(
                 getSupportFragmentManager(), NavigationHelper
-                .getDailySalesReportFragments()));
+                .getDailySalesReportFragments(), true));
 
         SlidingTabLayout tabLayout = (SlidingTabLayout) findViewById(R.id.melanieSlidingTabs);
         tabLayout.setSelectedIndicatorColors(Color.rgb(255, 117, 25));

@@ -157,4 +157,7 @@
     <string name="monthlySalesDescription">View monthly sales</string>
     <string name="userDailySalesDescription">View daily sales per user</string>
     <string name="userMonthlySalesDescription">View monthly sales per user</string>
+    <string name="day">Day</string>
+    <string name="bar">Bar</string>
+    <string name="line">Line</string>
 </resources>
