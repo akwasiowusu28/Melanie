@@ -12,7 +12,7 @@ import android.widget.ProgressBar;
 
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.melanie.androidactivities.support.NavigationHelper;
-import com.melanie.androidactivities.support.NavigationListViewAdapter;
+import com.melanie.androidactivities.adapters.NavigationListViewAdapter;
 import com.melanie.androidactivities.support.Utils;
 import com.melanie.business.MelanieSession;
 import com.melanie.business.UserController;

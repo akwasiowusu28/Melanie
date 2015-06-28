@@ -49,6 +49,7 @@ public class RecordCostsActivity extends AppCompatActivity {
     private double total = 0D;
     private ProductEntryController productEntryController;
     private SimpleDateFormat dateformater;
+
     private ButtonMethods buttonMethods = new ButtonMethods() {
 
         @Override
@@ -88,7 +89,7 @@ public class RecordCostsActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.record_costs, menu);
+        getMenuInflater().inflate(R.menu.record_costs_menu, menu);
         return true;
     }
 

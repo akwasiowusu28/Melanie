@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
 
-import com.melanie.androidactivities.support.ProductsAndSalesListViewAdapter;
+import com.melanie.androidactivities.adapters.ProductsAndSalesListViewAdapter;
 import com.melanie.androidactivities.support.ReportSession;
 import com.melanie.androidactivities.support.SectionHeader;
 import com.melanie.androidactivities.support.Utils;

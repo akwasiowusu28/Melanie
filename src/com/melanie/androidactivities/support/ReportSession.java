@@ -1,8 +1,10 @@
 package com.melanie.androidactivities.support;
 
 import com.melanie.business.SalesController;
+import com.melanie.business.UserController;
 import com.melanie.entities.Product;
 import com.melanie.entities.Sale;
+import com.melanie.entities.User;
 import com.melanie.support.BusinessFactory;
 import com.melanie.support.OperationCallBack;
 import com.melanie.support.exceptions.MelanieBusinessException;
@@ -30,6 +32,9 @@ public class ReportSession {
     private Date selectedDate;
     private boolean startDateUnchanged = false;
     private boolean endDateUnchanged = false;
+    private List<User> users;
+    private UserController userController;
+    private boolean usersRequestMade = false;
 
     private ReportSession() {
         initializeFields();
@@ -52,10 +57,10 @@ public class ReportSession {
         dailySalesDisplayItems = new ArrayList<>();
         monthlySalesDisplayItems = new ArrayList<>();
         sales = new ArrayList<>();
+        users = new ArrayList<>();
         salesController = BusinessFactory.makeSalesController();
-
+        userController = BusinessFactory.makeUserController();
         initializeDates();
-        loadSales(false);
     }
 
     private void initializeDates() {
@@ -65,8 +70,16 @@ public class ReportSession {
         endDate = Utils.getDateToEndOfDay(calendar);
     }
 
-    public void loadSales(final boolean isDaily) {
+    public void initializeData(boolean isDaily) {
 
+        loadSales(isDaily);
+        if(!usersRequestMade) {
+            loadUsers();
+            usersRequestMade = true;
+        }
+    }
+
+    private void loadSales(final boolean isDaily){
         if (!(startDateUnchanged && endDateUnchanged)) {
             if (!sales.isEmpty())
                 sales.clear();
@@ -88,11 +101,31 @@ public class ReportSession {
         updateDisplayItems(isDaily);
     }
 
-    private void updateSalesDisplayItems(boolean isDaily) {
+    private void loadUsers(){
+        if(users.isEmpty()){
+            try {
+                userController.getAllUsers(new OperationCallBack<User>() {
 
-        List<SalesReportItem> reportItems = getDisplayItemsGroup(isDaily);
+                    @Override
+                    public void onCollectionOperationSuccessful(List<User> results) {
+                        users.addAll(results);
+                        notifyPropertyChanged(PropertyNames.USERS);
+                    }
+                });
+            } catch (MelanieBusinessException e) {
+                e.printStackTrace(); //TODO log it
+            }
+        }
+    }
 
-        if(reportItems != null){
+    private void updateDisplayItems(boolean isDaily) {
+      updateDisplayItems(isDaily, Utils.Constants.NONE);
+    }
+
+    private void updateDisplayItems(boolean isDaily, String ownerId) {
+
+        List<SalesReportItem> reportItems = getDisplayItemsGroup(isDaily, ownerId);
+
             if(isDaily) {
                 dailySalesDisplayItems.clear();
                 dailySalesDisplayItems.addAll(reportItems);
@@ -102,11 +135,10 @@ public class ReportSession {
                 monthlySalesDisplayItems.addAll(reportItems);
             }
             notifyPropertyChanged(PropertyNames.DAILY_SALES_DISPLAY_ITEMS);
-        }
     }
 
 
-    private List<SalesReportItem> getDisplayItemsGroup(boolean isDaily){
+    private List<SalesReportItem> getDisplayItemsGroup(boolean isDaily, String ownerId){
         List<SalesReportItem> salesReportItems = new ArrayList<>();
         Map<String, Integer> indexLookUp = new HashMap<>();
 
@@ -134,6 +166,9 @@ public class ReportSession {
                 if(product != null) {
                    total = quantity * product.getPrice();
                 }
+                if(ownerId != Utils.Constants.NONE && !sale.getOwnerId().equals(ownerId)){
+                    continue;
+                }
                 SalesReportItem reportItem = new SalesReportItem(date,quantity,total,sale.getSaleDate());
                 salesReportItems.add(reportItem);
                 indexLookUp.put(date, salesReportItems.indexOf(reportItem));
@@ -142,16 +177,16 @@ public class ReportSession {
         return salesReportItems;
     }
 
-    private void updateDisplayItems(boolean isDaily) {
-            updateSalesDisplayItems(isDaily);
-    }
-
     public List<SalesReportItem> getDisplayItems(boolean isDaily) {
         return isDaily ? dailySalesDisplayItems : monthlySalesDisplayItems;
     }
 
     public Date getStartDate() {
         return startDate;
+    }
+
+    public void filterDisplayItemsByUser(boolean isDaily, String ownerId){
+       updateDisplayItems(isDaily, ownerId);
     }
 
     public void setStartDate(Date startDate) {
@@ -190,6 +225,10 @@ public class ReportSession {
         return sales;
     }
 
+    public List<User> getUsers(){
+        return users;
+    }
+
     public void setSales(List<Sale> sales) {
         this.sales = sales;
     }
@@ -203,10 +242,15 @@ public class ReportSession {
         public static final String DAILY_SALES_DISPLAY_ITEMS = "dailySalesDisplayItems";
         public static final String START_DATE = "startDate";
         public static final String END_DATE = "endDate";
+        public static final String USERS = "users";
     }
 
     private static class LocalConstants {
         public static final String DAILY_FORMAT = "MMM dd, yyyy";
         public static final String MONTHLY_FORMAT = "MMMM";
+    }
+
+    public void removeListener(ObservablePropertyChangedListener listener){
+        observablePropertyChangedListeners.remove(listener);
     }
 }

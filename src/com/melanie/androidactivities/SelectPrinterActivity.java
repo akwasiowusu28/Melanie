@@ -11,7 +11,7 @@ import android.widget.ListView;
 
 import com.melanie.androidactivities.support.MelaniePrinterDiscoverer;
 import com.melanie.androidactivities.support.PrinterType;
-import com.melanie.androidactivities.support.SingleTextListAdapter;
+import com.melanie.androidactivities.adapters.SingleTextListAdapter;
 import com.melanie.androidactivities.support.Utils;
 import com.melanie.support.OperationCallBack;
 

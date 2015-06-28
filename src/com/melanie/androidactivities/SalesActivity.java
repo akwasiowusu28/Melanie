@@ -23,7 +23,7 @@ import android.widget.TextView;
 import com.melanie.androidactivities.support.MelanieAlertDialog;
 import com.melanie.androidactivities.support.MelanieAlertDialog.ButtonModes;
 import com.melanie.androidactivities.support.PrinterType;
-import com.melanie.androidactivities.support.ProductsAndSalesListViewAdapter;
+import com.melanie.androidactivities.adapters.ProductsAndSalesListViewAdapter;
 import com.melanie.androidactivities.support.ReceiptPrintingHelper;
 import com.melanie.androidactivities.support.Utils;
 import com.melanie.business.CustomersController;

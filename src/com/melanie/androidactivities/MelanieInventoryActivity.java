@@ -22,7 +22,7 @@ import android.widget.Spinner;
 
 import com.melanie.androidactivities.support.BarcodePrintHelper;
 import com.melanie.androidactivities.support.FileShareHelper;
-import com.melanie.androidactivities.support.ProductsAndSalesListViewAdapter;
+import com.melanie.androidactivities.adapters.ProductsAndSalesListViewAdapter;
 import com.melanie.androidactivities.support.Utils;
 import com.melanie.business.ProductEntryController;
 import com.melanie.entities.Category;

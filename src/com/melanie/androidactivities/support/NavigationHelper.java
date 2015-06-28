@@ -24,7 +24,7 @@ import com.melanie.androidactivities.fragments.SalesTableFragment;
 
 /**
  * @author Akwasi Owusu
- *         <p>
+ *         <p/>
  *         This class provides the activities and other items used in navigation
  *         NOTE: The order of items returned by the methods below, especially
  *         those that return arrays[], are important
@@ -130,7 +130,6 @@ public class NavigationHelper {
     }
 
 
-
     /**
      * Defines the main navigation items on the Reports main page. Add to this
      * if you want to add another item on the navigation page
@@ -138,8 +137,8 @@ public class NavigationHelper {
      * @return String ids of the navigation items
      */
     public static Integer[] getReportsMainNavigationItems() {
-        return new Integer[]{R.string.dailySales, R.string.monthlySales,
-                R.string.userDailySales, R.string.userMonthlySales};
+        return new Integer[]{R.string.dailySales, R.string.monthlySales
+        };
     }
 
     /**
@@ -148,8 +147,8 @@ public class NavigationHelper {
      * @return Ids for Icons used in the product main page
      */
     public static Integer[] getReportsMainIcons() {
-        return new Integer[]{R.drawable.dailyreport, R.drawable.monthlyreport,
-                R.drawable.userdailyreport, R.drawable.usermonthlyreport};
+        return new Integer[]{R.drawable.dailyreport, R.drawable.monthlyreport
+        };
     }
 
     /**
@@ -160,7 +159,7 @@ public class NavigationHelper {
      */
     public static Integer[] getReportsMainNavigationDescription() {
         return new Integer[]{R.string.dailySalesDescription,
-                R.string.monthlySalesDescription, R.string.userDailySalesDescription, R.string.userMonthlySalesDescription};
+                R.string.monthlySalesDescription};
     }
 
     /**
@@ -226,8 +225,6 @@ public class NavigationHelper {
             {
                 append(0, DailySalesReportActivity.class);
                 append(1, MonthlySalesReportActivity.class);
-                append(2, DailySalesReportActivity.class);
-                append(3, MonthlySalesReportActivity.class);
             }
         };
     }
@@ -245,18 +242,4 @@ public class NavigationHelper {
             }
         };
     }
-
-//    /**
-//     * A SparseArray containing the fragments used in the monthly sales report
-//     *
-//     * @return the fragments
-//     */
-//    public static SparseArray<Class<? extends Fragment>> getMonthlySalesReportFragments() {
-//        return new SparseArray<Class<? extends Fragment>>() {
-//            {
-//                append(0, MonthlySalesTableFragment.class);
-//                append(1, MonthlySalesChartFragment.class);
-//            }
-//        };
-//    }
 }

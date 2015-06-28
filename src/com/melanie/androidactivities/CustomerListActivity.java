@@ -6,7 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ListView;
 
-import com.melanie.androidactivities.support.CustomersListViewAdapter;
+import com.melanie.androidactivities.adapters.CustomersListViewAdapter;
 import com.melanie.androidactivities.support.Utils;
 import com.melanie.business.CustomersController;
 import com.melanie.entities.Customer;

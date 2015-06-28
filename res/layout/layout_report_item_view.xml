@@ -20,6 +20,8 @@
         android:id="@+id/secondItemTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:textColor="#855D5D"
         android:layout_gravity="center"
         android:layout_weight="0.3"
         android:gravity="center" />
@@ -31,7 +33,6 @@
         android:layout_gravity="center_vertical|right"
         android:layout_weight="0.3"
         android:textColor="@android:color/black"
-        android:textStyle="bold"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
         android:background="@drawable/roundedshape"

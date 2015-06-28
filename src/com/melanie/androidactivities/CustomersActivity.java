@@ -15,7 +15,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.melanie.androidactivities.support.SingleTextListAdapter;
+import com.melanie.androidactivities.adapters.SingleTextListAdapter;
 import com.melanie.androidactivities.support.Utils;
 import com.melanie.business.CustomersController;
 import com.melanie.entities.Customer;

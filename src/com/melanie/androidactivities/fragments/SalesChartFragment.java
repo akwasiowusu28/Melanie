@@ -56,8 +56,6 @@ public class SalesChartFragment extends Fragment implements
     private BarDataSet barDataSet;
 
     private boolean isDaily = true;
-    private RadioButton lineRadioButton;
-    private RadioButton barRadioButton;
     private BarChart barChart;
     private ArrayList<BarEntry> barEntries;
 
@@ -74,7 +72,7 @@ public class SalesChartFragment extends Fragment implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle bundle = getArguments();
-        if(bundle != null){
+        if (bundle != null) {
             isDaily = bundle.getBoolean(Utils.Constants.IS_DAILY);
         }
         initializeFields();
@@ -101,11 +99,10 @@ public class SalesChartFragment extends Fragment implements
 
     private void initializeDates() {
 
-        if(isDaily) {
+        if (isDaily) {
             startDate = reportSession.getStartDate();
             endDate = reportSession.getEndDate();
-        }
-        else{
+        } else {
             startDate = Utils.getDateForFirstMonthDay(reportSession.getStartDate());
             endDate = Utils.getDateForLastMonthDay(reportSession.getEndDate());
         }
@@ -124,16 +121,16 @@ public class SalesChartFragment extends Fragment implements
         setupDateButtons();
         setUpCharts();
         setupRadioButtons();
-        reportSession.loadSales(isDaily);
+        reportSession.initializeData(isDaily);
     }
 
     private void setupRadioButtons() {
         View view = getView();
         if (view != null) {
-            lineRadioButton = (RadioButton)view.findViewById(R.id.lineRadio);
+            RadioButton lineRadioButton = (RadioButton) view.findViewById(R.id.lineRadio);
             lineRadioButton.setOnClickListener(onRadioButtonClicked);
 
-            barRadioButton = (RadioButton)view.findViewById(R.id.barRadio);
+            RadioButton barRadioButton = (RadioButton) view.findViewById(R.id.barRadio);
             barRadioButton.setOnClickListener(onRadioButtonClicked);
         }
     }
@@ -141,15 +138,17 @@ public class SalesChartFragment extends Fragment implements
     private OnClickListener onRadioButtonClicked = new OnClickListener() {
         @Override
         public void onClick(View view) {
-            switch (view.getId()){
-                case R.id.lineRadio:
-                    Utils.switchViewVisibitlity(true, lineChart);
-                    Utils.switchViewVisibitlity(false, barChart);
-                    break;
-                case R.id.barRadio:
-                    Utils.switchViewVisibitlity(true, barChart);
-                    Utils.switchViewVisibitlity(false, lineChart);
-                    break;
+            if (!(lineChart.isEmpty() && barChart.isEmpty())) {
+                switch (view.getId()) {
+                    case R.id.lineRadio:
+                        Utils.switchViewVisibitlity(true, lineChart);
+                        Utils.switchViewVisibitlity(false, barChart);
+                        break;
+                    case R.id.barRadio:
+                        Utils.switchViewVisibitlity(true, barChart);
+                        Utils.switchViewVisibitlity(false, lineChart);
+                        break;
+                }
             }
         }
     };
@@ -204,7 +203,7 @@ public class SalesChartFragment extends Fragment implements
         lineDataSet.setFillColor(Color.rgb(255, 102, 0));
     }
 
-    private void refreshBarDataSet(){
+    private void refreshBarDataSet() {
         barDataSet = new BarDataSet(barEntries, LocalConstants.DAILY_SALES);
         barDataSet.setColor(Color.rgb(51, 153, 255));
         barDataSet.setValueTextSize(9f);
@@ -242,21 +241,19 @@ public class SalesChartFragment extends Fragment implements
 
                 if (isValidDate(newDate, buttonId)) {
                     if (isStartDate) {
-                        if(isDaily) {
+                        if (isDaily) {
                             reportSession.setStartDate(Utils
                                     .getDateToStartOfDay(calendar));
-                        }
-                        else {
+                        } else {
                             newDate = Utils.getDateForFirstMonthDay(Utils
                                     .getDateToStartOfDay(calendar));
                             reportSession.setStartDate(newDate);
                         }
                     } else {
-                        if(isDaily) {
+                        if (isDaily) {
                             reportSession.setEndDate(Utils
                                     .getDateToEndOfDay(calendar));
-                        }
-                        else{
+                        } else {
                             newDate = Utils.getDateForLastMonthDay(Utils
                                     .getDateToEndOfDay(calendar));
                             reportSession.setEndDate(newDate);
@@ -264,7 +261,7 @@ public class SalesChartFragment extends Fragment implements
                     }
 
                     pickerButton.setText(dateFormatter.format(newDate));
-                    reportSession.loadSales(isDaily);
+                    reportSession.initializeData(isDaily);
                     refreshChart();
                 } else {
                     Utils.makeToast(getActivity(),
@@ -289,17 +286,20 @@ public class SalesChartFragment extends Fragment implements
 
     @Override
     public void onObservablePropertyChanged(String propertyName) {
-        switch (propertyName) {
-            case ReportSession.PropertyNames.DAILY_SALES_DISPLAY_ITEMS:
-                updateDisplayItems();
-                break;
-            case ReportSession.PropertyNames.START_DATE:
-                startDate = reportSession.getStartDate();
-                startDateButton.setText(dateFormatter.format(startDate));
-                break;
-            case ReportSession.PropertyNames.END_DATE:
-                endDate = reportSession.getEndDate();
-                endDateButton.setText(dateFormatter.format(endDate));
+        View view = getView();
+        if (view != null) {
+            switch (propertyName) {
+                case ReportSession.PropertyNames.DAILY_SALES_DISPLAY_ITEMS:
+                    updateDisplayItems();
+                    break;
+                case ReportSession.PropertyNames.START_DATE:
+                    startDate = reportSession.getStartDate();
+                    startDateButton.setText(dateFormatter.format(startDate));
+                    break;
+                case ReportSession.PropertyNames.END_DATE:
+                    endDate = reportSession.getEndDate();
+                    endDateButton.setText(dateFormatter.format(endDate));
+            }
         }
     }
 
@@ -312,7 +312,7 @@ public class SalesChartFragment extends Fragment implements
             reportItem = displayItems.get(i);
             int quantity = reportItem.getQuantity();
             lineEntries.add(new ChartEntry(quantity, i));
-            barEntries.add(new BarEntry(quantity,i));
+            barEntries.add(new BarEntry(quantity, i));
             chartLabels.add(reportItem.getDescription());
         }
     }
@@ -322,19 +322,27 @@ public class SalesChartFragment extends Fragment implements
             if (!lineChart.isEmpty()) {
                 lineChart.clearValues();
             }
-            if (!barChart.isEmpty()){
+            if (!barChart.isEmpty()) {
                 barChart.clearValues();
             }
             refreshChartEntries();
             refreshLineDataSet();
             refreshBarDataSet();
-            LineData lineData = new LineData(chartLabels, lineDataSet);
-            lineChart.setData(lineData);
-            lineChart.invalidate();
 
-            BarData barData = new BarData(chartLabels, barDataSet);
-            barChart.setData(barData);
-            barChart.invalidate();
+            if (!chartLabels.isEmpty()) {
+
+                if (!lineEntries.isEmpty()) {
+                    LineData lineData = new LineData(chartLabels, lineDataSet);
+                    lineChart.setData(lineData);
+                    lineChart.invalidate();
+                }
+
+                if (!barEntries.isEmpty()) {
+                    BarData barData = new BarData(chartLabels, barDataSet);
+                    barChart.setData(barData);
+                    barChart.invalidate();
+                }
+            }
         }
     }
 
@@ -342,5 +350,11 @@ public class SalesChartFragment extends Fragment implements
         public static final String EMPTY_STRING = "";
         public static final String DATEFORMAT = "MMM dd, yyyy";
         private static final String DAILY_SALES = "Daily Sales";
+    }
+
+    @Override
+    public void onDetach() {
+        reportSession.removeListener(this);
+        super.onDetach();
     }
 }

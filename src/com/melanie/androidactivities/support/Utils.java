@@ -269,6 +269,7 @@ public final class Utils {
         public static final int PRINTER_SELECT_REQUEST_CODE = 28;
         public static final String EMPTY_STRING = "";
         public static final String IS_DAILY = "isDaily";
+        public static final String NONE = "None";
     }
 
     public static void dismissKeyboard(Context context, EditText editText){

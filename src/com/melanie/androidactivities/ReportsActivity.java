@@ -8,7 +8,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.melanie.androidactivities.support.NavigationHelper;
-import com.melanie.androidactivities.support.NavigationListViewAdapter;
+import com.melanie.androidactivities.adapters.NavigationListViewAdapter;
 
 public class ReportsActivity extends AppCompatActivity {
 

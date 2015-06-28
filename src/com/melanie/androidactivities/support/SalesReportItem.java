@@ -4,7 +4,7 @@ package com.melanie.androidactivities.support;
 import java.io.Serializable;
 import java.util.Date;
 
-public class SalesReportItem implements Serializable {
+public class SalesReportItem implements Serializable, Comparable<SalesReportItem> {
 
     private String description;
     private int quantity;
@@ -73,5 +73,11 @@ public class SalesReportItem implements Serializable {
         result = 31 * result + (int) (temp ^ (temp >>> 32));
         result = 31 * result + getSaleDate().hashCode();
         return result;
+    }
+
+    @Override
+    public int compareTo(SalesReportItem another) {
+        return another != null && another.getDescription() != null ?
+                another.getDescription().compareTo(getDescription()) : 0;
     }
 }

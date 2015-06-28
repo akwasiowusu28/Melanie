@@ -21,4 +21,6 @@ public interface UserController {
     void updateUser(User user, String field, Object value, OperationCallBack<OperationResult> operationCallBack) throws MelanieBusinessException;
 
     User getLocalUser() throws MelanieBusinessException;
+
+    void getAllUsers(OperationCallBack<User> operationCallBack) throws MelanieBusinessException;
 }

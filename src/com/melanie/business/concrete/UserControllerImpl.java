@@ -13,6 +13,9 @@ import com.melanie.support.OperationResult;
 import com.melanie.support.exceptions.MelanieBusinessException;
 import com.melanie.support.exceptions.MelanieDataLayerException;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class UserControllerImpl implements UserController {
 
     private final DataAccessLayer dataAccess;
@@ -29,7 +32,7 @@ public class UserControllerImpl implements UserController {
     public void createUser(String name, String phone, String password, String deviceId,
                            final OperationCallBack<User> operationCallBack) throws MelanieBusinessException {
         User user = new User(name, password, phone, deviceId, false);
-        if (session.canConnectToCloud() ) {
+        if (session.canConnectToCloud()) {
             try {
                 dataAccess.addDataItem(user, User.class, operationCallBack);
             } catch (MelanieDataLayerException e) {
@@ -43,7 +46,7 @@ public class UserControllerImpl implements UserController {
     public void loginSavedUser(final OperationCallBack<User> operationCallBack) throws MelanieBusinessException {
         // Since there's should be only one user on this device, find the user
         // with id 1 from cache
-        if (session.canConnectToCloud() ) {
+        if (session.canConnectToCloud()) {
             try {
                 final User user = dataAccess.findItemById(1, User.class, null);
                 if (user != null) {
@@ -67,7 +70,7 @@ public class UserControllerImpl implements UserController {
     public void updateUser(User user, String field, Object value,
                            final OperationCallBack<OperationResult> operationCallBack) throws MelanieBusinessException {
 
-        if (session.canConnectToCloud() ) {
+        if (session.canConnectToCloud()) {
             try {
                 if (user == null) {
                     user = getLocalUser();
@@ -107,7 +110,7 @@ public class UserControllerImpl implements UserController {
     @Override
     public boolean localUserExists() throws MelanieBusinessException {
 
-       return getLocalUser() != null;
+        return getLocalUser() != null;
 
     }
 
@@ -115,7 +118,7 @@ public class UserControllerImpl implements UserController {
     public User getLocalUser() throws MelanieBusinessException {
         User user = null;
         try {
-            if (session.canConnectToCloud() ) {
+            if (session.canConnectToCloud()) {
                 user = dataAccess.findItemById(1, User.class, null);
             }
         } catch (MelanieDataLayerException e) {
@@ -186,7 +189,7 @@ public class UserControllerImpl implements UserController {
     }
 
     private void addUserToLocalDataStore(User user) throws MelanieDataLayerException {
-            dataAccess.addOrUpdateItemLocalOnly(user, User.class);
+        dataAccess.addOrUpdateItemLocalOnly(user, User.class);
     }
 
     private User constructUserFromBackendless(BackendlessUser backendlessUser) {
@@ -206,6 +209,26 @@ public class UserControllerImpl implements UserController {
         }
 
         return user;
+    }
+
+    @Override
+    public void getAllUsers(final OperationCallBack<User> operationCallBack) throws MelanieBusinessException {
+        try {
+
+            cloudAccess.findAllItems(BackendlessUser.class, new OperationCallBack<BackendlessUser>(){
+                @Override
+                public void onCollectionOperationSuccessful(List<BackendlessUser> results) {
+                    List<User> users = new ArrayList<User>();
+                    for(BackendlessUser backendlessUser : results){
+                        users.add(constructUserFromBackendless(backendlessUser));
+                    }
+                   operationCallBack.onCollectionOperationSuccessful(users);
+                }
+            });
+
+        } catch (MelanieDataLayerException ex) {
+            throw new MelanieBusinessException(ex.getMessage(), ex);
+        }
     }
 
     private class LocalConstants {

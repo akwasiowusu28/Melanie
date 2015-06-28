@@ -15,9 +15,9 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.melanie.androidactivities.support.ProductsAndSalesListViewAdapter;
+import com.melanie.androidactivities.adapters.ProductsAndSalesListViewAdapter;
 import com.melanie.androidactivities.support.SectionHeader;
-import com.melanie.androidactivities.support.SingleTextListAdapter;
+import com.melanie.androidactivities.adapters.SingleTextListAdapter;
 import com.melanie.androidactivities.support.Utils;
 import com.melanie.business.CustomersController;
 import com.melanie.business.SalesController;

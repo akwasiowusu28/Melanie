@@ -108,4 +108,8 @@ public class User extends BackendlessUser {
         public static final String PHONE = "phone";
     }
 
+    @Override
+    public String toString() {
+        return name;
+    }
 }

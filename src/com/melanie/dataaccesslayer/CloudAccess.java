@@ -6,6 +6,7 @@ import com.backendless.BackendlessUser;
 import com.backendless.async.callback.AsyncCallback;
 import com.backendless.exceptions.BackendlessFault;
 import com.backendless.persistence.BackendlessDataQuery;
+import com.backendless.persistence.QueryOptions;
 import com.melanie.dataaccesslayer.datasource.DataSourceManager;
 import com.melanie.entities.User;
 import com.melanie.support.OperationCallBack;
@@ -34,7 +35,7 @@ public class CloudAccess {
             throws MelanieDataLayerException {
         try {
             Backendless.Persistence.of(itemClass).save(dataItem,
-                    new BackendAsynCallBack<T>(operationCallBack));
+                    new BackendAsynCallBack<>(operationCallBack));
         } catch (Exception e) {
             throw new MelanieDataLayerException(e.getMessage(), e);
         }
@@ -88,7 +89,7 @@ public class CloudAccess {
             Backendless.Persistence
                     .of(itemClass)
                     .find(query,
-                            (AsyncCallback<BackendlessCollection<T>>) new BackendAsynCallBack<T>(
+                            (AsyncCallback<BackendlessCollection<T>>) new BackendAsynCallBack<>(
                                     operationCallBack));
         } catch (Exception e) {
             throw new MelanieDataLayerException(e.getMessage(), e);
@@ -104,9 +105,17 @@ public class CloudAccess {
             collectionRequestsCount++;
             BackendlessDataQuery query = new BackendlessDataQuery();
             query.setPageSize(100);
+
+            if (itemClass != BackendlessUser.class) {
+
+                QueryOptions queryOptions = new QueryOptions();
+                queryOptions.addSortByOption("created DSC");
+                query.setQueryOptions(queryOptions);
+            }
+
             Backendless.Persistence
                     .of(itemClass)
-                    .find(query, (AsyncCallback<BackendlessCollection<T>>) new BackendAsynCallBack<T>(
+                    .find(query, (AsyncCallback<BackendlessCollection<T>>) new BackendAsynCallBack<>(
                             operationCallBack));
         } catch (Exception e) {
             throw new MelanieDataLayerException(e.getMessage(), e);
@@ -118,7 +127,7 @@ public class CloudAccess {
             throws MelanieDataLayerException {
         try {
             Backendless.Persistence.of(itemClass).findLast(
-                    new BackendAsynCallBack<T>(operationCallBack));
+                    new BackendAsynCallBack<>(operationCallBack));
 
         } catch (Exception e) {
             throw new MelanieDataLayerException(e.getMessage(), e);
@@ -136,7 +145,7 @@ public class CloudAccess {
             Backendless.Persistence
                     .of(itemClass)
                     .find(query,
-                            (AsyncCallback<BackendlessCollection<T>>) new BackendAsynCallBack<T>(
+                            (AsyncCallback<BackendlessCollection<T>>) new BackendAsynCallBack<>(
                                     operationCallBack));
         } catch (Exception e) {
             throw new MelanieDataLayerException(e.getMessage(), e);
@@ -153,7 +162,7 @@ public class CloudAccess {
             Backendless.Persistence
                     .of(itemClass)
                     .find(query,
-                            (AsyncCallback<BackendlessCollection<T>>) new BackendAsynCallBack<T>(
+                            (AsyncCallback<BackendlessCollection<T>>) new BackendAsynCallBack<>(
                                     operationCallBack));
         } catch (Exception e) {
             throw new MelanieDataLayerException(e.getMessage(), e);
@@ -189,7 +198,7 @@ public class CloudAccess {
             Backendless.Persistence
                     .of(itemClass)
                     .find(query,
-                            (AsyncCallback<BackendlessCollection<T>>) new BackendAsynCallBack<T>(
+                            (AsyncCallback<BackendlessCollection<T>>) new BackendAsynCallBack<>(
                                     operationCallBack));
         } catch (Exception e) {
             throw new MelanieDataLayerException(e.getMessage(), e);
@@ -200,7 +209,7 @@ public class CloudAccess {
     public void addUser(User user, OperationCallBack<BackendlessUser> operationCallBack) {
 
         Backendless.UserService.register(user,
-                new BackendAsynCallBack<BackendlessUser>(operationCallBack));
+                new BackendAsynCallBack<>(operationCallBack));
     }
 
     public void updateUser(User user, OperationCallBack<BackendlessUser> operationCallBack) {
@@ -257,7 +266,7 @@ public class CloudAccess {
                 } else {
                     operationCallBack.onOperationSuccessful(responseObject);
                 }
-            isCollectionOperation = collectionRequestsCount > 0 ? isCollectionOperation : false;
+            isCollectionOperation = collectionRequestsCount > 0 && isCollectionOperation;
         }
     }
 }

@@ -21,9 +21,9 @@ import android.widget.TextView;
 
 import com.melanie.androidactivities.R;
 import com.melanie.androidactivities.ViewSalesActivity;
-import com.melanie.androidactivities.support.ReportListAdapter;
 import com.melanie.androidactivities.support.MelanieDatePicker;
 import com.melanie.androidactivities.support.ObservablePropertyChangedListener;
+import com.melanie.androidactivities.adapters.ReportListAdapter;
 import com.melanie.androidactivities.support.ReportSession;
 import com.melanie.androidactivities.support.SalesReportItem;
 import com.melanie.androidactivities.support.Utils;
@@ -50,7 +50,7 @@ public class SalesTableFragment extends Fragment implements
     private Handler handler;
     private ReportSession reportSession;
     private Context context;
-    private boolean isDaily = true;
+    private boolean isDaily;
     private OnItemClickListener listItemListener = new OnItemClickListener() {
 
         @Override
@@ -59,7 +59,7 @@ public class SalesTableFragment extends Fragment implements
             reportSession.setSelectedDate(displayItems.get(position - 1)
                     .getSaleDate());
             Intent intent = new Intent(context, ViewSalesActivity.class);
-            intent.putExtra(Utils.Constants.IS_DAILY,true);
+            intent.putExtra(Utils.Constants.IS_DAILY,isDaily);
             startActivity(intent);
         }
     };
@@ -106,7 +106,6 @@ public class SalesTableFragment extends Fragment implements
     private void updateDisplayItems() {
         displayItems.clear();
         displayItems.addAll(reportSession.getDisplayItems(isDaily));
-
         Utils.notifyListUpdate(displayItemsAdapter, handler);
     }
 
@@ -118,7 +117,7 @@ public class SalesTableFragment extends Fragment implements
         setupListView();
         reportSession.setStartDate(startDate);
         reportSession.setEndDate(endDate);
-        reportSession.loadSales(isDaily);
+        reportSession.initializeData(isDaily);
     }
 
     private void setupListView() {
@@ -205,7 +204,7 @@ public class SalesTableFragment extends Fragment implements
                     }
 
                     pickerButton.setText(dateformater.format(newDate));
-                    reportSession.loadSales(isDaily);
+                    reportSession.initializeData(isDaily);
                 } else {
                     Utils.makeToast(getActivity(),
                             isStartDate ? R.string.startDateError
@@ -229,21 +228,30 @@ public class SalesTableFragment extends Fragment implements
 
     @Override
     public void onObservablePropertyChanged(String propertyName) {
-        switch (propertyName) {
-            case ReportSession.PropertyNames.DAILY_SALES_DISPLAY_ITEMS:
-                updateDisplayItems();
-                break;
-            case ReportSession.PropertyNames.START_DATE:
-                startDate = reportSession.getStartDate();
-                startDateButton.setText(dateformater.format(startDate));
-                break;
-            case ReportSession.PropertyNames.END_DATE:
-                endDate = reportSession.getEndDate();
-                endDateButton.setText(dateformater.format(endDate));
+        View view = getView();
+        if (view != null) {
+            switch (propertyName) {
+                case ReportSession.PropertyNames.DAILY_SALES_DISPLAY_ITEMS:
+                    updateDisplayItems();
+                    break;
+                case ReportSession.PropertyNames.START_DATE:
+                    startDate = reportSession.getStartDate();
+                    startDateButton.setText(dateformater.format(startDate));
+                    break;
+                case ReportSession.PropertyNames.END_DATE:
+                    endDate = reportSession.getEndDate();
+                    endDateButton.setText(dateformater.format(endDate));
+            }
         }
     }
 
     private class LocalConstants {
         public static final String MMM_DD_YYYY = "MMM dd, yyyy";
+    }
+
+    @Override
+    public void onDetach() {
+        reportSession.removeListener(this);
+        super.onDetach();
     }
 }
