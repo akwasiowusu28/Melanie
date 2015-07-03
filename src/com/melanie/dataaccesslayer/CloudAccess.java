@@ -109,7 +109,7 @@ public class CloudAccess {
             if (itemClass != BackendlessUser.class) {
 
                 QueryOptions queryOptions = new QueryOptions();
-                queryOptions.addSortByOption("created DSC");
+                queryOptions.addSortByOption("created DESC");
                 query.setQueryOptions(queryOptions);
             }
 

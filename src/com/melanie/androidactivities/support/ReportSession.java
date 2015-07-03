@@ -35,6 +35,7 @@ public class ReportSession {
     private List<User> users;
     private UserController userController;
     private boolean usersRequestMade = false;
+    private String currentSelectedUser;
 
     private ReportSession() {
         initializeFields();
@@ -61,6 +62,7 @@ public class ReportSession {
         salesController = BusinessFactory.makeSalesController();
         userController = BusinessFactory.makeUserController();
         initializeDates();
+        currentSelectedUser = Utils.Constants.NONE;
     }
 
     private void initializeDates() {
@@ -118,6 +120,10 @@ public class ReportSession {
         }
     }
 
+    public String getCurrentSelectedUser(){
+        return currentSelectedUser;
+    }
+
     private void updateDisplayItems(boolean isDaily) {
       updateDisplayItems(isDaily, Utils.Constants.NONE);
     }
@@ -166,7 +172,7 @@ public class ReportSession {
                 if(product != null) {
                    total = quantity * product.getPrice();
                 }
-                if(ownerId != Utils.Constants.NONE && !sale.getOwnerId().equals(ownerId)){
+                if(!ownerId.equals(Utils.Constants.NONE) && !sale.getOwnerId().equals(ownerId)){
                     continue;
                 }
                 SalesReportItem reportItem = new SalesReportItem(date,quantity,total,sale.getSaleDate());
@@ -187,6 +193,7 @@ public class ReportSession {
 
     public void filterDisplayItemsByUser(boolean isDaily, String ownerId){
        updateDisplayItems(isDaily, ownerId);
+        currentSelectedUser = ownerId;
     }
 
     public void setStartDate(Date startDate) {

@@ -69,7 +69,12 @@ public class ViewSalesActivity extends Activity {
         Date selectedDate = reportSession.getSelectedDate();
         String currentTime = "";
 
+        String ownerId = reportSession.getCurrentSelectedUser();
+
         for (Sale sale : reportSales) {
+            if(!ownerId.equals(Utils.Constants.NONE) && !sale.getOwnerId().equals(ownerId)){
+                continue;
+            }
             Date salesDate = sale.getSaleDate();
             if (salesDate.equals(selectedDate)) {
                 String salesTime = timeFormatter.format(salesDate);

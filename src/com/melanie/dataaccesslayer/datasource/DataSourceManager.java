@@ -25,9 +25,19 @@ import java.util.List;
  */
 public class DataSourceManager {
 
-    private static final String APPLICATION_ID = "09B34DD5-7EA5-294B-FF3A-EB779F8EEF00";
-    private static final String SECRET_KEY = "C4580BEA-9513-1DB0-FFF1-98AA763D3300";
-    private static final String VERSION = "v1";
+    private class LocalConstants{
+
+        /*********J Six*******************
+        public static final String APPLICATION_ID = "6894887D-385F-BED1-FF9D-A587850AA700";
+         public static final String SECRET_KEY = "D1C3D6CE-85FF-6679-FFBB-CB16A400E300";
+        /********* ** *******************/
+
+        /******** Melanie ***************/
+        public static final String APPLICATION_ID = "09B34DD5-7EA5-294B-FF3A-EB779F8EEF00";
+        public static final String SECRET_KEY = "C4580BEA-9513-1DB0-FFF1-98AA763D3300";
+        /******** ** ***************/
+        public static final String VERSION = "v1";
+    }
 
     private static List<Class<?>> entityClasses = new ArrayList<Class<?>>() {
         private static final long serialVersionUID = 1L;
@@ -98,6 +108,7 @@ public class DataSourceManager {
     }
 
     public static <T> void initializeBackendless(T dataContext) {
-        Backendless.initApp(dataContext, APPLICATION_ID, SECRET_KEY, VERSION);
+        Backendless.initApp(dataContext, LocalConstants.APPLICATION_ID,
+                LocalConstants.SECRET_KEY, LocalConstants.VERSION);
     }
 }

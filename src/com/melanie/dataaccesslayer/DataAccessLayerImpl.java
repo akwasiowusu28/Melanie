@@ -65,7 +65,7 @@ public class DataAccessLayerImpl implements DataAccessLayer {
                 if (addReturn == 1) {
                     DataUtil.updateItemRecentUse(dataItem);
                     if (cloudAccess != null) {
-                        cloudAccess.addDataItem(dataItem, itemClass, new DataUtil.DataCallBack<T>(operationCallBack));
+                        cloudAccess.addDataItem(dataItem, itemClass, new DataUtil.DataCallBack<>(operationCallBack));
                     }
                     result = OperationResult.SUCCESSFUL;
                 }
@@ -115,7 +115,7 @@ public class DataAccessLayerImpl implements DataAccessLayer {
     @Override
     public <T> OperationResult updateDataItem(T dataItem, Class<T> itemClass) throws MelanieDataLayerException {
         if (cloudAccess != null) {
-            cloudAccess.updateDataItem(dataItem, itemClass, new DataUtil.DataCallBack<T>(null));
+            cloudAccess.updateDataItem(dataItem, itemClass, new DataUtil.DataCallBack<>(null));
         }
 
         return OperationResult.SUCCESSFUL; // very optimistic :-D
@@ -166,7 +166,7 @@ public class DataAccessLayerImpl implements DataAccessLayer {
                     DataUtil.updateDataCache(item);
                 }
             } else if (operationCallBack != null && cloudAccess != null) {
-                cloudAccess.findItemById(itemId, itemClass, new DataUtil.DataCallBack<T>(operationCallBack));
+                cloudAccess.findItemById(itemId, itemClass, new DataUtil.DataCallBack<>(operationCallBack));
             }
 
         } catch (SQLException e) {
@@ -196,7 +196,7 @@ public class DataAccessLayerImpl implements DataAccessLayer {
                     item = itemClass.cast(results.get(0));
                     DataUtil.updateDataCache(item);
                 } else if (operationCallBack != null && cloudAccess != null) {
-                    cloudAccess.findItemByFieldName(fieldName, searchValue, itemClass, new DataUtil.DataCallBack<T>(
+                    cloudAccess.findItemByFieldName(fieldName, searchValue, itemClass, new DataUtil.DataCallBack<>(
                             operationCallBack));
                 }
             }
@@ -223,7 +223,7 @@ public class DataAccessLayerImpl implements DataAccessLayer {
             DataUtil.updateDataCache(item);
         }
         if (cloudAccess != null) {
-            cloudAccess.findAllItems(itemClass, new DataUtil.DataCallBack<T>(operationCallBack));
+            cloudAccess.findAllItems(itemClass, new DataUtil.DataCallBack<>(operationCallBack));
         }
 
         return items;
@@ -260,20 +260,20 @@ public class DataAccessLayerImpl implements DataAccessLayer {
     @Override
     public <T> List<T> findItemsByFieldName(String fieldName, String searchValue, Class<T> itemClass,
                                             OperationCallBack<T> operationCallBack) throws MelanieDataLayerException {
-        List<T> items = new ArrayList<T>();
+        List<T> items = new ArrayList<>();
         try {
             Dao<T, Integer> dao = DataSourceManager.getCachedDaoFor(itemClass);
             if (dao != null) {
 
                 List<T> results = dao.queryForEq(getFieldNameWithoutClassNamePrefix(fieldName), searchValue);
                 if (results != null && results.size() > 0) {
-                    items = (List<T>) results;
+                    items = results;
                     for (T item : items) {
                         DataUtil.updateDataCache(item);
                     }
                 }
                 if (operationCallBack != null && cloudAccess != null) {
-                    cloudAccess.findItemsByFieldName(fieldName, searchValue, itemClass, new DataUtil.DataCallBack<T>(
+                    cloudAccess.findItemsByFieldName(fieldName, searchValue, itemClass, new DataUtil.DataCallBack<>(
                             operationCallBack));
                 }
             }
@@ -322,7 +322,7 @@ public class DataAccessLayerImpl implements DataAccessLayer {
     @Override
     public <T> OperationResult addOrUpdateItemLocalOnly(T dataItem, Class<T> itemClass)
             throws MelanieDataLayerException {
-        OperationResult result = OperationResult.FAILED;
+        OperationResult result;
         if (dataItem instanceof User) {
             Dao<T, Integer> dao = DataSourceManager.getCachedDaoFor(itemClass);
             try {
@@ -340,7 +340,7 @@ public class DataAccessLayerImpl implements DataAccessLayer {
     public <T, E> List<T> findItemsBetween(String fieldName, E lowerBound, E upperBound, Class<T> itemClass,
                                            OperationCallBack<T> operationCallBack) throws MelanieDataLayerException {
 
-        List<T> result = new ArrayList<T>();
+        List<T> result = new ArrayList<>();
         try {
             Dao<T, Integer> dao = DataSourceManager.getCachedDaoFor(itemClass);
             if (dao != null && dao.queryBuilder() != null) {
@@ -348,9 +348,9 @@ public class DataAccessLayerImpl implements DataAccessLayer {
                 Where<T, Integer> where = queryBuilder.where();
                 where.between(fieldName, lowerBound, upperBound);
 
-                result.addAll((List<T>) dao.query(queryBuilder.prepare()));
+                result.addAll(dao.query(queryBuilder.prepare()));
                 cloudAccess.findItemsBetween(fieldName, lowerBound, upperBound, itemClass,
-                        new DataUtil.DataCallBack<T>(operationCallBack));
+                        new DataUtil.DataCallBack<>(operationCallBack));
             }
 
         } catch (SQLException e) {
@@ -363,7 +363,7 @@ public class DataAccessLayerImpl implements DataAccessLayer {
         try {
             Dao<User, Integer> dao = DataSourceManager.getCachedDaoFor(User.class);
             DataUtil.addOrUpdateItem(dao, user);
-            addUserToCloud((User) user, dao, (OperationCallBack<User>) operationCallBack);
+            addUserToCloud(user, dao, operationCallBack);
         } catch (MelanieDataLayerException | SQLException e) {
             throw new MelanieDataLayerException(e.getMessage(), e);
         }

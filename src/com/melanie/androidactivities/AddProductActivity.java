@@ -32,8 +32,6 @@ public class AddProductActivity extends AppCompatActivity {
     private static boolean bluetoothRequestMade;
     private ProductEntryController productController;
 
-    private Map<String, String> printerInfo = null;
-
     private String currentBarcode = null;
     private int currentProductQuantity = 1;
 
@@ -75,13 +73,13 @@ public class AddProductActivity extends AppCompatActivity {
         if (!instanceWasSaved) {
             getAllCategories();
         }
-        categoriesAdapter = new ArrayAdapter<Category>(this, android.R.layout.simple_spinner_dropdown_item, categories);
+        categoriesAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, categories);
     }
 
     private void getAllCategories() {
-        categories = new ArrayList<Category>();
+        categories = new ArrayList<>();
         try {
-            List<Category> tempCategories = null;
+            List<Category> tempCategories;
             tempCategories = productController.getAllCategories(new OperationCallBack<Category>() {
                 @Override
                 public void onCollectionOperationSuccessful(List<Category> results) {
@@ -171,8 +169,7 @@ public class AddProductActivity extends AppCompatActivity {
     private String generateBarcodeString(int lastItemId) {
         lastItemId++;
         String format = "%06d";
-        String barcodeNumber = Utils.getBarcodePrefix() + String.format(format, lastItemId);
-        return barcodeNumber;
+        return Utils.getBarcodePrefix() + String.format(format, lastItemId);
     }
 
     private void clearTextFields() {
@@ -202,7 +199,7 @@ public class AddProductActivity extends AppCompatActivity {
         if (resultCode == RESULT_OK && requestCode == Utils.Constants.PRINTER_SELECT_REQUEST_CODE) {
 
             Bundle bundle = intentData.getExtras();
-            printerInfo = (Map<String, String>) bundle.get(LocalConstants.PRINTER_INFO);
+            Map<String, String> printerInfo = (Map<String, String>) bundle.get(LocalConstants.PRINTER_INFO);
             if (printerInfo != null) {
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
                 if (barcodePrintHelper != null) {

@@ -26,6 +26,9 @@ public class Product extends BaseEntity {
     @DatabaseField
     private String barcode;
 
+    @DatabaseField
+    private String imagePath;
+
     @DatabaseField(columnName = "CategoryId", foreignAutoRefresh = true, canBeNull = true, foreign = true)
     private Category category;
 
@@ -81,6 +84,14 @@ public class Product extends BaseEntity {
 
     public void setCategory(Category category) {
         this.category = category;
+    }
+
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
     }
 
     @Override
