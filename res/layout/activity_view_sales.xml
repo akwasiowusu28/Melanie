@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="400dp"
     android:background="@android:color/white"
-    tools:context="com.melanie.androidactivities.ViewSalesActivity">
+    tools:context="com.melanie.ui.activities.ViewSalesActivity">
 
     <ListView
         android:id="@+id/salesListView"

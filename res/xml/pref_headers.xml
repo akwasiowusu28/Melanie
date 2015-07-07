@@ -3,19 +3,19 @@
     <!-- These settings headers are only used on tablets. -->
 
     <header
-        android:fragment="com.melanie.androidactivities.SettingsActivity$GeneralPreferenceFragment"
+        android:fragment="com.melanie.ui.activities.SettingsActivity$GeneralPreferenceFragment"
         android:title="@string/pref_header_general" />
     <header
-        android:fragment="com.melanie.androidactivities.SettingsActivity$NotificationPreferenceFragment"
+        android:fragment="com.melanie.ui.activities.SettingsActivity$NotificationPreferenceFragment"
         android:title="@string/pref_header_notifications" />
     <header
-        android:fragment="com.melanie.androidactivities.SettingsActivity$DataSyncPreferenceFragment"
+        android:fragment="com.melanie.ui.activities.SettingsActivity$DataSyncPreferenceFragment"
         android:title="@string/pref_header_data_sync" /><header
-        android:fragment="com.melanie.androidactivities.SettingsActivity$GeneralPreferenceFragment"
+        android:fragment="com.melanie.ui.activities.SettingsActivity$GeneralPreferenceFragment"
         android:title="@string/pref_header_general" /><header
-        android:fragment="com.melanie.androidactivities.SettingsActivity$NotificationPreferenceFragment"
+        android:fragment="com.melanie.ui.activities.SettingsActivity$NotificationPreferenceFragment"
         android:title="@string/pref_header_notifications" /><header
-        android:fragment="com.melanie.androidactivities.SettingsActivity$DataSyncPreferenceFragment"
+        android:fragment="com.melanie.ui.activities.SettingsActivity$DataSyncPreferenceFragment"
         android:title="@string/pref_header_data_sync" />
 
 </preference-headers>

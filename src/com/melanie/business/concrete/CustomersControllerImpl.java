@@ -2,7 +2,7 @@ package com.melanie.business.concrete;
 
 import com.melanie.business.CustomersController;
 import com.melanie.business.MelanieSession;
-import com.melanie.dataaccesslayer.DataAccessLayer;
+import com.melanie.dataaccess.DataAccessLayer;
 import com.melanie.entities.Customer;
 import com.melanie.support.BusinessFactory;
 import com.melanie.support.DataFactory;

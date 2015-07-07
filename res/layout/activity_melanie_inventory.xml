@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    tools:context="com.melanie.androidactivities.MelanieInventoryActivity">
+    tools:context="com.melanie.ui.activities.MelanieInventoryActivity">
 
     <LinearLayout
         android:id="@+id/filterContainer"

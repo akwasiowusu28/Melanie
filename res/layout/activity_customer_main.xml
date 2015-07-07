@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.melanie.androidactivities.CustomerMainActivity">
+    tools:context="com.melanie.ui.activities.CustomerMainActivity">
 
     <ListView
         android:id="@+id/customerMainListview"

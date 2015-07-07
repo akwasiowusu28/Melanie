@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.melanie.androidactivities"
+    package="com.melanie.ui"
     android:versionCode="1"
     android:versionName="1.0" >
 
@@ -46,7 +46,7 @@
 
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="com.melanie.androidactivities.fileprovider"
+            android:authorities="com.melanie.ui.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true" >
             <meta-data
@@ -55,7 +55,7 @@
         </provider>
 
         <activity
-            android:name=".MainActivity"
+            android:name=".activities.MainActivity"
             android:label="@string/title_activity_main" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -64,125 +64,125 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".CategoriesActivity"
+            android:name=".activities.CategoriesActivity"
             android:label="@string/app_name" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.melanie.androidactivities.ProductsMainActivity" />
+                android:value=".activities.ProductsMainActivity" />
         </activity>
         <activity
-            android:name=".ProductsMainActivity"
+            android:name=".activities.ProductsMainActivity"
             android:label="@string/title_activity_products" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.melanie.androidactivities.MainActivity" />
+                android:value=".activities.MainActivity" />
         </activity>
         <activity
-            android:name=".AddProductActivity"
+            android:name=".activities.AddProductActivity"
             android:label="@string/title_activity_add_product" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.melanie.androidactivities.ProductsMainActivity" />
+                android:value=".activities.ProductsMainActivity" />
         </activity>
         <activity
-            android:name=".ScanBarcodeActivity"
+            android:name=".activities.ScanBarcodeActivity"
             android:label="@string/title_activity_scan_barcode"
             android:theme="@android:style/Theme.Dialog" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.melanie.androidactivities.SalesActivity" />
+                android:value=".activities.SalesActivity" />
         </activity>
         <activity
-            android:name=".SalesActivity"
+            android:name=".activities.SalesActivity"
             android:label="@string/title_activity_sales" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.melanie.androidactivities.MainActivity" />
+                android:value=".activities.MainActivity" />
         </activity>
         <activity
-            android:name=".CustomersActivity"
+            android:name=".activities.CustomersActivity"
             android:label="@string/title_activity_customers" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.melanie.androidactivities.MainActivity" />
+                android:value=".activities.MainActivity" />
         </activity>
         <activity
-            android:name=".ReportsActivity"
+            android:name=".activities.ReportsActivity"
             android:label="@string/title_activity_reports" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.melanie.androidactivities.MainActivity" />
+                android:value=".activities.MainActivity" />
         </activity>
         <activity
-            android:name=".SettingsActivity"
+            android:name=".activities.SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:parentActivityName=".MainActivity" >
+            android:parentActivityName=".activities.MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.melanie.androidactivities.MainActivity" />
+                android:value=".activities.MainActivity" />
         </activity>
         <activity
-            android:name=".PaymentActivity"
+            android:name=".activities.PaymentActivity"
             android:label="@string/melanie_payment" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.melanie.androidactivities.MainActivity" />
+                android:value=".activities.MainActivity" />
         </activity>
         <activity
-            android:name=".MelanieInventoryActivity"
+            android:name=".activities.MelanieInventoryActivity"
             android:label="@string/melanie_inventory" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.melanie.androidactivities.ProductsMainActivity" />
+                android:value=".activities.ProductsMainActivity" />
         </activity>
         <activity
-            android:name=".CustomerListActivity"
+            android:name=".activities.CustomerListActivity"
             android:label="@string/title_activity_customer_list" />
         <activity
-            android:name=".DailySalesReportActivity"
+            android:name=".activities.DailySalesReportActivity"
             android:label="@string/title_activity_sales_report" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.melanie.androidactivities.MainActivity" />
+                android:value=".activities.MainActivity" />
         </activity>
         <activity
-            android:name=".CustomerMainActivity"
+            android:name=".activities.CustomerMainActivity"
             android:label="@string/title_activity_customer_main" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.melanie.androidactivities.MainActivity" />
+                android:value=".activities.MainActivity" />
         </activity>
         <activity
-            android:name=".ViewSalesActivity"
+            android:name=".activities.ViewSalesActivity"
             android:label="@string/title_activity_view_sales"
             android:theme="@android:style/Theme.Dialog" />
         <activity
-            android:name=".MonthlySalesReportActivity"
+            android:name=".activities.MonthlySalesReportActivity"
             android:label="@string/title_activity_monthly_sales_report" />
         <activity
-            android:name=".SelectPrinterActivity"
+            android:name=".activities.SelectPrinterActivity"
             android:label="@string/title_activity_select_printer"
             android:theme="@android:style/Theme.Dialog" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.melanie.androidactivities.MainActivity" />
+                android:value=".activities.MainActivity" />
         </activity>
         <activity
-            android:name=".SignupActivity"
+            android:name=".activities.SignupActivity"
             android:label="@string/signup"
             android:noHistory="true" />
         <activity
-            android:name=".ConfirmActivity"
+            android:name=".activities.ConfirmActivity"
             android:label="@string/title_activity_confirm"
             android:noHistory="true" />
         <activity
-            android:name=".LoginActivity"
+            android:name=".activities.LoginActivity"
             android:label="@string/title_activity_login"
             android:noHistory="true" />
-        <activity android:name=".RecordCostsActivity" >
+        <activity android:name=".activities.RecordCostsActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.melanie.androidactivities.ProductsMainActivity" />
+                android:value=".activities.ProductsMainActivity" />
         </activity>
     </application>
 

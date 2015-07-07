@@ -2,7 +2,7 @@ package com.melanie.business.concrete;
 
 import com.melanie.business.MelanieSession;
 import com.melanie.business.ProductEntryController;
-import com.melanie.dataaccesslayer.DataAccessLayer;
+import com.melanie.dataaccess.DataAccessLayer;
 import com.melanie.entities.Category;
 import com.melanie.entities.CostEntry;
 import com.melanie.entities.CostItem;

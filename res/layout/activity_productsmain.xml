@@ -3,7 +3,7 @@
     android:layout_width="fill_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center"
-    tools:context="com.melanie.androidactivities.ProductsMainActivity">
+    tools:context="com.melanie.ui.activities.ProductsMainActivity">
 
     <ListView
         android:id="@+id/productMainListview"

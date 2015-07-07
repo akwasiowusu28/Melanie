@@ -1,8 +1,8 @@
 package com.melanie.business.concrete;
 
 import com.melanie.business.MelanieSession;
-import com.melanie.dataaccesslayer.CloudAccess;
-import com.melanie.dataaccesslayer.DataAccessLayer;
+import com.melanie.dataaccess.CloudAccess;
+import com.melanie.dataaccess.DataAccessLayer;
 import com.melanie.entities.User;
 import com.melanie.support.BusinessFactory;
 import com.melanie.support.DataFactory;

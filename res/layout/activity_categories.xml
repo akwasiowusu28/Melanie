@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    tools:context="com.melanie.androidactivities.CategoriesActivity">
+    tools:context="com.melanie.ui.activities.CategoriesActivity">
 
     <LinearLayout
         android:id="@+id/inputViews"

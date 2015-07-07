@@ -1,12 +1,12 @@
 package com.melanie.business.concrete;
 
-import com.melanie.androidactivities.support.Utils;
+import com.melanie.ui.support.Utils;
 import com.melanie.business.CustomersController;
 import com.melanie.business.MelanieSession;
 import com.melanie.business.ProductEntryController;
 import com.melanie.business.SalesController;
-import com.melanie.dataaccesslayer.CloudAccess;
-import com.melanie.dataaccesslayer.DataAccessLayer;
+import com.melanie.dataaccess.CloudAccess;
+import com.melanie.dataaccess.DataAccessLayer;
 import com.melanie.entities.Customer;
 import com.melanie.entities.Payment;
 import com.melanie.entities.Product;

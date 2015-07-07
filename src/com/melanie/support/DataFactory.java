@@ -1,8 +1,8 @@
 package com.melanie.support;
 
-import com.melanie.dataaccesslayer.CloudAccess;
-import com.melanie.dataaccesslayer.DataAccessLayer;
-import com.melanie.dataaccesslayer.DataAccessLayerImpl;
+import com.melanie.dataaccess.CloudAccess;
+import com.melanie.dataaccess.DataAccessLayer;
+import com.melanie.dataaccess.DataAccessLayerImpl;
 
 public class DataFactory {
 

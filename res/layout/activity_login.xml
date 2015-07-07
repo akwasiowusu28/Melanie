@@ -10,7 +10,7 @@
         android:background="@android:color/white"
         android:orientation="vertical"
         android:padding="10dp"
-        tools:context="com.melanie.androidactivities.LoginActivity">
+        tools:context="com.melanie.ui.activities.LoginActivity">
 
         <ImageView
             android:id="@+id/melanielogo"
