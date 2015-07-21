@@ -1,11 +1,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="10dp"
-    android:weightSum="1"
-    tools:context="com.melanie.ui.activities.SignupActivity">
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              android:padding="10dp"
+              android:weightSum="1"
+              tools:context="com.melanie.ui.activities.SignupActivity">
 
     <TextView
         android:layout_width="wrap_content"
@@ -17,6 +17,18 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="textPersonName" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/phone" />
+
+    <EditText
+        android:id="@+id/phoneNumber"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/phoneNumberHint"
+        android:inputType="phone" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -40,17 +52,7 @@
         android:layout_height="wrap_content"
         android:inputType="textPassword" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/phone" />
 
-    <EditText
-        android:id="@+id/phoneNumber"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/phoneNumberHint"
-        android:inputType="phone" />
 
     <Button
         android:id="@+id/createAccountButton"

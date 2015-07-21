@@ -46,7 +46,8 @@ public class FileShareHelper {
 
             if (barcodeCacheFolder == null) {
                 barcodeCacheFolder = new File(context.getCacheDir(), LocalConstants.BARCODE_PATH);
-                barcodeCacheFolder.mkdirs();
+                if (!barcodeCacheFolder.exists())
+                    barcodeCacheFolder.mkdirs();
             }
             File barcodefilePath = new File(barcodeCacheFolder, fileName);
             FileOutputStream stream = new FileOutputStream(barcodefilePath);
@@ -80,7 +81,7 @@ public class FileShareHelper {
     private class LocalConstants {
         public static final String BARCODE_PATH = "barcodes/";
         public static final String PNG = ".png";
-        public static final String AUTHORITY = "com.melanie.androidactivities.fileprovider";
+        public static final String AUTHORITY = "com.melanie.ui.fileprovider";
         public static final String SPECIAL_CHARS = "[!@#$%\\^&*\\( \\)\\.\\,'\"\\\\?\\-/\\|_\\[\\+\\+`~]";
         public static final String EMPTY_STRING = "";
     }

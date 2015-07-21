@@ -39,7 +39,6 @@ public class UserControllerImpl implements UserController {
                 throw new MelanieBusinessException(e.getMessage(), e);
             }
         }
-
     }
 
     @Override

@@ -1,6 +1,5 @@
 package com.melanie.ui.activities;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
@@ -14,14 +13,14 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
 
-import com.melanie.ui.R;
-import com.melanie.ui.support.BarcodePrintHelper;
-import com.melanie.ui.support.Utils;
 import com.melanie.business.ProductEntryController;
 import com.melanie.entities.Category;
 import com.melanie.support.BusinessFactory;
 import com.melanie.support.OperationCallBack;
 import com.melanie.support.exceptions.MelanieBusinessException;
+import com.melanie.ui.R;
+import com.melanie.ui.support.BarcodePrintHelper;
+import com.melanie.ui.support.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,8 +41,8 @@ public class AddProductActivity extends AppCompatActivity {
     private ArrayList<Category> categories;
     private boolean instanceWasSaved = false;
     private BarcodePrintHelper barcodePrintHelper;
+    private CheckBox checkBox;
 
-    @SuppressLint("NewApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,20 +52,27 @@ public class AddProductActivity extends AppCompatActivity {
             restoreInstanceState(savedInstanceState);
             instanceWasSaved = true;
         }
-
         initializeFields();
+
+        checkBox = (CheckBox) findViewById(R.id.printBarcodeCheckBox);
+
+        if(Utils.Constants.PRINTING_OFF){
+            checkBox.setVisibility(View.INVISIBLE);
+            checkBox.setChecked(false);
+        }
 
         Spinner categorySpinner = (Spinner) findViewById(R.id.categoriesSpinner);
         categorySpinner.setAdapter(categoriesAdapter);
 
-
-        if (!bluetoothRequestMade) {
+        if (!Utils.Constants.PRINTING_OFF && !bluetoothRequestMade) {
             bluetoothRequestMade = true;
             barcodePrintHelper = new BarcodePrintHelper(this, bluetoothEnableRefused);
         }
         setupAddProductListener();
 
     }
+
+
 
     private void initializeFields() {
         productController = BusinessFactory.makeProductEntryController();
@@ -110,7 +116,8 @@ public class AddProductActivity extends AppCompatActivity {
 
     /**
      * Add a new product from the user input
-         */
+     */
+
     public void addProduct() {
 
         Category category = getSelectedCategory();
@@ -191,7 +198,7 @@ public class AddProductActivity extends AppCompatActivity {
     }
 
     private boolean userWantsToPrintBarcode() {
-        CheckBox checkBox = (CheckBox) findViewById(R.id.printBarcodeCheckBox);
+
         return checkBox.isChecked();
     }
 
@@ -237,7 +244,6 @@ public class AddProductActivity extends AppCompatActivity {
         }
     }
 
-    //cc
     private class LocalConstants {
         public static final String PRINTER_INFO = "printerInfo";
         public static final String CATEGORIES = "categories";

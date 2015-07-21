@@ -52,7 +52,6 @@ public class MelanieInventoryActivity extends AppCompatActivity {
     private boolean isInEditProcess;
 
 
-
     private String currentBarcode = null;
     private BarcodePrintHelper barcodePrintHelper;
     private View selectedListViewChild;
@@ -81,6 +80,9 @@ public class MelanieInventoryActivity extends AppCompatActivity {
 
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.inventory_menu, menu);
+        if (Utils.Constants.PRINTING_OFF) {
+            menu.getItem(1).setVisible(false);
+        }
     }
 
     @Override

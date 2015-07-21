@@ -270,6 +270,7 @@ public final class Utils {
         public static final String EMPTY_STRING = "";
         public static final String IS_DAILY = "isDaily";
         public static final String NONE = "None";
+        public static final boolean PRINTING_OFF = false;
     }
 
     public static void dismissKeyboard(Context context, EditText editText){

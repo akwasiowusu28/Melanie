@@ -300,7 +300,10 @@ public class SalesActivity extends AppCompatActivity {
         } catch (MelanieBusinessException e) {
             e.printStackTrace(); // TODO log it
         }
-        //printReceipt();
+        if (!Utils.Constants.PRINTING_OFF) {
+            printReceipt();
+        }
+
         updateUIAfterSave(saveResult);
     }
 
