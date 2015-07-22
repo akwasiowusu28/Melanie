@@ -174,8 +174,7 @@ public class UserControllerImpl implements UserController {
 
                             @Override
                             public void onOperationFailed(Throwable e) {
-                                // for logging purposes
-                                operationCallBack.onOperationFailed(e);
+                              super.onOperationFailed(e);
                                 // return null to caller if error occured
                                 operationCallBack.onOperationSuccessful(null);
                             }

@@ -133,6 +133,8 @@ public class ConfirmActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
             result = OperationResult.SUCCESSFUL;
+        }else {
+            Utils.makeToast(this, R.string.confirmation_failed);
         }
         return result;
     }

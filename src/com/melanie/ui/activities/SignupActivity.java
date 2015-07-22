@@ -23,10 +23,6 @@ import com.melanie.support.exceptions.MelanieBusinessException;
 public class SignupActivity extends AppCompatActivity {
 
     private UserController userController;
-    private EditText passwordField;
-    private EditText confirmPasswordField;
-    private EditText nameField;
-    private EditText phoneField;
     private String phoneNumber;
     private ProgressDialog progressDialog;
 
@@ -40,10 +36,6 @@ public class SignupActivity extends AppCompatActivity {
 
     private void initializeFields() {
         userController = BusinessFactory.makeUserController();
-        passwordField = (EditText) findViewById(R.id.password);
-        confirmPasswordField = (EditText) findViewById(R.id.confirmPassword);
-        nameField = (EditText) findViewById(R.id.userName);
-        phoneField = (EditText) findViewById(R.id.phoneNumber);
     }
 
     private void setupCreateAccountButton() {
@@ -58,7 +50,7 @@ public class SignupActivity extends AppCompatActivity {
 
     }
 
-    private final AsyncTask<Void, Void, Void> signupAsync() {
+    private AsyncTask<Void, Void, Void> signupAsync() {
         return new AsyncTask<Void, Void, Void>() {
 
             @Override
@@ -88,10 +80,7 @@ public class SignupActivity extends AppCompatActivity {
 
     private void createAccount() {
 
-        passwordField.getText().toString();
-        confirmPasswordField.getText().toString();
-        nameField.getText().toString();
-        phoneNumber = phoneField.getText().toString();
+        phoneNumber = ((EditText) findViewById(R.id.phoneNumber)).getText().toString();
 
         if (userController != null) {
             try {
@@ -115,7 +104,10 @@ public class SignupActivity extends AppCompatActivity {
     }
 
     private void performCreateAccount() {
-        String name = nameField.getText().toString();
+        EditText passwordField =(EditText) findViewById(R.id.password);
+        EditText confirmPasswordField = (EditText) findViewById(R.id.confirmPassword);
+
+        String name = ((EditText) findViewById(R.id.userName)).getText().toString();
         String password = passwordField.getText().toString();
         String confirmPassword = confirmPasswordField.getText().toString();
 
@@ -140,15 +132,15 @@ public class SignupActivity extends AppCompatActivity {
 
                 @Override
                 public void onOperationSuccessful(User user) {
-                    Utils.switchInvalidFieldsBackColor(true, passwordField, confirmPasswordField);
                     BusinessFactory.getSession().setUser(user);
                     dismissProgressDialog();
-                    launchMainActivity();
+                    launchConfirmActivity();
                 }
 
                 @Override
                 public void onOperationFailed(Throwable e) {
                     Utils.makeToast(SignupActivity.this, R.string.createAccountFailed);
+                    dismissProgressDialog();
                 }
             });
         } catch (MelanieBusinessException e) {
@@ -160,16 +152,15 @@ public class SignupActivity extends AppCompatActivity {
     private String getDeviceId() {
         TelephonyManager telephonyManager = (TelephonyManager) getBaseContext().getSystemService(
                 Context.TELEPHONY_SERVICE);
-        String deviceId = telephonyManager.getDeviceId();
-        return deviceId;
+        return telephonyManager.getDeviceId();
     }
 
     private boolean passwordsMatch(String password, String confirmPassword) {
         return password.equals(confirmPassword);
     }
 
-    private void launchMainActivity() {
-        Intent intent = new Intent(this, MainActivity.class);
+    private void launchConfirmActivity() {
+        Intent intent = new Intent(this, ConfirmActivity.class);
         startActivity(intent);
         finish();
     }

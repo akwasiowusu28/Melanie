@@ -20,6 +20,8 @@ import java.util.List;
 public class CloudAccess {
 
     private boolean isCollectionOperation;
+    //This is to make sure the right objects are passed to the callback method in case there are multiple request that return collections.
+    // Increment this any time you run a request that has a potential of returning a collection
     private int collectionRequestsCount = 0;
 
     public CloudAccess() {

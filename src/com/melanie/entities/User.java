@@ -35,8 +35,8 @@ public class User extends BackendlessUser {
         setProperty(LocalConstants.NAME, name);
         setProperty(LocalConstants.PASSWORD, password);
         setProperty(LocalConstants.PHONE, phone);
-        setProperty(LocalConstants.DEVICEID, deviceId);
-        setProperty(LocalConstants.ISCONFIRMED, isConfirmed);
+        setProperty(LocalConstants.DEVICE_ID, deviceId);
+        setProperty(LocalConstants.IS_CONFIRMED, isConfirmed);
     }
 
     @Override
@@ -89,7 +89,7 @@ public class User extends BackendlessUser {
 
     public void setDeviceId(String deviceId) {
         this.deviceId = deviceId;
-        setProperty(LocalConstants.DEVICEID, deviceId);
+        setProperty(LocalConstants.DEVICE_ID, deviceId);
     }
 
     public String getPhone() {
@@ -103,8 +103,8 @@ public class User extends BackendlessUser {
     private class LocalConstants {
         public static final String PASSWORD = "password";
         public static final String NAME = "name";
-        public static final String DEVICEID = "deviceid";
-        public static final String ISCONFIRMED = "isconfirmed";
+        public static final String DEVICE_ID = "deviceid";
+        public static final String IS_CONFIRMED = "isconfirmed";
         public static final String PHONE = "phone";
     }
 
