@@ -128,7 +128,7 @@ public class LoginActivity extends Activity {
                             user.setPassword(password);
                             handleUserExists(user);
                         } else {
-                            postToastToUIThread(R.string.accountLookupFailed);
+                            postToastToUIThread(R.string.loginFailed);
                         }
 
                     }

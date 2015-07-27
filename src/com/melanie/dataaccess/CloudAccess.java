@@ -106,12 +106,12 @@ public class CloudAccess {
             isCollectionOperation = true;
             collectionRequestsCount++;
             BackendlessDataQuery query = new BackendlessDataQuery();
-            query.setPageSize(100);
 
             if (itemClass != BackendlessUser.class) {
 
                 QueryOptions queryOptions = new QueryOptions();
                 queryOptions.addSortByOption("created desc");
+                queryOptions.setPageSize(100);
                 query.setQueryOptions(queryOptions);
             }
 

@@ -1,10 +1,16 @@
 buildscript {
+    repositories {
+        jcenter()
+    }
     dependencies {
 
         classpath 'com.android.tools.build:gradle:1.2.3+'
 
     }
 }
+
+
+
 apply plugin: 'com.android.application'
 android {
     compileSdkVersion 22
@@ -49,6 +55,12 @@ android {
         }
     }
 }
+
+repositories {
+    mavenCentral()
+}
+
 dependencies {
     compile 'com.android.support:support-v4:22.+'
+    compile 'com.backendless:android:1.0'
 }

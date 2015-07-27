@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -48,13 +49,14 @@ public class MelanieInventoryActivity extends AppCompatActivity {
     private ArrayAdapter<Category> categoriesAdapter;
     private ArrayList<Category> categories;
     private boolean instanceWasSaved = false;
-
+    private int selectedCategoryPosition = 0;
     private boolean isInEditProcess;
 
 
     private String currentBarcode = null;
     private BarcodePrintHelper barcodePrintHelper;
     private View selectedListViewChild;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +74,7 @@ public class MelanieInventoryActivity extends AppCompatActivity {
 
         setupCategoriesSpinner();
         setupProductsListView();
+        setupSwipeRefresh();
     }
 
     @Override
@@ -215,6 +218,7 @@ public class MelanieInventoryActivity extends AppCompatActivity {
 
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                selectedCategoryPosition = position;
                 setCurrentProducts(position);
             }
 
@@ -252,8 +256,20 @@ public class MelanieInventoryActivity extends AppCompatActivity {
         Utils.notifyListUpdate(productsAdapter, handler);
 
         registerForContextMenu(listView);
-
     }
+
+    private void setupSwipeRefresh(){
+        swipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.refreshList);
+        swipeRefreshLayout.setOnRefreshListener(refreshListener);
+        swipeRefreshLayout.setColorSchemeResources(R.color.orange, R.color.green, R.color.blue);
+    }
+
+    private SwipeRefreshLayout.OnRefreshListener refreshListener = new SwipeRefreshLayout.OnRefreshListener() {
+        @Override
+        public void onRefresh() {
+            getAllProducts();
+        }
+    };
 
     private void getAllCategories() {
         try {
@@ -273,11 +289,15 @@ public class MelanieInventoryActivity extends AppCompatActivity {
     private void getAllProducts() {
         if (productController != null) {
             try {
+                if(!allProducts.isEmpty()){
+                    allProducts.clear();
+                }
                 allProducts.addAll(productController.findAllProducts(new OperationCallBack<Product>() {
                     @Override
                     public void onCollectionOperationSuccessful(List<Product> results) {
                         Utils.mergeItems(results, allProducts, false);
-                        setCurrentProducts(0);
+                        setCurrentProducts(selectedCategoryPosition);
+                        swipeRefreshLayout.setRefreshing(false);
                     }
                 }));
                 Utils.notifyListUpdate(productsAdapter, handler);
