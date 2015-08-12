@@ -84,15 +84,15 @@
     <orderEntry type="jdk" jdkName="Android API 22 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="ormlite-android-4.48" level="project" />
-    <orderEntry type="library" exported="" name="zbar" level="project" />
+    <orderEntry type="library" exported="" name="android-1.0" level="project" />
     <orderEntry type="library" exported="" name="ormlite-core-4.48" level="project" />
-    <orderEntry type="library" exported="" name="btsdk" level="project" />
     <orderEntry type="library" exported="" name="support-v4-22.2.1" level="project" />
     <orderEntry type="library" exported="" name="barcodegenerator" level="project" />
     <orderEntry type="library" exported="" name="LWPrint" level="project" />
-    <orderEntry type="library" exported="" name="support-annotations-22.2.1" level="project" />
-    <orderEntry type="library" exported="" name="android-1.0" level="project" />
     <orderEntry type="library" exported="" name="mpandroidchartlibrary-2-0-8" level="project" />
+    <orderEntry type="library" exported="" name="support-annotations-22.2.1" level="project" />
     <orderEntry type="library" exported="" name="appcompat-v7-22.2.0" level="project" />
+    <orderEntry type="library" exported="" name="btsdk" level="project" />
+    <orderEntry type="library" exported="" name="zbar" level="project" />
   </component>
 </module>

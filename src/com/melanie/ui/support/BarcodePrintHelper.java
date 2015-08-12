@@ -153,8 +153,10 @@ public class BarcodePrintHelper {
         }, 2, 2, TimeUnit.SECONDS);
     }
 
-    public void printBarcode(String barcode, Map<String, String> printerInfo) {
+    public void printBarcode(String barcode, int quantity, Map<String, String> printerInfo) {
         if (isInitialized) {
+            numberOfBarcodes = quantity;
+
             if (printerInfo != null) {
                 this.printerInfo = printerInfo;
             }

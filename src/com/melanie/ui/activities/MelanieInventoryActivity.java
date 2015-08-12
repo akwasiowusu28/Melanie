@@ -126,7 +126,7 @@ public class MelanieInventoryActivity extends AppCompatActivity {
         }
         Product product = currentProducts.get(position - 1); // This is because the listview header takes position 0 so the position coming in is off by one */
         currentBarcode = product.getBarcode();
-        barcodePrintHelper.printBarcode(currentBarcode, null);
+        barcodePrintHelper.printBarcode(currentBarcode, 1, null);
     }
 
     private void shareBarcodeImage(int position) {
@@ -318,7 +318,7 @@ public class MelanieInventoryActivity extends AppCompatActivity {
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
                 if (barcodePrintHelper != null) {
                     barcodePrintHelper.setIsPrinterFound(true);
-                    barcodePrintHelper.printBarcode(currentBarcode, printerInfo);
+                    barcodePrintHelper.printBarcode(currentBarcode, 1, printerInfo);
                 }
             }
         }

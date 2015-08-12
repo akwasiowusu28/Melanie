@@ -198,6 +198,7 @@ public class LoginActivity extends Activity {
             @Override
             public void onOperationSuccessful(OperationResult result) {
                 if (result.equals(OperationResult.SUCCESSFUL)) {
+                    session.setUser(user);
                     launchMainActivity();
                 } else {
                     postToastToUIThread(R.string.loginFailed);

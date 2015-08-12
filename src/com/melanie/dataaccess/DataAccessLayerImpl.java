@@ -36,7 +36,9 @@ public class DataAccessLayerImpl implements DataAccessLayer {
     }
 
     /**
+     *
      * @param dataContext the ORM datasource helper pushed from the UI
+     *
      */
     @Override
     public <T> void initialize(T dataContext) {
@@ -225,8 +227,8 @@ public class DataAccessLayerImpl implements DataAccessLayer {
         if (cloudAccess != null) {
             cloudAccess.findAllItems(itemClass, new DataUtil.DataCallBack<>(operationCallBack));
         }
-
-        return items;
+        //return items;
+        return new ArrayList<>();
     }
 
     /**
@@ -347,7 +349,7 @@ public class DataAccessLayerImpl implements DataAccessLayer {
                 Where<T, Integer> where = queryBuilder.where();
                 where.between(fieldName, lowerBound, upperBound);
 
-                result.addAll(dao.query(queryBuilder.prepare()));
+               // result.addAll(dao.query(queryBuilder.prepare()));
                 cloudAccess.findItemsBetween(fieldName, lowerBound, upperBound, itemClass,
                         new DataUtil.DataCallBack<>(operationCallBack));
             }
@@ -395,7 +397,6 @@ public class DataAccessLayerImpl implements DataAccessLayer {
                 itemExists = dao != null && dao.idExists(((BaseEntity) dataItem).getId());
 
             }
-
         } catch (SQLException e) {
             throw new MelanieDataLayerException(e.getMessage(), e);
         }

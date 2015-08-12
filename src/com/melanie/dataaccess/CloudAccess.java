@@ -144,6 +144,12 @@ public class CloudAccess {
             collectionRequestsCount++;
             String whereClause = fieldName + "='" + searchValue + "'";
             BackendlessDataQuery query = new BackendlessDataQuery(whereClause);
+
+            QueryOptions queryOptions = new QueryOptions();
+            queryOptions.addSortByOption("created desc");
+            queryOptions.setPageSize(100);
+            query.setQueryOptions(queryOptions);
+
             Backendless.Persistence
                     .of(itemClass)
                     .find(query,
@@ -161,6 +167,12 @@ public class CloudAccess {
             isCollectionOperation = true;
             collectionRequestsCount++;
             BackendlessDataQuery query = new BackendlessDataQuery(whereClause);
+
+            QueryOptions queryOptions = new QueryOptions();
+            queryOptions.addSortByOption("created desc");
+            queryOptions.setPageSize(100);
+            query.setQueryOptions(queryOptions);
+
             Backendless.Persistence
                     .of(itemClass)
                     .find(query,
@@ -197,6 +209,12 @@ public class CloudAccess {
                     + lowerBoundString + LocalConstants.AND + fieldName + LocalConstants.IS_LESS_OR_EQUAL_TO
                     + upperBoundString + LocalConstants.SINGLE_QUOTE;
             BackendlessDataQuery query = new BackendlessDataQuery(whereClause);
+
+            QueryOptions queryOptions = new QueryOptions();
+            queryOptions.addSortByOption("created desc");
+            queryOptions.setPageSize(100);
+            query.setQueryOptions(queryOptions);
+
             Backendless.Persistence
                     .of(itemClass)
                     .find(query,

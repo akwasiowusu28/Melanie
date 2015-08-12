@@ -167,14 +167,12 @@ public class ProductEntryControllerImpl implements ProductEntryController {
         List<Product> allProducts = new ArrayList<>();
         if (session.canConnectToCloud()) {
             try {
-                allProducts.addAll(getAllItemsOf(Product.class, operationCallBack));
-                for (Product product : allProducts) {
-                    dataAccess.refreshItem(product.getCategory(), Category.class);
-                }
+                getAllItemsOf(Product.class, operationCallBack);
             } catch (MelanieDataLayerException e) {
-                throw new MelanieBusinessException(e.getMessage(), e);
+                e.printStackTrace();
             }
         }
+
         return allProducts;
     }
 

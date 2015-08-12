@@ -193,7 +193,7 @@ public class AddProductActivity extends AppCompatActivity {
     private void printBarcode() {
 
         if (userWantsToPrintBarcode() && barcodePrintHelper != null) {
-            barcodePrintHelper.printBarcode(currentBarcode, null);
+            barcodePrintHelper.printBarcode(currentBarcode, currentProductQuantity, null);
         }
     }
 
@@ -212,7 +212,7 @@ public class AddProductActivity extends AppCompatActivity {
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
                 if (barcodePrintHelper != null) {
                     barcodePrintHelper.setIsPrinterFound(true);
-                    barcodePrintHelper.printBarcode(currentBarcode, printerInfo);
+                    barcodePrintHelper.printBarcode(currentBarcode, currentProductQuantity, printerInfo);
                 }
             }
         } else if (requestCode == Utils.Constants.BLUETOOTH_REQUEST_CODE) {

@@ -41,7 +41,6 @@ public class DataSourceManager {
 
     private static List<Class<?>> entityClasses = new ArrayList<Class<?>>() {
         private static final long serialVersionUID = 1L;
-
         {
             add(Category.class);
             add(Customer.class);
