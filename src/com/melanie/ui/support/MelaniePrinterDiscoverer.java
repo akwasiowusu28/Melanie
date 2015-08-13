@@ -34,11 +34,13 @@ public class MelaniePrinterDiscoverer {
                 printerDiscoverHelper.stopDiscover();
             }
 
+            Utils.makeToast(context, R.string.printerDiscovered);
             operationCallBack.onOperationSuccessful(printerInfo);
         }
 
         @Override
         public void onRemovePrinter(LWPrintDiscoverPrinter arg0, Map<String, String> arg1) {
+            Utils.makeToast(context, R.string.printerRemoved);
         }
 
     };
@@ -121,6 +123,7 @@ public class MelaniePrinterDiscoverer {
         if (!bluetoothRefused) {
             receiptPrinterService = new BluetoothService(context, new Handler());
             receiptPrinterService.startDiscovery();
+            Utils.makeToast(context, R.string.printerdiscovering);
         }
     }
 

@@ -158,4 +158,8 @@
     <string name="line">Line</string>
     <string name="filterByUser">Filter by user</string>
     <string name="confirmation_failed">Confirmation failed. Please try again</string>
+    <string name="printerDiscovered">Akwasi: printer discovered</string>
+    <string name="printerRemoved">Akwasi: printer removed</string>
+    <string name="printerdiscovering">Akwasi: discovering printer</string>
+    <string name="printerResourcesCleared">Akwasi: Printer cleared</string>
 </resources>

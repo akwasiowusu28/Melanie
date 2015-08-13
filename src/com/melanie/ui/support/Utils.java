@@ -120,8 +120,13 @@ public final class Utils {
      * @param context  The activity that wants to make a toast
      * @param stringId The string to display on toast
      */
-    public static void makeToast(Context context, int stringId) {
-        Toast.makeText(context, stringId, Toast.LENGTH_LONG).show();
+    public static void makeToast(final Context context,final int stringId) {
+        new Handler().post(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(context, stringId, Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
 
