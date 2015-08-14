@@ -162,4 +162,7 @@
     <string name="printerRemoved">Akwasi: printer removed</string>
     <string name="printerdiscovering">Akwasi: discovering printer</string>
     <string name="printerResourcesCleared">Akwasi: Printer cleared</string>
+    <string name="bluetoothNotEnabled">Bluetooth is not enabled</string>
+    <string name="couldnotDiscoverPrinter">Could not discover printer</string>
+    <string name="initializingPrinter">Akwasi: Initializing Printer</string>
 </resources>

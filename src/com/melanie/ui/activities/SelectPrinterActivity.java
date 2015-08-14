@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.melanie.ui.R;
 import com.melanie.ui.support.MelaniePrinterDiscoverer;
@@ -62,6 +63,9 @@ public class SelectPrinterActivity extends Activity {
 
         if (printerDiscoverer.isBluetoothAvailable()) {
             discoverPrinter();
+        }
+        else{
+            Utils.makeToast(this, R.string.couldnotDiscoverPrinter);
         }
     }
 

@@ -47,13 +47,14 @@ public class BarcodePrintHelper {
         if (!bluetoothEnabledRefused) {
             this.context = context;
             initializePrinter();
+            Utils.makeToast(context, R.string.initializingPrinter);
             createPrintProgressDialog();
             handler = new Handler(context.getMainLooper());
         }
     }
 
     private void initializePrinter() {
-        if (printer == null && printerInfo == null) {
+
             printerDiscoverer = new MelaniePrinterDiscoverer(context, new OperationCallBack<Map<String, String>>() {
 
                 @Override
@@ -64,8 +65,7 @@ public class BarcodePrintHelper {
 
             }, PrinterType.Barcode);
 
-            printerDiscoverer.discoverBarcodePrinter();
-        }
+        printerDiscoverer.discoverBarcodePrinter();
         printer = new LWPrint(context);
         printer.setCallback(new PrintCallBack());
     }

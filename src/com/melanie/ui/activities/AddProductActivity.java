@@ -64,12 +64,11 @@ public class AddProductActivity extends AppCompatActivity {
         Spinner categorySpinner = (Spinner) findViewById(R.id.categoriesSpinner);
         categorySpinner.setAdapter(categoriesAdapter);
 
-        if (!Utils.Constants.PRINTING_OFF && !bluetoothRequestMade) {
-            bluetoothRequestMade = true;
+        if (!Utils.Constants.PRINTING_OFF) {
+
             barcodePrintHelper = new BarcodePrintHelper(this, bluetoothEnableRefused);
         }
         setupAddProductListener();
-
     }
 
 
